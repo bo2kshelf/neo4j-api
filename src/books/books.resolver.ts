@@ -24,7 +24,7 @@ export class BooksResolver {
 
   @Mutation()
   async createBook(
-    @Args() {data}: {data: {title: string}},
+    @Args() {data}: {data: {title: string; isbn?: string}},
   ): Promise<BookEntity> {
     return this.booksService.createBook(data);
   }

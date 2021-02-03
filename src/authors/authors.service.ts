@@ -12,9 +12,13 @@ export class AuthorsService {
       .then((res) => res.records[0].get(0).properties);
   }
 
-  async createAuthor(data: {name: string}) {
+  async createAuthor(data: {name: string}): Promise<AuthorEntity> {
     const result = await this.neo4jService.write(
-      `CREATE (n:Author {id: apoc.create.uuid(), name: $data.name}) RETURN n`,
+      `
+      CREATE (n:Author {id: apoc.create.uuid()})
+      SET n += $data
+      RETURN n
+      `,
       {data},
     );
     return result.records[0].get(0).properties;

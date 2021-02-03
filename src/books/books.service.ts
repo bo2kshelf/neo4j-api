@@ -12,9 +12,12 @@ export class BooksService {
       .then((res) => res.records[0].get(0).properties);
   }
 
-  async createBook(data: {title: string}) {
+  async createBook(data: {title: string; isbn?: string}): Promise<BookEntity> {
     const result = await this.neo4jService.write(
-      `CREATE (n:Book {id: apoc.create.uuid(), title: $data.title}) RETURN n`,
+      `
+      CREATE (n:Book {id: apoc.create.uuid()})
+      SET n += $data
+      RETURN n`,
       {data},
     );
     return result.records[0].get(0).properties;

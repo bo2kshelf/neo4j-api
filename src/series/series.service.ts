@@ -12,14 +12,13 @@ export class SeriesService {
       .then((res) => res.records[0].get(0).properties);
   }
 
-  async createSeries(data: {title: string}) {
+  async createSeries(data: {title: string}): Promise<SeriesEntity> {
     const result = await this.neo4jService.write(
-      `CREATE (n:Series {id: apoc.create.uuid(), title: $data.title}) RETURN n`,
-      {
-        data: {
-          title: data.title,
-        },
-      },
+      `
+      CREATE (n:Series {id: apoc.create.uuid()})
+      SET n += $data
+      RETURN n`,
+      {data},
     );
     return result.records[0].get(0).properties;
   }
