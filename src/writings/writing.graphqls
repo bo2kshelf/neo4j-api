@@ -1,0 +1,15 @@
+type Writing {
+  author: Author!
+  book: Book!
+  roles: [String!]
+}
+
+input CreateWritingInput {
+  bookId: ID!
+  authorId: ID!
+  roles: [String!]
+}
+
+type Mutation {
+  createWriting(data: CreateWritingInput!): Writing!
+}

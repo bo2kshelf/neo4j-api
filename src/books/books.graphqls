@@ -1,0 +1,20 @@
+type Book @key(fields: "id") {
+  id: ID!
+  title: String!
+  isbn(dehyphenize: Boolean = true): String
+  writedBy(skip: Int, limit: Int): [Writing!]!
+}
+
+extend type Query {
+  book(id: ID!): Book!
+  allBooks: [Book!]!
+}
+
+input CreateBookInput {
+  title: String!
+  isbn: String
+}
+
+extend type Mutation {
+  createBook(data: CreateBookInput!): Book!
+}
