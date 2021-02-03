@@ -1,7 +1,9 @@
 import {
   Args,
   Mutation,
+  Parent,
   Query,
+  ResolveField,
   Resolver,
   ResolveReference,
 } from '@nestjs/graphql';
@@ -15,6 +17,15 @@ export class BooksResolver {
   @ResolveReference()
   resolveReference(reference: {__typename: string; id: string}) {
     return this.booksService.findById(reference.id);
+  }
+
+  @ResolveField()
+  isbn(
+    @Parent() parent: BookEntity,
+    @Args() {dehyphenize}: {dehyphenize: boolean},
+  ) {
+    if (dehyphenize && parent?.isbn) return parent.isbn.replace(/-/g, '');
+    return parent?.isbn;
   }
 
   @Query()
