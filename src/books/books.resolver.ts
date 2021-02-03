@@ -1,4 +1,10 @@
-import {Args, Query, Resolver, ResolveReference} from '@nestjs/graphql';
+import {
+  Args,
+  Mutation,
+  Query,
+  Resolver,
+  ResolveReference,
+} from '@nestjs/graphql';
 import {BookEntity} from './book.entity';
 import {BooksService} from './books.service';
 
@@ -14,5 +20,12 @@ export class BooksResolver {
   @Query()
   async book(@Args('id') id: string): Promise<BookEntity> {
     return this.booksService.findById(id);
+  }
+
+  @Mutation()
+  async createBook(
+    @Args() {data}: {data: {title: string}},
+  ): Promise<BookEntity> {
+    return this.booksService.createBook(data);
   }
 }

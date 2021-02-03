@@ -11,4 +11,12 @@ export class AuthorsService {
       .read(`MATCH (n:Author {id: $id}) RETURN n`, {id})
       .then((res) => res.records[0].get(0).properties);
   }
+
+  async createAuthor(data: {name: string}) {
+    const result = await this.neo4jService.write(
+      `CREATE (n:Author {id: apoc.create.uuid(), name: $data.name}) RETURN n`,
+      {data},
+    );
+    return result.records[0].get(0).properties;
+  }
 }

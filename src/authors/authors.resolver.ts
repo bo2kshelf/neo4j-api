@@ -1,5 +1,6 @@
 import {
   Args,
+  Mutation,
   Parent,
   Query,
   ResolveField,
@@ -31,5 +32,12 @@ export class AuthorsResolver {
   @Query()
   async author(@Args('id') id: string): Promise<AuthorEntity> {
     return this.authorsService.findById(id);
+  }
+
+  @Mutation()
+  async createAuthor(
+    @Args() {data}: {data: {name: string}},
+  ): Promise<BookEntity> {
+    return this.authorsService.createAuthor(data);
   }
 }

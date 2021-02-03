@@ -11,4 +11,12 @@ export class BooksService {
       .read(`MATCH (n:Book {id: $id}) RETURN n`, {id})
       .then((res) => res.records[0].get(0).properties);
   }
+
+  async createBook(data: {title: string}) {
+    const result = await this.neo4jService.write(
+      `CREATE (n:Book {id: apoc.create.uuid(), title: $data.title}) RETURN n`,
+      {data},
+    );
+    return result.records[0].get(0).properties;
+  }
 }
