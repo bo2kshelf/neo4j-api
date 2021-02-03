@@ -39,6 +39,7 @@
     "class-transformer": "0.3.1",
     "class-validator": "0.12.2",
     "graphql": "15.4.0",
+    "nanoid": "^3.1.20",
     "neo4j-driver": "^4.2.2",
     "reflect-metadata": "0.1.13",
     "rxjs": "6.6.3"
