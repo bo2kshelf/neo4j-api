@@ -1,0 +1,15 @@
+type SeriesPart {
+  series: Series!
+  book: Book!
+  volume: Int
+}
+
+input RegisterBookToSeriesInput {
+  bookId: ID!
+  seriesId: ID!
+  volume: Float
+}
+
+type Mutation {
+  registerBookToSeries(data: RegisterBookToSeriesInput!): SeriesPart!
+}

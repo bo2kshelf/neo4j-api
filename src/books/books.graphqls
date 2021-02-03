@@ -3,6 +3,7 @@ type Book @key(fields: "id") {
   title: String!
   isbn(dehyphenize: Boolean = true): String
   writedBy(skip: Int, limit: Int): [Writing!]!
+  seriesOf(skip: Int, limit: Int): [SeriesPart!]!
 }
 
 extend type Query {
