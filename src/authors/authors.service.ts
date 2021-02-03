@@ -12,6 +12,12 @@ export class AuthorsService {
       .then((res) => res.records[0].get(0).properties);
   }
 
+  async findAllAuthors(): Promise<AuthorEntity[]> {
+    return this.neo4jService
+      .read(`MATCH (n:Author) RETURN n`)
+      .then((res) => res.records.map((record) => record.get(0).properties));
+  }
+
   async createAuthor(data: {name: string}): Promise<AuthorEntity> {
     const result = await this.neo4jService.write(
       `

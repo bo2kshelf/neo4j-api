@@ -12,6 +12,12 @@ export class SeriesService {
       .then((res) => res.records[0].get(0).properties);
   }
 
+  async findAllSeries(): Promise<SeriesEntity[]> {
+    return this.neo4jService
+      .read(`MATCH (n:Series) RETURN n`)
+      .then((res) => res.records.map((record) => record.get(0).properties));
+  }
+
   async createSeries(data: {title: string}): Promise<SeriesEntity> {
     const result = await this.neo4jService.write(
       `

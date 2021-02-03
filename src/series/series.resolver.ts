@@ -22,6 +22,11 @@ export class SeriesResolver {
     return this.seriesService.findById(id);
   }
 
+  @Query()
+  async allSeries(): Promise<SeriesEntity[]> {
+    return this.seriesService.findAllSeries();
+  }
+
   @Mutation()
   async createSeries(
     @Args() {data}: {data: {title: string}},

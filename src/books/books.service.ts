@@ -6,10 +6,16 @@ import {BookEntity} from './book.entity';
 export class BooksService {
   constructor(private readonly neo4jService: Neo4jService) {}
 
-  async findById(id: string): Promise<BookEntity> {
+  async findBookById(id: string): Promise<BookEntity> {
     return this.neo4jService
       .read(`MATCH (n:Book {id: $id}) RETURN n`, {id})
       .then((res) => res.records[0].get(0).properties);
+  }
+
+  async findAllBooks(): Promise<BookEntity[]> {
+    return this.neo4jService
+      .read(`MATCH (n:Book) RETURN n`)
+      .then((res) => res.records.map((record) => record.get(0).properties));
   }
 
   async createBook(data: {title: string; isbn?: string}): Promise<BookEntity> {

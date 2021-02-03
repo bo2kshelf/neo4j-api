@@ -22,6 +22,11 @@ export class AuthorsResolver {
     return this.authorsService.findById(id);
   }
 
+  @Query()
+  async allAuthors(): Promise<AuthorEntity[]> {
+    return this.authorsService.findAllAuthors();
+  }
+
   @Mutation()
   async createAuthor(
     @Args() {data}: {data: {name: string}},
