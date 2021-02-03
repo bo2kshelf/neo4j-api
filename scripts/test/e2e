@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+
+jest --config=test/jest.e2e.config.ts \
+  --runInBand --passWithNoTests $@

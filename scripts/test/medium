@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+
+jest --config=test/jest.medium.config.ts \
+  --runInBand --passWithNoTests $@

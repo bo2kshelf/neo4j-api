@@ -1,0 +1,34 @@
+commit-msg:
+  commands:
+    commitlint:
+      run: commitlint --edit ./.git/COMMIT_EDITMSG
+
+pre-push:
+  parallel:
+  commands:
+    ts-check:
+      run: tsc --noEmit
+
+pre-commit:
+  parallel: true
+  commands:
+    eslint:
+      run: yarn run lint:eslint
+    prettier:
+      run: yarn run lint:prettier
+    hadolint:
+      files: git diff --name-only --staged
+      glob: 'Dockerfile*'
+      run: yarn run lint:hadolint
+    validate-codecov:
+      files: git diff --name-only --staged
+      glob: 'codecov.yml'
+      run: yarn run lint:codecov
+    validate-renovate:
+      files: git diff --name-only --staged
+      glob: '.renovaterc'
+      run: yarn run lint:renovate
+    validate-circleci:
+      files: git diff --name-only --staged
+      glob: '.circleci/*.yml'
+      run: yarn run lint:circleci

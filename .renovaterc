@@ -1,0 +1,6 @@
+{
+  "baseBranches": ["develop"],
+  "extends": [
+    "github>bo2kshelf/renovate-config"
+  ]
+}

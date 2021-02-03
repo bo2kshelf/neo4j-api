@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+
+jest --config=test/jest.small.config.ts \
+  --runInBand --passWithNoTests $@

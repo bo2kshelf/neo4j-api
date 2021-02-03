@@ -1,0 +1,175 @@
+version: 2.1
+
+orbs:
+  node: circleci/node@4.1.0
+  docker: circleci/docker@1.5.0
+  codecov: codecov/codecov@1.1.3
+
+jobs:
+  build:
+    docker:
+      - image: circleci/node:14.15.3
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: yarn
+      - run: yarn run build
+      - store_artifacts:
+          path: ./dist
+
+  lint-prettier:
+    docker:
+      - image: circleci/node:14.15.3
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: yarn
+      - run: yarn run lint:prettier
+
+  lint-eslint:
+    docker:
+      - image: circleci/node:14.15.3
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: yarn
+      - restore_cache:
+          key: eslint-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - run: yarn run lint:eslint --cache --format junit --output-file ./junit/eslint.xml
+      - save_cache:
+          key: eslint-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          paths:
+            - .eslintcache
+      - store_test_results:
+          path: ./junit
+
+  ts-check:
+    docker:
+      - image: circleci/node:14.15.3
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: yarn
+      - run: yarn run ts-check
+
+  test-small:
+    docker:
+      - image: circleci/node:14.15.3
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: yarn
+      - run:
+          command: |
+            yarn run test:small --ci --runInBand \
+              --forceExit \
+              --reporters=default --reporters=jest-junit \
+              --testResultsProcessor=jest-junit
+          environment:
+            JEST_JUNIT_OUTPUT_DIR: ./junit
+            JEST_JUNIT_OUTPUT_NAME: jest.xml
+      - store_test_results:
+          path: ./junit
+      - store_artifacts:
+          path: ./coverage
+      - codecov/upload:
+          flags: small
+          file: ./coverage/lcov.info
+
+  test-medium:
+    docker:
+      - image: circleci/node:14.15.3
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: yarn
+      - run:
+          command: |
+            yarn run test:medium --ci --runInBand \
+              --forceExit \
+              --reporters=default --reporters=jest-junit \
+              --testResultsProcessor=jest-junit
+          environment:
+            JEST_JUNIT_OUTPUT_DIR: ./junit
+            JEST_JUNIT_OUTPUT_NAME: jest.xml
+      - store_test_results:
+          path: ./junit
+      - store_artifacts:
+          path: ./coverage
+      - codecov/upload:
+          flags: medium
+          file: ./coverage/lcov.info
+
+  test-large:
+    docker:
+      - image: circleci/node:14.15.3
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: yarn
+      - run:
+          command: |
+            yarn run test:large --ci --forceExit \
+              --reporters=default --reporters=jest-junit \
+              --testResultsProcessor=jest-junit
+          environment:
+            JEST_JUNIT_OUTPUT_DIR: ./junit
+            JEST_JUNIT_OUTPUT_NAME: jest.xml
+      - store_test_results:
+          path: ./junit
+      - store_artifacts:
+          path: ./coverage
+      - codecov/upload:
+          flags: large
+          file: ./coverage/lcov.info
+
+  test-e2e:
+    docker:
+      - image: circleci/node:14.15.3
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: yarn
+      - run:
+          command: |
+            yarn run test:e2e --ci --forceExit
+
+workflows:
+  version: 2
+  main:
+    jobs:
+      - lint-eslint
+      - lint-prettier
+      - docker/hadolint:
+          dockerfiles: Dockerfile
+      - ts-check
+      - test-small:
+          requires:
+            - ts-check
+      - test-medium:
+          requires:
+            - ts-check
+      - test-large:
+          requires:
+            - ts-check
+            - test-small
+            - test-medium
+      - test-e2e:
+          requires:
+            - ts-check
+            - test-small
+            - test-medium
+      - build:
+          requires:
+            - lint-eslint
+            - lint-prettier
+            - ts-check
+            - test-small
+            - test-medium
+            - test-large
+            - test-e2e
+      - docker/publish:
+          requires:
+            - build
+          deploy: false
+          image: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME

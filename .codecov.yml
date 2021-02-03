@@ -1,0 +1,27 @@
+coverage:
+  status:
+    patch: off
+    project:
+      default: off
+      small:
+        target: 60%
+        threshold: 10%
+        flags:
+          - small
+      medium:
+        target: 60%
+        threshold: 10%
+        flags:
+          - medium
+      large:
+        target: 60%
+        threshold: 10%
+        flags:
+          - large
+flags:
+  small:
+    carryforward: true
+  medium:
+    carryforward: true
+  large:
+    carryforward: true
