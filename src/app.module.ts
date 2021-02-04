@@ -18,9 +18,7 @@ import {WritingsModule} from './writings/writings.module';
       imports: [ConfigModule.forFeature(Neo4jConfig)],
       inject: [Neo4jConfig.KEY],
       useFactory: async (config: ConfigType<typeof Neo4jConfig>) => ({
-        scheme: config.scheme,
-        host: config.host,
-        port: config.port,
+        url: config.url,
         username: config.username,
         password: config.password,
       }),

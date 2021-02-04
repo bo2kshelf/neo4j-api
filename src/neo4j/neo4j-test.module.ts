@@ -9,11 +9,7 @@ import {Neo4jModule} from './neo4j.module';
       imports: [ConfigModule.forFeature(Neo4jTestConfig)],
       inject: [Neo4jTestConfig.KEY],
       useFactory: async (config: ConfigType<typeof Neo4jTestConfig>) => ({
-        scheme: config.scheme,
-        host: config.host,
-        port: config.port,
-        username: config.username,
-        password: config.password,
+        url: config.url,
       }),
     }),
   ],

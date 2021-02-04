@@ -8,7 +8,7 @@ services:
       - 7474:7474 # http
       - 7687:7687 # bolt
     environment:
-      NEO4J_AUTH: ${NEO4J_TEST_USER}/${NEO4J_TEST_PASSWORD}
+      NEO4J_AUTH: none
       NEO4JLABS_PLUGINS: '["apoc"]'
       NEO4J_apoc_export_file_enabled: 'true'
       NEO4J_apoc_import_file_enabled: 'true'
