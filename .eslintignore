@@ -4,3 +4,7 @@ junit/
 
 # output
 dist/
+
+# docker
+docker/*
+!docker/*.yml

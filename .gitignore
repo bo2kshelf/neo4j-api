@@ -21,3 +21,7 @@ junit/
 # editor
 .vscode/*
 !.vscode/extensions.json
+
+# docker
+docker/*
+!docker/*.yml

@@ -1,4 +1,10 @@
+# test
 coverage/
 junit/
 
+# output
 dist/
+
+# docker
+docker/*
+!docker/*.yml
