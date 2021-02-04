@@ -24,7 +24,7 @@ export class PartsOfSeriesResolver {
 export class BookSeriesOfResolver {
   constructor(private readonly partsService: PartsOfSeriesService) {}
 
-  @ResolveField()
+  @ResolveField(() => [PartOfSeriesEntity])
   async seriesOf(
     @Parent() book: BookEntity,
     @Args({type: () => BookSeriesOfArgs}) args: BookSeriesOfArgs,
@@ -37,7 +37,7 @@ export class BookSeriesOfResolver {
 export class SeriesPartsResolver {
   constructor(private readonly partsService: PartsOfSeriesService) {}
 
-  @ResolveField()
+  @ResolveField(() => [PartOfSeriesEntity])
   async parts(
     @Parent() series: SeriesEntity,
     @Args({type: () => SeriesPartsArgs}) args: SeriesPartsArgs,
