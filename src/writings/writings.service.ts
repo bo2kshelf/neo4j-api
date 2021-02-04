@@ -25,7 +25,7 @@ export class WritingsService {
       .read(
         `
       MATCH (b:Book {id: $book.id})
-      MATCH (a)-[r:WRITING]->(b)
+      MATCH (a)-[r:WRITES]->(b)
       RETURN a,r,b
       SKIP $skip LIMIT $limit
       `,
@@ -46,7 +46,7 @@ export class WritingsService {
       .read(
         `
       MATCH (a:Author {id: $author.id})
-      MATCH (a)-[r:WRITING]->(b)
+      MATCH (a)-[r:WRITES]->(b)
       RETURN a,r,b
       SKIP $skip LIMIT $limit
       `,
@@ -57,5 +57,30 @@ export class WritingsService {
         },
       )
       .then(this.transferRecords);
+  }
+
+  async connectBookToAuthor(
+    {bookId, authorId}: {bookId: string; authorId: string},
+    props: {roles?: string[]} = {},
+  ): Promise<WritingEntity> {
+    return this.neo4jService
+      .write(
+        `
+        MATCH (a:Author {id: $authorId})
+        MATCH (b:Book {id: $bookId})
+        MERGE (a)-[r:WRITES]->(b)
+        SET r = $props
+        RETURN a,r,b
+      `,
+        {bookId, authorId, props},
+      )
+      .then((result) =>
+        result.records.map((record) => ({
+          ...record.get('r').properties,
+          author: record.get('a').properties,
+          book: record.get('b').properties,
+        })),
+      )
+      .then((entities) => entities[0]);
   }
 }

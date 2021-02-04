@@ -1,8 +1,15 @@
-import {AuthorEntity} from '../authors/author.entity';
+import {Field, Float, ObjectType} from '@nestjs/graphql';
 import {BookEntity} from '../books/book.entity';
+import {SeriesEntity} from '../series/series.entity';
 
+@ObjectType('SeriesPart')
 export class SeriesPartEntity {
-  series!: AuthorEntity;
+  @Field(() => SeriesEntity)
+  series!: SeriesEntity;
+
+  @Field(() => BookEntity)
   book!: BookEntity;
+
+  @Field(() => Float, {nullable: true})
   volume?: number;
 }

@@ -12,7 +12,7 @@ import {WritingsModule} from './writings/writings.module';
 @Module({
   imports: [
     GraphQLFederationModule.forRoot({
-      typePaths: ['**/*.graphqls'],
+      autoSchemaFile: true,
     }),
     Neo4jModule.forRootAsync({
       imports: [ConfigModule.forFeature(Neo4jConfig)],

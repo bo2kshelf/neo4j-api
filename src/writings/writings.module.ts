@@ -1,10 +1,19 @@
 import {Module} from '@nestjs/common';
-import {WritingsResolver} from './writings.resolver';
+import {
+  AuthorWritesResolver,
+  BookWritedByResolver,
+  WritingsResolver,
+} from './writings.resolver';
 import {WritingsService} from './writings.service';
 
 @Module({
   imports: [],
-  providers: [WritingsResolver, WritingsService],
+  providers: [
+    WritingsService,
+    WritingsResolver,
+    AuthorWritesResolver,
+    BookWritedByResolver,
+  ],
   exports: [WritingsService],
 })
 export class WritingsModule {}

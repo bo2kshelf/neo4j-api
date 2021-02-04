@@ -7,6 +7,8 @@ import {
 } from '@nestjs/graphql';
 import {AuthorEntity} from './author.entity';
 import {AuthorsService} from './authors.service';
+import {CreateAuthorArgs} from './dto/create-author.dto';
+import {GetAuthorArgs} from './dto/get-author.dto';
 
 @Resolver('Author')
 export class AuthorsResolver {
@@ -17,19 +19,21 @@ export class AuthorsResolver {
     return this.authorsService.findById(reference.id);
   }
 
-  @Query()
-  async author(@Args('id') id: string): Promise<AuthorEntity> {
+  @Query(() => AuthorEntity)
+  async author(
+    @Args({type: () => GetAuthorArgs}) {id}: GetAuthorArgs,
+  ): Promise<AuthorEntity> {
     return this.authorsService.findById(id);
   }
 
-  @Query()
+  @Query(() => [AuthorEntity])
   async allAuthors(): Promise<AuthorEntity[]> {
     return this.authorsService.findAllAuthors();
   }
 
-  @Mutation()
+  @Mutation(() => [AuthorEntity])
   async createAuthor(
-    @Args() {data}: {data: {name: string}},
+    @Args({type: () => CreateAuthorArgs}) {data}: CreateAuthorArgs,
   ): Promise<AuthorEntity> {
     return this.authorsService.createAuthor(data);
   }

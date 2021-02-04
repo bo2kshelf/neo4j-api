@@ -5,10 +5,12 @@ import {
   Resolver,
   ResolveReference,
 } from '@nestjs/graphql';
+import {CreateSeriesArgs} from './dto/create-series.dto';
+import {GetSeriesArgs} from './dto/get-series.dto';
 import {SeriesEntity} from './series.entity';
 import {SeriesService} from './series.service';
 
-@Resolver('Series')
+@Resolver(() => SeriesEntity)
 export class SeriesResolver {
   constructor(private readonly seriesService: SeriesService) {}
 
@@ -17,19 +19,21 @@ export class SeriesResolver {
     return this.seriesService.findById(reference.id);
   }
 
-  @Query()
-  async series(@Args('id') id: string): Promise<SeriesEntity> {
+  @Query(() => SeriesEntity)
+  async series(
+    @Args({type: () => GetSeriesArgs}) {id}: GetSeriesArgs,
+  ): Promise<SeriesEntity> {
     return this.seriesService.findById(id);
   }
 
-  @Query()
+  @Query(() => [SeriesEntity])
   async allSeries(): Promise<SeriesEntity[]> {
     return this.seriesService.findAllSeries();
   }
 
-  @Mutation()
+  @Mutation(() => SeriesEntity)
   async createSeries(
-    @Args() {data}: {data: {title: string}},
+    @Args({type: () => CreateSeriesArgs}) {data}: CreateSeriesArgs,
   ): Promise<SeriesEntity> {
     return this.seriesService.createSeries(data);
   }
