@@ -108,6 +108,10 @@ jobs:
       - image: neo4j:4.2.3
         environment:
           NEO4J_AUTH: none
+          NEO4JLABS_PLUGINS: '["apoc"]'
+          NEO4J_apoc_export_file_enabled: 'true'
+          NEO4J_apoc_import_file_enabled: 'true'
+          NEO4J_apoc_import_file_use__neo4j__config: 'true'
     steps:
       - checkout
       - node/install-packages:
