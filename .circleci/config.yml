@@ -157,13 +157,9 @@ workflows:
       - test-large:
           requires:
             - ts-check
-            - test-small
-            - test-medium
       - test-e2e:
           requires:
             - ts-check
-            - test-small
-            - test-medium
       - build:
           requires:
             - lint-eslint
