@@ -1,5 +1,5 @@
 import {Injectable} from '@nestjs/common';
-import {int, QueryResult} from 'neo4j-driver';
+import {int} from 'neo4j-driver';
 import {BookEntity} from '../books/book.entity';
 import {Neo4jService} from '../neo4j/neo4j.service';
 import {SeriesEntity} from '../series/series.entity';
@@ -8,14 +8,6 @@ import {SeriesPartEntity} from './series-part.entity';
 @Injectable()
 export class SeriesPartService {
   constructor(private readonly neo4jService: Neo4jService) {}
-
-  async transferRecords(result: QueryResult): Promise<SeriesPartEntity[]> {
-    return result.records.map((record) => ({
-      ...record.get('r').properties,
-      series: record.get('s').properties,
-      book: record.get('b').properties,
-    }));
-  }
 
   async getFromBook(
     book: BookEntity,
@@ -35,7 +27,13 @@ export class SeriesPartService {
           limit: int(limit),
         },
       )
-      .then(this.transferRecords);
+      .then((result) =>
+        result.records.map((record) => ({
+          ...record.get('r').properties,
+          series: record.get('s').properties,
+          book: record.get('b').properties,
+        })),
+      );
   }
 
   async getFromSeries(
@@ -56,7 +54,13 @@ export class SeriesPartService {
           limit: int(limit),
         },
       )
-      .then(this.transferRecords);
+      .then((result) =>
+        result.records.map((record) => ({
+          ...record.get('r').properties,
+          series: record.get('s').properties,
+          book: record.get('b').properties,
+        })),
+      );
   }
 
   async connectSeriesAndBook(
@@ -74,7 +78,13 @@ export class SeriesPartService {
       `,
         {bookId, seriesId, props},
       )
-      .then(this.transferRecords)
+      .then((result) =>
+        result.records.map((record) => ({
+          ...record.get('r').properties,
+          series: record.get('s').properties,
+          book: record.get('b').properties,
+        })),
+      )
       .then((entities) => entities[0]);
   }
 }

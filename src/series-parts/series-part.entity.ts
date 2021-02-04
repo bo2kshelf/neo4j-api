@@ -4,4 +4,5 @@ import {BookEntity} from '../books/book.entity';
 export class SeriesPartEntity {
   series!: AuthorEntity;
   book!: BookEntity;
+  volume?: number;
 }
