@@ -145,7 +145,7 @@ jobs:
 
 workflows:
   version: 2
-  main:
+  develop:
     jobs:
       - lint-eslint
       - lint-prettier
@@ -174,7 +174,10 @@ workflows:
             - test-large
             - test-e2e
       - docker/publish:
-          requires:
-            - build
           deploy: false
           image: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
+          requires:
+            - build
+          filters:
+            branches:
+              only: develop
