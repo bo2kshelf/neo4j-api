@@ -44,7 +44,7 @@ export class Neo4jService implements OnApplicationShutdown {
   }
 
   clear() {
-    return this.write(`MATCH (n) DELETE n`);
+    return this.write(`MATCH (n) DETACH DELETE n`);
   }
 
   onApplicationShutdown() {
