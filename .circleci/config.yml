@@ -108,7 +108,7 @@ jobs:
       - image: circleci/node:14.15.3
       - image: neo4j:4.2.3
         environment:
-          NEO4J_AUTH: ${NEO4J_TEST_USER}/${NEO4J_TEST_PASSWORD}
+          NEO4J_AUTH: neo4j/test
           NEO4JLABS_PLUGINS: '["apoc"]'
           NEO4J_apoc_export_file_enabled: 'true'
           NEO4J_apoc_import_file_enabled: 'true'
