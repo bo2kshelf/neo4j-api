@@ -101,8 +101,18 @@ jobs:
           file: ./coverage/lcov.info
 
   test-large:
+    environment:
+      NEO4J_TEST_USER: neo4j
+      NEO4J_TEST_PASSWORD: test
     docker:
       - image: circleci/node:14.15.3
+      - image: neo4j:4.2.3
+        environment:
+          NEO4J_AUTH: ${NEO4J_TEST_USER}/${NEO4J_TEST_PASSWORD}
+          NEO4JLABS_PLUGINS: '["apoc"]'
+          NEO4J_apoc_export_file_enabled: 'true'
+          NEO4J_apoc_import_file_enabled: 'true'
+          NEO4J_apoc_import_file_use__neo4j__config: 'true'
     steps:
       - checkout
       - node/install-packages:
