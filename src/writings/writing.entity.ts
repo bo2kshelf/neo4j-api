@@ -10,6 +10,6 @@ export class WritingEntity {
   @Field(() => BookEntity)
   book!: BookEntity;
 
-  @Field(() => [String], {nullable: false})
+  @Field(() => [String], {nullable: true})
   roles?: string[];
 }

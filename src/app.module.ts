@@ -5,7 +5,7 @@ import {AuthorsModule} from './authors/authors.module';
 import {BooksModule} from './books/books.module';
 import {Neo4jConfig} from './neo4j/neo4j.config';
 import {Neo4jModule} from './neo4j/neo4j.module';
-import {SeriesPartModule} from './series-parts/series-parts.module';
+import {PartsOfSeriesModule} from './parts-of-series/parts-of-series.module';
 import {SeriesModule} from './series/series.module';
 import {WritingsModule} from './writings/writings.module';
 
@@ -27,7 +27,7 @@ import {WritingsModule} from './writings/writings.module';
     AuthorsModule,
     SeriesModule,
     WritingsModule,
-    SeriesPartModule,
+    PartsOfSeriesModule,
   ],
 })
 export class AppModule {}

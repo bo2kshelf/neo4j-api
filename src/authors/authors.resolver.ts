@@ -31,7 +31,7 @@ export class AuthorsResolver {
     return this.authorsService.findAllAuthors();
   }
 
-  @Mutation(() => [AuthorEntity])
+  @Mutation(() => AuthorEntity)
   async createAuthor(
     @Args({type: () => CreateAuthorArgs}) {data}: CreateAuthorArgs,
   ): Promise<AuthorEntity> {

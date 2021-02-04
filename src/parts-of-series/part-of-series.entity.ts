@@ -3,7 +3,7 @@ import {BookEntity} from '../books/book.entity';
 import {SeriesEntity} from '../series/series.entity';
 
 @ObjectType('SeriesPart')
-export class SeriesPartEntity {
+export class PartOfSeriesEntity {
   @Field(() => SeriesEntity)
   series!: SeriesEntity;
 

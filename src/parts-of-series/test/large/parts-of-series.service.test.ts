@@ -6,22 +6,22 @@ import {IDService} from '../../../id/id.service';
 import {Neo4jTestModule} from '../../../neo4j/neo4j-test.module';
 import {Neo4jService} from '../../../neo4j/neo4j.service';
 import {SeriesService} from '../../../series/series.service';
-import {SeriesPartService} from '../../series-parts.service';
+import {PartsOfSeriesService} from '../../parts-of-series.service';
 
-describe(SeriesPartService.name, () => {
+describe(PartsOfSeriesService.name, () => {
   let app: INestApplication;
 
   let neo4jService: Neo4jService;
   let idService: IDService;
 
-  let partsService: SeriesPartService;
+  let partsService: PartsOfSeriesService;
   let seriesService: SeriesService;
   let booksService: BooksService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       imports: [Neo4jTestModule, IDModule],
-      providers: [IDService, SeriesPartService, BooksService, SeriesService],
+      providers: [IDService, PartsOfSeriesService, BooksService, SeriesService],
     }).compile();
 
     app = module.createNestApplication();
@@ -30,7 +30,7 @@ describe(SeriesPartService.name, () => {
     neo4jService = module.get<Neo4jService>(Neo4jService);
     idService = module.get<IDService>(IDService);
 
-    partsService = module.get<SeriesPartService>(SeriesPartService);
+    partsService = module.get<PartsOfSeriesService>(PartsOfSeriesService);
     seriesService = module.get<SeriesService>(SeriesService);
     booksService = module.get<BooksService>(BooksService);
   });

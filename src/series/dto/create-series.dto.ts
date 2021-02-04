@@ -5,9 +5,6 @@ import {ValidateNested} from 'class-validator';
 export class CreateSeriesDataInput {
   @Field(() => String)
   title!: string;
-
-  @Field(() => String, {nullable: true})
-  isbn?: string;
 }
 
 @ArgsType()

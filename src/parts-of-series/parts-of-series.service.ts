@@ -3,16 +3,16 @@ import {int} from 'neo4j-driver';
 import {BookEntity} from '../books/book.entity';
 import {Neo4jService} from '../neo4j/neo4j.service';
 import {SeriesEntity} from '../series/series.entity';
-import {SeriesPartEntity} from './series-part.entity';
+import {PartOfSeriesEntity} from './part-of-series.entity';
 
 @Injectable()
-export class SeriesPartService {
+export class PartsOfSeriesService {
   constructor(private readonly neo4jService: Neo4jService) {}
 
   async getFromBook(
     book: BookEntity,
     {skip = 0, limit = 0}: {skip?: number; limit?: number},
-  ): Promise<SeriesPartEntity[]> {
+  ): Promise<PartOfSeriesEntity[]> {
     return this.neo4jService
       .read(
         `
@@ -39,7 +39,7 @@ export class SeriesPartService {
   async getFromSeries(
     series: SeriesEntity,
     {skip = 0, limit = 0}: {skip?: number; limit?: number},
-  ): Promise<SeriesPartEntity[]> {
+  ): Promise<PartOfSeriesEntity[]> {
     return this.neo4jService
       .read(
         `
@@ -66,7 +66,7 @@ export class SeriesPartService {
   async connectSeriesAndBook(
     {bookId, seriesId}: {bookId: string; seriesId: string},
     props: {volume?: number} = {},
-  ): Promise<SeriesPartEntity> {
+  ): Promise<PartOfSeriesEntity> {
     return this.neo4jService
       .write(
         `

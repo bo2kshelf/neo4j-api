@@ -25,7 +25,7 @@ export class AuthorWritesResolver {
   constructor(private readonly writingsService: WritingsService) {}
 
   @ResolveField(() => [WritingEntity])
-  async writings(
+  async writes(
     @Parent() author: AuthorEntity,
     @Args({type: () => AuthorWritesArgs}) args: AuthorWritesArgs,
   ): Promise<WritingEntity[]> {
