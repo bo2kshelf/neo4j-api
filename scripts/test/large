@@ -1,4 +1,3 @@
 #!/usr/bin/env sh
 
-jest --config=test/jest.large.config.ts \
-  --runInBand --passWithNoTests $@
+jest --config=test/jest.large.config.ts --runInBand $@
