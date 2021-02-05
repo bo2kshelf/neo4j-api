@@ -26,3 +26,27 @@ export class ReadingRecordEntity {
   @Field(() => Boolean)
   reading!: boolean;
 }
+
+@ObjectType('WishReadRecord')
+export class WishReadRecordEntity {
+  @Field(() => AccountEntity)
+  account!: AccountEntity;
+
+  @Field(() => BookEntity)
+  book!: BookEntity;
+
+  @Field(() => Boolean)
+  wish!: boolean;
+}
+
+@ObjectType('HaveRecord')
+export class HaveRecordEntity {
+  @Field(() => AccountEntity)
+  account!: AccountEntity;
+
+  @Field(() => BookEntity)
+  book!: BookEntity;
+
+  @Field(() => Boolean)
+  have!: boolean;
+}

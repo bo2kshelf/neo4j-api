@@ -1,8 +1,10 @@
 import {Module} from '@nestjs/common';
 import {
   AccountRecordsResolver,
+  HaveRecordsResolver,
   ReadingRecordsResolver,
   ReadRecordsResolver,
+  WishReadRecordsResolver,
 } from './records.resolver';
 import {RecordsService} from './records.service';
 
@@ -12,6 +14,8 @@ import {RecordsService} from './records.service';
     RecordsService,
     ReadingRecordsResolver,
     ReadRecordsResolver,
+    HaveRecordsResolver,
+    WishReadRecordsResolver,
     AccountRecordsResolver,
   ],
   exports: [RecordsService],

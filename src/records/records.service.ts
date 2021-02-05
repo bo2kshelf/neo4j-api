@@ -2,7 +2,12 @@ import {Injectable} from '@nestjs/common';
 import {int, types} from 'neo4j-driver';
 import {AccountEntity} from '../accounts/account.entity';
 import {Neo4jService} from '../neo4j/neo4j.service';
-import {ReadingRecordEntity, ReadRecordEntity} from './record.entity';
+import {
+  HaveRecordEntity,
+  ReadingRecordEntity,
+  ReadRecordEntity,
+  WishReadRecordEntity,
+} from './record.entity';
 
 @Injectable()
 export class RecordsService {
@@ -57,6 +62,63 @@ export class RecordsService {
         result.records.map((record) => ({
           account: record.get('a').properties,
           book: record.get('b').properties,
+          reading: true,
+          ...record.get('r').properties,
+        })),
+      );
+  }
+
+  async getWishReadRecordEntity(
+    account: AccountEntity,
+    {skip = 0, limit = 0}: {skip?: number; limit?: number},
+  ): Promise<WishReadRecordEntity[]> {
+    return this.neo4jService
+      .read(
+        `
+        MATCH (a:Account {id: $account.id})
+        MATCH (a)-[r:WANTS_TO_READ]->(b:Book)
+        RETURN *
+        SKIP $skip LIMIT $limit
+        `,
+        {
+          account,
+          skip: int(skip),
+          limit: int(limit),
+        },
+      )
+      .then((result) =>
+        result.records.map((record) => ({
+          account: record.get('a').properties,
+          book: record.get('b').properties,
+          wish: true,
+          ...record.get('r').properties,
+        })),
+      );
+  }
+
+  async getHaveRecordEntity(
+    account: AccountEntity,
+    {skip = 0, limit = 0}: {skip?: number; limit?: number},
+  ): Promise<HaveRecordEntity[]> {
+    return this.neo4jService
+      .read(
+        `
+        MATCH (a:Account {id: $account.id})
+        MATCH (a)-[r:HAS]->(b:Book)
+        RETURN *
+        SKIP $skip LIMIT $limit
+        `,
+        {
+          account,
+          skip: int(skip),
+          limit: int(limit),
+        },
+      )
+      .then((result) =>
+        result.records.map((record) => ({
+          account: record.get('a').properties,
+          book: record.get('b').properties,
+          have: true,
           ...record.get('r').properties,
         })),
       );
@@ -142,6 +204,106 @@ export class RecordsService {
         account: result.records[0].get('a').properties,
         book: result.records[0].get('b').properties,
         reading: false,
+      }));
+  }
+
+  async createWishReadRecord({
+    bookId,
+    accountId,
+  }: {
+    bookId: string;
+    accountId: string;
+  }): Promise<WishReadRecordEntity> {
+    return this.neo4jService
+      .read(
+        `
+      MATCH (a:Account {id: $accountId})
+      MATCH (b:Book {id: $bookId})
+      MERGE (a)-[r:WANTS_TO_READ]->(b)
+      RETURN *
+      `,
+        {accountId, bookId},
+      )
+      .then((result) => ({
+        account: result.records[0].get('a').properties,
+        book: result.records[0].get('b').properties,
+        wish: true,
+        ...result.records[0].get('r').properties,
+      }));
+  }
+
+  async deleteWishReadRecord({
+    bookId,
+    accountId,
+  }: {
+    bookId: string;
+    accountId: string;
+  }): Promise<WishReadRecordEntity> {
+    return this.neo4jService
+      .read(
+        `
+      MATCH (a:Account {id: $accountId})
+      MATCH (b:Book {id: $bookId})
+      OPTIONAL MATCH (a)-[r:WANTS_TO_READ]->(b)
+      DELETE r
+      RETURN *
+      `,
+        {accountId, bookId},
+      )
+      .then((result) => ({
+        account: result.records[0].get('a').properties,
+        book: result.records[0].get('b').properties,
+        wish: false,
+      }));
+  }
+
+  async createHaveRecordEntity({
+    bookId,
+    accountId,
+  }: {
+    bookId: string;
+    accountId: string;
+  }): Promise<HaveRecordEntity> {
+    return this.neo4jService
+      .read(
+        `
+      MATCH (a:Account {id: $accountId})
+      MATCH (b:Book {id: $bookId})
+      MERGE (a)-[r:HAS]->(b)
+      RETURN *
+      `,
+        {accountId, bookId},
+      )
+      .then((result) => ({
+        account: result.records[0].get('a').properties,
+        book: result.records[0].get('b').properties,
+        have: true,
+        ...result.records[0].get('r').properties,
+      }));
+  }
+
+  async deleteHaveRecordEntity({
+    bookId,
+    accountId,
+  }: {
+    bookId: string;
+    accountId: string;
+  }): Promise<HaveRecordEntity> {
+    return this.neo4jService
+      .read(
+        `
+      MATCH (a:Account {id: $accountId})
+      MATCH (b:Book {id: $bookId})
+      OPTIONAL MATCH (a)-[r:HAS]->(b)
+      DELETE r
+      RETURN *
+      `,
+        {accountId, bookId},
+      )
+      .then((result) => ({
+        account: result.records[0].get('a').properties,
+        book: result.records[0].get('b').properties,
+        have: false,
       }));
   }
 }

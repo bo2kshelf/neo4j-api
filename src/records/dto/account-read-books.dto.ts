@@ -1,7 +1,7 @@
 import {ArgsType, Field, Int} from '@nestjs/graphql';
 
 @ArgsType()
-export class AccountReadsArgs {
+export class AccountReadBooksArgs {
   @Field(() => Int, {nullable: true})
   skip?: number;
 
