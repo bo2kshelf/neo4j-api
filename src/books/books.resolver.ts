@@ -22,7 +22,7 @@ export class BooksResolver {
     return this.booksService.findBookById(reference.id);
   }
 
-  @ResolveField(() => String)
+  @ResolveField(() => String, {nullable: true})
   isbn(
     @Parent() parent: BookEntity,
     @Args({type: () => BookISBNArgs}) {dehyphenize}: BookISBNArgs,
