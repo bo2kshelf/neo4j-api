@@ -1,6 +1,7 @@
 import {Module} from '@nestjs/common';
 import {ConfigModule, ConfigType} from '@nestjs/config';
 import {GraphQLFederationModule} from '@nestjs/graphql';
+import {AuthorSeriesRelationsModule} from './author-series-relation/author-series-relations.module';
 import {AuthorsModule} from './authors/authors.module';
 import {BooksModule} from './books/books.module';
 import {Neo4jConfig} from './neo4j/neo4j.config';
@@ -28,6 +29,7 @@ import {WritingsModule} from './writings/writings.module';
     SeriesModule,
     WritingsModule,
     PartsOfSeriesModule,
+    AuthorSeriesRelationsModule,
   ],
 })
 export class AppModule {}
