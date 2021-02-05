@@ -1,6 +1,7 @@
-import {Field, ID, ObjectType} from '@nestjs/graphql';
+import {Directive, Field, ID, ObjectType} from '@nestjs/graphql';
 
 @ObjectType('Book')
+@Directive('@key(fields: "id")')
 export class BookEntity {
   @Field(() => ID)
   id!: string;
