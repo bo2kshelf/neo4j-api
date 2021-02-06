@@ -165,8 +165,8 @@ export class RecordsService {
     return this.neo4jService
       .read(
         `
-      MATCH (a:Account {id: $accountId})
       MATCH (b:Book {id: $bookId})
+      MERGE (a:Account {id: $accountId})
       MERGE (a)-[r:READS {date: $props.date}]->(b)
       SET r = $props
       RETURN *
@@ -195,8 +195,8 @@ export class RecordsService {
     return this.neo4jService
       .read(
         `
-      MATCH (a:Account {id: $accountId})
       MATCH (b:Book {id: $bookId})
+      MERGE (a:Account {id: $accountId})
       MERGE (a)-[r:READING]->(b)
       RETURN *
       `,
@@ -245,8 +245,8 @@ export class RecordsService {
     return this.neo4jService
       .read(
         `
-      MATCH (a:Account {id: $accountId})
       MATCH (b:Book {id: $bookId})
+      MERGE (a:Account {id: $accountId})
       MERGE (a)-[r:WANTS_TO_READ]->(b)
       RETURN *
       `,
@@ -295,8 +295,8 @@ export class RecordsService {
     return this.neo4jService
       .read(
         `
-      MATCH (a:Account {id: $accountId})
       MATCH (b:Book {id: $bookId})
+      MERGE (a:Account {id: $accountId})
       MERGE (a)-[r:HAS]->(b)
       RETURN *
       `,
