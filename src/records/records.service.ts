@@ -3,11 +3,11 @@ import {int, types} from 'neo4j-driver';
 import {AccountEntity} from '../accounts/account.entity';
 import {Neo4jService} from '../neo4j/neo4j.service';
 import {
-  HaveRecordEntity,
-  ReadingRecordEntity,
-  ReadRecordEntity,
+  HaveBookRecordEntity,
+  ReadBookRecordEntity,
+  ReadingBookRecordEntity,
   StackedRecordEntity,
-  WishReadRecordEntity,
+  WishReadBookRecordEntity,
 } from './record.entity';
 
 @Injectable()
@@ -17,7 +17,7 @@ export class RecordsService {
   async getReadRecordsFromAccount(
     account: AccountEntity,
     {skip = 0, limit = 0}: {skip?: number; limit?: number},
-  ): Promise<ReadRecordEntity[]> {
+  ): Promise<ReadBookRecordEntity[]> {
     return this.neo4jService
       .read(
         `
@@ -44,7 +44,7 @@ export class RecordsService {
   async getReadingRecordsFromAccount(
     account: AccountEntity,
     {skip = 0, limit = 0}: {skip?: number; limit?: number},
-  ): Promise<ReadingRecordEntity[]> {
+  ): Promise<ReadingBookRecordEntity[]> {
     return this.neo4jService
       .read(
         `
@@ -72,7 +72,7 @@ export class RecordsService {
   async getWishReadRecordEntity(
     account: AccountEntity,
     {skip = 0, limit = 0}: {skip?: number; limit?: number},
-  ): Promise<WishReadRecordEntity[]> {
+  ): Promise<WishReadBookRecordEntity[]> {
     return this.neo4jService
       .read(
         `
@@ -100,7 +100,7 @@ export class RecordsService {
   async getHaveRecordEntity(
     account: AccountEntity,
     {skip = 0, limit = 0}: {skip?: number; limit?: number},
-  ): Promise<HaveRecordEntity[]> {
+  ): Promise<HaveBookRecordEntity[]> {
     return this.neo4jService
       .read(
         `
@@ -161,7 +161,7 @@ export class RecordsService {
       accountId: string;
     },
     {date, ...props}: {date: string},
-  ): Promise<ReadRecordEntity> {
+  ): Promise<ReadBookRecordEntity> {
     return this.neo4jService
       .read(
         `
@@ -191,7 +191,7 @@ export class RecordsService {
   }: {
     bookId: string;
     accountId: string;
-  }): Promise<ReadingRecordEntity> {
+  }): Promise<ReadingBookRecordEntity> {
     return this.neo4jService
       .read(
         `
@@ -216,7 +216,7 @@ export class RecordsService {
   }: {
     bookId: string;
     accountId: string;
-  }): Promise<ReadingRecordEntity> {
+  }): Promise<ReadingBookRecordEntity> {
     return this.neo4jService
       .read(
         `
@@ -241,7 +241,7 @@ export class RecordsService {
   }: {
     bookId: string;
     accountId: string;
-  }): Promise<WishReadRecordEntity> {
+  }): Promise<WishReadBookRecordEntity> {
     return this.neo4jService
       .read(
         `
@@ -266,7 +266,7 @@ export class RecordsService {
   }: {
     bookId: string;
     accountId: string;
-  }): Promise<WishReadRecordEntity> {
+  }): Promise<WishReadBookRecordEntity> {
     return this.neo4jService
       .read(
         `
@@ -291,7 +291,7 @@ export class RecordsService {
   }: {
     bookId: string;
     accountId: string;
-  }): Promise<HaveRecordEntity> {
+  }): Promise<HaveBookRecordEntity> {
     return this.neo4jService
       .read(
         `
@@ -316,7 +316,7 @@ export class RecordsService {
   }: {
     bookId: string;
     accountId: string;
-  }): Promise<HaveRecordEntity> {
+  }): Promise<HaveBookRecordEntity> {
     return this.neo4jService
       .read(
         `

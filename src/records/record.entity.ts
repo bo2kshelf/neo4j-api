@@ -3,8 +3,8 @@ import {LocalDateResolver} from 'graphql-scalars';
 import {AccountEntity} from '../accounts/account.entity';
 import {BookEntity} from '../books/book.entity';
 
-@ObjectType('ReadRecord')
-export class ReadRecordEntity {
+@ObjectType('ReadBookRecord')
+export class ReadBookRecordEntity {
   @Field(() => AccountEntity)
   account!: AccountEntity;
 
@@ -15,8 +15,8 @@ export class ReadRecordEntity {
   date!: string;
 }
 
-@ObjectType('ReadingRecord')
-export class ReadingRecordEntity {
+@ObjectType('ReadingBookRecord')
+export class ReadingBookRecordEntity {
   @Field(() => AccountEntity)
   account!: AccountEntity;
 
@@ -27,8 +27,8 @@ export class ReadingRecordEntity {
   reading!: boolean;
 }
 
-@ObjectType('WishReadRecord')
-export class WishReadRecordEntity {
+@ObjectType('WishReadBookRecord')
+export class WishReadBookRecordEntity {
   @Field(() => AccountEntity)
   account!: AccountEntity;
 
@@ -39,8 +39,8 @@ export class WishReadRecordEntity {
   wish!: boolean;
 }
 
-@ObjectType('HaveRecord')
-export class HaveRecordEntity {
+@ObjectType('HaveBookRecord')
+export class HaveBookRecordEntity {
   @Field(() => AccountEntity)
   account!: AccountEntity;
 

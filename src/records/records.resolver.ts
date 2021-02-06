@@ -5,40 +5,40 @@ import {AccountReadBooksArgs} from './dto/account-read-books.dto';
 import {AccountReadingBooksArgs} from './dto/account-reading-books.dto';
 import {AccountStackedBooksArgs} from './dto/account-stacked-books.dto';
 import {AccountWishBooksArgs} from './dto/account-wish-books.dto';
-import {CreateReadRecord} from './dto/create-read-record.dto';
-import {SwitchHaveRecordArgs} from './dto/switch-have-record.dto';
-import {SwitchReadingRecordArgs} from './dto/switch-reading-record.dto';
-import {SwitchWishReadRecordArgs} from './dto/switch-wish-read-record.dto';
+import {CreateReadBookRecord} from './dto/create-read-book-record.dto';
+import {SwitchHaveBookRecordArgs} from './dto/switch-have-book-record.dto';
+import {SwitchReadingBookRecordArgs} from './dto/switch-reading-book-record.dto';
+import {SwitchWishReadBookRecordArgs} from './dto/switch-wish-book-read-record.dto';
 import {
-  HaveRecordEntity,
-  ReadingRecordEntity,
-  ReadRecordEntity,
+  HaveBookRecordEntity,
+  ReadBookRecordEntity,
+  ReadingBookRecordEntity,
   StackedRecordEntity,
-  WishReadRecordEntity,
+  WishReadBookRecordEntity,
 } from './record.entity';
 import {RecordsService} from './records.service';
 
-@Resolver(() => ReadRecordEntity)
+@Resolver(() => ReadBookRecordEntity)
 export class ReadRecordsResolver {
   constructor(private readonly recordsService: RecordsService) {}
 
-  @Mutation(() => ReadRecordEntity)
+  @Mutation(() => ReadBookRecordEntity)
   createReadRecord(
-    @Args({type: () => CreateReadRecord})
-    {bookId, accountId, date}: CreateReadRecord,
+    @Args({type: () => CreateReadBookRecord})
+    {bookId, accountId, date}: CreateReadBookRecord,
   ) {
     return this.recordsService.createReadRecord({bookId, accountId}, {date});
   }
 }
 
-@Resolver(() => ReadingRecordEntity)
+@Resolver(() => ReadingBookRecordEntity)
 export class ReadingRecordsResolver {
   constructor(private readonly recordsService: RecordsService) {}
 
-  @Mutation(() => ReadingRecordEntity)
+  @Mutation(() => ReadingBookRecordEntity)
   switchReadingRecord(
-    @Args({type: () => SwitchReadingRecordArgs})
-    {bookId, accountId, reading}: SwitchReadingRecordArgs,
+    @Args({type: () => SwitchReadingBookRecordArgs})
+    {bookId, accountId, reading}: SwitchReadingBookRecordArgs,
   ) {
     return reading
       ? this.recordsService.createReadingRecord({bookId, accountId})
@@ -46,14 +46,14 @@ export class ReadingRecordsResolver {
   }
 }
 
-@Resolver(() => WishReadRecordEntity)
+@Resolver(() => WishReadBookRecordEntity)
 export class WishReadRecordsResolver {
   constructor(private readonly recordsService: RecordsService) {}
 
-  @Mutation(() => WishReadRecordEntity)
+  @Mutation(() => WishReadBookRecordEntity)
   switchWishReadRecord(
-    @Args({type: () => SwitchWishReadRecordArgs})
-    {bookId, accountId, wish}: SwitchWishReadRecordArgs,
+    @Args({type: () => SwitchWishReadBookRecordArgs})
+    {bookId, accountId, wish}: SwitchWishReadBookRecordArgs,
   ) {
     return wish
       ? this.recordsService.createWishReadRecord({bookId, accountId})
@@ -61,14 +61,14 @@ export class WishReadRecordsResolver {
   }
 }
 
-@Resolver(() => HaveRecordEntity)
+@Resolver(() => HaveBookRecordEntity)
 export class HaveRecordsResolver {
   constructor(private readonly recordsService: RecordsService) {}
 
-  @Mutation(() => HaveRecordEntity)
+  @Mutation(() => HaveBookRecordEntity)
   switchHaveRecord(
-    @Args({type: () => SwitchHaveRecordArgs})
-    {bookId, accountId, have}: SwitchHaveRecordArgs,
+    @Args({type: () => SwitchHaveBookRecordArgs})
+    {bookId, accountId, have}: SwitchHaveBookRecordArgs,
   ) {
     return have
       ? this.recordsService.createHaveRecordEntity({bookId, accountId})
@@ -80,35 +80,35 @@ export class HaveRecordsResolver {
 export class AccountRecordsResolver {
   constructor(private readonly recordsService: RecordsService) {}
 
-  @ResolveField(() => [ReadRecordEntity])
+  @ResolveField(() => [ReadBookRecordEntity])
   async readBooks(
     @Parent() account: AccountEntity,
     @Args({type: () => AccountReadBooksArgs}) args: AccountReadBooksArgs,
-  ): Promise<ReadRecordEntity[]> {
+  ): Promise<ReadBookRecordEntity[]> {
     return this.recordsService.getReadRecordsFromAccount(account, args);
   }
 
-  @ResolveField(() => [ReadingRecordEntity])
+  @ResolveField(() => [ReadingBookRecordEntity])
   async readingBooks(
     @Parent() account: AccountEntity,
     @Args({type: () => AccountReadingBooksArgs}) args: AccountReadingBooksArgs,
-  ): Promise<ReadingRecordEntity[]> {
+  ): Promise<ReadingBookRecordEntity[]> {
     return this.recordsService.getReadingRecordsFromAccount(account, args);
   }
 
-  @ResolveField(() => [WishReadRecordEntity])
+  @ResolveField(() => [WishReadBookRecordEntity])
   async wishReadBooks(
     @Parent() account: AccountEntity,
     @Args({type: () => AccountWishBooksArgs}) args: AccountWishBooksArgs,
-  ): Promise<WishReadRecordEntity[]> {
+  ): Promise<WishReadBookRecordEntity[]> {
     return this.recordsService.getWishReadRecordEntity(account, args);
   }
 
-  @ResolveField(() => [HaveRecordEntity])
+  @ResolveField(() => [HaveBookRecordEntity])
   async haveBooks(
     @Parent() account: AccountEntity,
     @Args({type: () => AccountHaveBooksArgs}) args: AccountHaveBooksArgs,
-  ): Promise<HaveRecordEntity[]> {
+  ): Promise<HaveBookRecordEntity[]> {
     return this.recordsService.getHaveRecordEntity(account, args);
   }
 
