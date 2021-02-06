@@ -50,3 +50,12 @@ export class HaveRecordEntity {
   @Field(() => Boolean)
   have!: boolean;
 }
+
+@ObjectType('StackedRecord')
+export class StackedRecordEntity {
+  @Field(() => AccountEntity)
+  account!: AccountEntity;
+
+  @Field(() => BookEntity)
+  book!: BookEntity;
+}

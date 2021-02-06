@@ -6,6 +6,7 @@ import {
   HaveRecordEntity,
   ReadingRecordEntity,
   ReadRecordEntity,
+  StackedRecordEntity,
   WishReadRecordEntity,
 } from './record.entity';
 
@@ -120,6 +121,33 @@ export class RecordsService {
           book: record.get('b').properties,
           have: true,
           ...record.get('r').properties,
+        })),
+      );
+  }
+
+  async getStackedRecordsFromAccount(
+    account: AccountEntity,
+    {skip = 0, limit = 0}: {skip?: number; limit?: number},
+  ): Promise<StackedRecordEntity[]> {
+    return this.neo4jService
+      .read(
+        `
+        MATCH (a:Account {id: $account.id})
+        MATCH p = (a)-[:HAS]->(b)
+        WHERE NOT EXISTS ((a)-[:READS]->(b))
+        RETURN a,b
+        SKIP $skip LIMIT $limit
+        `,
+        {
+          account,
+          skip: int(skip),
+          limit: int(limit),
+        },
+      )
+      .then((result) =>
+        result.records.map((record) => ({
+          account: record.get('a').properties,
+          book: record.get('b').properties,
         })),
       );
   }

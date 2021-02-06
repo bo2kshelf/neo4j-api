@@ -3,6 +3,7 @@ import {AccountEntity} from '../accounts/account.entity';
 import {AccountHaveBooksArgs} from './dto/account-have-books.dto';
 import {AccountReadBooksArgs} from './dto/account-read-books.dto';
 import {AccountReadingBooksArgs} from './dto/account-reading-books.dto';
+import {AccountStackedBooksArgs} from './dto/account-stacked-books.dto';
 import {AccountWishBooksArgs} from './dto/account-wish-books.dto';
 import {CreateReadRecord} from './dto/create-read-record.dto';
 import {SwitchHaveRecordArgs} from './dto/switch-have-record.dto';
@@ -12,6 +13,7 @@ import {
   HaveRecordEntity,
   ReadingRecordEntity,
   ReadRecordEntity,
+  StackedRecordEntity,
   WishReadRecordEntity,
 } from './record.entity';
 import {RecordsService} from './records.service';
@@ -108,5 +110,13 @@ export class AccountRecordsResolver {
     @Args({type: () => AccountHaveBooksArgs}) args: AccountHaveBooksArgs,
   ): Promise<HaveRecordEntity[]> {
     return this.recordsService.getHaveRecordEntity(account, args);
+  }
+
+  @ResolveField(() => [StackedRecordEntity])
+  async stackedBooks(
+    @Parent() account: AccountEntity,
+    @Args({type: () => AccountStackedBooksArgs}) args: AccountStackedBooksArgs,
+  ): Promise<StackedRecordEntity[]> {
+    return this.recordsService.getStackedRecordsFromAccount(account, args);
   }
 }
