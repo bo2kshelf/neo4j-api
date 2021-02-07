@@ -42,7 +42,13 @@ export class HaveBooksService {
   async countHaveRecordFromAccount(
     account: AccountEntity,
     {skip, limit}: {skip: number; limit: number},
-  ): Promise<{count: number; hasPrevious: boolean; hasNext: boolean}> {
+  ): Promise<{
+    count: number;
+    skip: number;
+    limit: number;
+    hasPrevious: boolean;
+    hasNext: boolean;
+  }> {
     return this.neo4jService
       .read(
         `
@@ -56,6 +62,8 @@ export class HaveBooksService {
         count: result.records[0].get('count').toNumber(),
         hasNext: result.records[0].get('next'),
         hasPrevious: result.records[0].get('previous'),
+        skip,
+        limit,
       }));
   }
 

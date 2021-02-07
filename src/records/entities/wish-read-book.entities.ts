@@ -22,6 +22,12 @@ export class WishReadBooksPayloadEntity {
   @Field(() => Int)
   count!: number;
 
+  @Field(() => Int)
+  skip!: number;
+
+  @Field(() => Int)
+  limit!: number;
+
   @Field(() => Boolean)
   hasPrevious!: boolean;
 

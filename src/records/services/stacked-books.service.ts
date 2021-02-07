@@ -3,10 +3,9 @@ import {int} from 'neo4j-driver';
 import {AccountEntity} from '../../accounts/account.entity';
 import {Neo4jService} from '../../neo4j/neo4j.service';
 import {
-  HaveBookRecordEntity,
-  HaveBooksPayloadEntity,
-} from '../entities/have-book.entities';
-import { StackedBooksPayloadEntity, StackedRecordEntity } from '../entities/stacked-book.entities';
+  StackedBooksPayloadEntity,
+  StackedRecordEntity,
+} from '../entities/stacked-book.entities';
 
 @Injectable()
 export class StackedBooksService {
@@ -35,7 +34,7 @@ export class StackedBooksService {
         result.records.map((record) => ({
           account: record.get('a').properties,
           book: record.get('b').properties,
-          have: true, 
+          have: true,
         })),
       );
   }
@@ -43,7 +42,13 @@ export class StackedBooksService {
   async countStackedBookRecordsFromAccount(
     account: AccountEntity,
     {skip, limit}: {skip: number; limit: number},
-  ): Promise<{count: number; hasPrevious: boolean; hasNext: boolean}> {
+  ): Promise<{
+    count: number;
+    skip: number;
+    limit: number;
+    hasPrevious: boolean;
+    hasNext: boolean;
+  }> {
     return this.neo4jService
       .read(
         `
@@ -59,6 +64,8 @@ export class StackedBooksService {
         count: result.records[0].get('count').toNumber(),
         hasNext: result.records[0].get('next'),
         hasPrevious: result.records[0].get('previous'),
+        skip,
+        limit,
       }));
   }
 
