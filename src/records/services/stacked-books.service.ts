@@ -56,7 +56,7 @@ export class StackedBooksService {
         {account, skip, limit},
       )
       .then((result) => ({
-        count: result.records[0].get('count'),
+        count: result.records[0].get('count').toNumber(),
         hasNext: result.records[0].get('next'),
         hasPrevious: result.records[0].get('previous'),
       }));
