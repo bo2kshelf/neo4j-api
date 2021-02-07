@@ -41,6 +41,17 @@ export class RecordsService {
       );
   }
 
+  async countReadRecordFromAccount(account: AccountEntity): Promise<number[]> {
+    return this.neo4jService
+      .read(
+        `MATCH p = (:Account {id: $account.id})-[:READS]->() RETURN count(p)`,
+        {
+          account,
+        },
+      )
+      .then((result) => result.records[0].get(0).toNumber());
+  }
+
   async getReadingRecordsFromAccount(
     account: AccountEntity,
     {skip = 0, limit = 0}: {skip?: number; limit?: number},
@@ -67,6 +78,19 @@ export class RecordsService {
           ...record.get('r').properties,
         })),
       );
+  }
+
+  async countReadingRecordFromAccount(
+    account: AccountEntity,
+  ): Promise<number[]> {
+    return this.neo4jService
+      .read(
+        `MATCH p = (:Account {id: $account.id})-[:READING]->() RETURN count(p)`,
+        {
+          account,
+        },
+      )
+      .then((result) => result.records[0].get(0).toNumber());
   }
 
   async getWishReadRecordEntity(
@@ -97,6 +121,19 @@ export class RecordsService {
       );
   }
 
+  async countWishReadRecordFromAccount(
+    account: AccountEntity,
+  ): Promise<number[]> {
+    return this.neo4jService
+      .read(
+        `MATCH p = (:Account {id: $account.id})-[:WANTS_TO_READ]->() RETURN count(p)`,
+        {
+          account,
+        },
+      )
+      .then((result) => result.records[0].get(0).toNumber());
+  }
+
   async getHaveRecordEntity(
     account: AccountEntity,
     {skip = 0, limit = 0}: {skip?: number; limit?: number},
@@ -125,6 +162,15 @@ export class RecordsService {
       );
   }
 
+  async countHaveRecordFromAccount(account: AccountEntity): Promise<number[]> {
+    return this.neo4jService
+      .read(
+        `MATCH p = (:Account {id: $account.id})-[:HAS]->() RETURN count(p)`,
+        {account},
+      )
+      .then((result) => result.records[0].get(0).toNumber());
+  }
+
   async getStackedRecordsFromAccount(
     account: AccountEntity,
     {skip = 0, limit = 0}: {skip?: number; limit?: number},
@@ -150,6 +196,24 @@ export class RecordsService {
           book: record.get('b').properties,
         })),
       );
+  }
+
+  async countStackedRecordsFromAccount(
+    account: AccountEntity,
+  ): Promise<number[]> {
+    return this.neo4jService
+      .read(
+        `
+        MATCH (a:Account {id: $account.id})
+        MATCH p = (a)-[:HAS]->(b)
+        WHERE NOT EXISTS ((a)-[:READS]->(b))
+        RETURN count(p)
+        `,
+        {
+          account,
+        },
+      )
+      .then((result) => result.records[0].get(0).toNumber());
   }
 
   async createReadRecord(

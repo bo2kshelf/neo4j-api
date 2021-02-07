@@ -1,4 +1,11 @@
-import {Args, Mutation, Parent, ResolveField, Resolver} from '@nestjs/graphql';
+import {
+  Args,
+  Int,
+  Mutation,
+  Parent,
+  ResolveField,
+  Resolver,
+} from '@nestjs/graphql';
 import {AccountEntity} from '../accounts/account.entity';
 import {AccountHaveBooksArgs} from './dto/account-have-books.dto';
 import {AccountReadBooksArgs} from './dto/account-read-books.dto';
@@ -88,12 +95,22 @@ export class AccountRecordsResolver {
     return this.recordsService.getReadRecordsFromAccount(account, args);
   }
 
+  @ResolveField(() => Int!)
+  async countReadBooks(@Parent() account: AccountEntity): Promise<number[]> {
+    return this.recordsService.countReadRecordFromAccount(account);
+  }
+
   @ResolveField(() => [ReadingBookRecordEntity])
   async readingBooks(
     @Parent() account: AccountEntity,
     @Args({type: () => AccountReadingBooksArgs}) args: AccountReadingBooksArgs,
   ): Promise<ReadingBookRecordEntity[]> {
     return this.recordsService.getReadingRecordsFromAccount(account, args);
+  }
+
+  @ResolveField(() => Int!)
+  async countReadingBooks(@Parent() account: AccountEntity): Promise<number[]> {
+    return this.recordsService.countReadingRecordFromAccount(account);
   }
 
   @ResolveField(() => [WishReadBookRecordEntity])
@@ -104,6 +121,13 @@ export class AccountRecordsResolver {
     return this.recordsService.getWishReadRecordEntity(account, args);
   }
 
+  @ResolveField(() => Int!)
+  async countWishReadBooks(
+    @Parent() account: AccountEntity,
+  ): Promise<number[]> {
+    return this.recordsService.countWishReadRecordFromAccount(account);
+  }
+
   @ResolveField(() => [HaveBookRecordEntity])
   async haveBooks(
     @Parent() account: AccountEntity,
@@ -112,11 +136,21 @@ export class AccountRecordsResolver {
     return this.recordsService.getHaveRecordEntity(account, args);
   }
 
+  @ResolveField(() => Int!)
+  async countHaveBooks(@Parent() account: AccountEntity): Promise<number[]> {
+    return this.recordsService.countHaveRecordFromAccount(account);
+  }
+
   @ResolveField(() => [StackedRecordEntity])
   async stackedBooks(
     @Parent() account: AccountEntity,
     @Args({type: () => AccountStackedBooksArgs}) args: AccountStackedBooksArgs,
   ): Promise<StackedRecordEntity[]> {
     return this.recordsService.getStackedRecordsFromAccount(account, args);
+  }
+
+  @ResolveField(() => Int!)
+  async countStackedBooks(@Parent() account: AccountEntity): Promise<number[]> {
+    return this.recordsService.countStackedRecordsFromAccount(account);
   }
 }
