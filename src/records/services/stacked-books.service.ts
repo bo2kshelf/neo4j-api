@@ -6,6 +6,7 @@ import {
   HaveBookRecordEntity,
   HaveBooksPayloadEntity,
 } from '../entities/have-book.entities';
+import { StackedBooksPayloadEntity, StackedRecordEntity } from '../entities/stacked-book.entities';
 
 @Injectable()
 export class StackedBooksService {
@@ -14,7 +15,7 @@ export class StackedBooksService {
   async getStackedBookRecordsFromAccount(
     account: AccountEntity,
     {skip, limit}: {skip: number; limit: number},
-  ): Promise<HaveBookRecordEntity[]> {
+  ): Promise<StackedRecordEntity[]> {
     return this.neo4jService
       .read(
         `
@@ -34,8 +35,7 @@ export class StackedBooksService {
         result.records.map((record) => ({
           account: record.get('a').properties,
           book: record.get('b').properties,
-          have: true,
-          ...record.get('r').properties,
+          have: true, 
         })),
       );
   }
@@ -65,7 +65,7 @@ export class StackedBooksService {
   async unionResult(
     account: AccountEntity,
     {skip = 0, limit = 0}: {skip?: number; limit?: number},
-  ): Promise<HaveBooksPayloadEntity> {
+  ): Promise<StackedBooksPayloadEntity> {
     return {
       ...(await this.countStackedBookRecordsFromAccount(account, {
         skip,
