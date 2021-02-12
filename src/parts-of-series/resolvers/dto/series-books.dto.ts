@@ -1,5 +1,5 @@
 import {ArgsType, Field, InputType, Int} from '@nestjs/graphql';
-import {OrderBy} from '../../common/order-by.enum';
+import {OrderBy} from '../../../common/order-by.enum';
 
 @InputType()
 export class SeriesPartsArgsOrderBy {
