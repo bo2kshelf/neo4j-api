@@ -1,9 +1,9 @@
 import {Args, Mutation, Parent, ResolveField, Resolver} from '@nestjs/graphql';
 import {BookEntity} from '../books/book.entity';
 import {SeriesEntity} from '../series/series.entity';
-import {SeriesPartsArgs} from './dto/author-writes.dto';
 import {BookSeriesOfArgs} from './dto/book-writed-by.dto';
 import {ConnectBookToSeriesArgs} from './dto/connect-book-to-series.dto';
+import {SeriesPartsArgs} from './dto/series-parts.dto';
 import {
   SeriesPartEntity,
   SeriesPartsPayloadEntity,

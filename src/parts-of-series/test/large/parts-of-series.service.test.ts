@@ -120,7 +120,10 @@ describe(PartsOfSeriesService.name, () => {
         ),
       );
 
-      const actual = await partsService.getPartsFromSeries(series1, args);
+      const actual = await partsService.getPartsFromSeries(series1, {
+        ...args,
+        orderBy: {},
+      });
       expect(actual).toHaveLength(expected.length);
       for (const connection of actual) {
         expect(series1).toStrictEqual(connection.series);

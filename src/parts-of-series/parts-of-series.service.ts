@@ -1,6 +1,7 @@
 import {Injectable} from '@nestjs/common';
 import {int} from 'neo4j-driver';
 import {BookEntity} from '../books/book.entity';
+import {OrderBy} from '../common/order-by.enum';
 import {Neo4jService} from '../neo4j/neo4j.service';
 import {SeriesEntity} from '../series/series.entity';
 import {
@@ -81,9 +82,29 @@ export class PartsOfSeriesService {
     };
   }
 
+  orderByBuilder(
+    orderBy: Partial<{title: OrderBy; volume: OrderBy}>,
+    {series, relation, book}: {series: string; relation: string; book: string},
+  ): string {
+    const order = [];
+    if (orderBy.volume) order.push(`${relation}.volume ${orderBy.volume}`);
+    if (orderBy.title) order.push(`${book}.title ${orderBy.title}`);
+
+    if (order.length > 0) return `ORDER BY ${order.join(',')}`;
+    return '';
+  }
+
   async getPartsFromSeries(
     series: SeriesEntity,
-    {skip, limit}: {skip: number; limit: number},
+    {
+      skip,
+      limit,
+      orderBy,
+    }: {
+      skip: number;
+      limit: number;
+      orderBy: Parameters<PartsOfSeriesService['orderByBuilder']>[0];
+    },
   ): Promise<SeriesPartEntity[]> {
     return this.neo4jService
       .read(
@@ -91,6 +112,7 @@ export class PartsOfSeriesService {
       MATCH (s:Series {id: $series.id})
       MATCH (s)-[r:PART_OF_SERIES]->(b)
       RETURN s,r,b
+      ${this.orderByBuilder(orderBy, {series: 's', relation: 'r', book: 'b'})}
       SKIP $skip LIMIT $limit
       `,
         {
@@ -138,10 +160,18 @@ export class PartsOfSeriesService {
 
   async unionFromSeries(
     series: SeriesEntity,
-    {skip = 0, limit = 0}: {skip?: number; limit?: number},
+    {
+      skip = 0,
+      limit = 0,
+      orderBy = {},
+    }: {
+      skip?: number;
+      limit?: number;
+      orderBy?: Parameters<PartsOfSeriesService['orderByBuilder']>[0];
+    },
   ): Promise<SeriesPartsPayloadEntity> {
     return {
-      parts: await this.getPartsFromSeries(series, {skip, limit}),
+      parts: await this.getPartsFromSeries(series, {skip, limit, orderBy}),
       ...(await this.getMetaFromSeries(series, {skip, limit})),
     };
   }
