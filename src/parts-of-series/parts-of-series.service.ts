@@ -3,7 +3,10 @@ import {int} from 'neo4j-driver';
 import {BookEntity} from '../books/book.entity';
 import {Neo4jService} from '../neo4j/neo4j.service';
 import {SeriesEntity} from '../series/series.entity';
-import {PartOfSeriesEntity} from './part-of-series.entity';
+import {
+  SeriesPartEntity,
+  SeriesPartsPayloadEntity,
+} from './part-of-series.entity';
 
 @Injectable()
 export class PartsOfSeriesService {
@@ -11,8 +14,8 @@ export class PartsOfSeriesService {
 
   async getFromBook(
     book: BookEntity,
-    {skip = 0, limit = 0}: {skip?: number; limit?: number},
-  ): Promise<PartOfSeriesEntity[]> {
+    {skip, limit}: {skip: number; limit: number},
+  ): Promise<SeriesPartEntity[]> {
     return this.neo4jService
       .read(
         `
@@ -36,10 +39,52 @@ export class PartsOfSeriesService {
       );
   }
 
-  async getFromSeries(
-    series: SeriesEntity,
+  async getMetaFromBook(
+    book: BookEntity,
+    {skip, limit}: {skip: number; limit: number},
+  ): Promise<{
+    count: number;
+    skip: number;
+    limit: number;
+    hasPrevious: boolean;
+    hasNext: boolean;
+  }> {
+    return this.neo4jService
+      .read(
+        `
+        MATCH p=()-[:PART_OF_SERIES]->(:Book {id: $book.id})
+        WITH count(p) AS count
+        RETURN count, 0 < count AND 0 < $skip AS previous, $skip + $limit < count AS next
+      `,
+        {
+          book,
+          skip: int(skip),
+          limit: int(limit),
+        },
+      )
+      .then((result) => ({
+        count: result.records[0].get('count').toNumber(),
+        hasNext: result.records[0].get('next'),
+        hasPrevious: result.records[0].get('previous'),
+        skip,
+        limit,
+      }));
+  }
+
+  async unionFromBook(
+    book: BookEntity,
     {skip = 0, limit = 0}: {skip?: number; limit?: number},
-  ): Promise<PartOfSeriesEntity[]> {
+  ): Promise<SeriesPartsPayloadEntity> {
+    return {
+      parts: await this.getFromBook(book, {skip, limit}),
+      ...(await this.getMetaFromBook(book, {skip, limit})),
+    };
+  }
+
+  async getPartsFromSeries(
+    series: SeriesEntity,
+    {skip, limit}: {skip: number; limit: number},
+  ): Promise<SeriesPartEntity[]> {
     return this.neo4jService
       .read(
         `
@@ -63,10 +108,48 @@ export class PartsOfSeriesService {
       );
   }
 
+  async getMetaFromSeries(
+    series: SeriesEntity,
+    {skip, limit}: {skip: number; limit: number},
+  ): Promise<{
+    count: number;
+    skip: number;
+    limit: number;
+    hasPrevious: boolean;
+    hasNext: boolean;
+  }> {
+    return this.neo4jService
+      .read(
+        `
+        MATCH p=(:Series {id: $series.id})-[:PART_OF_SERIES]->()
+        WITH count(p) AS count
+        RETURN count, 0 < count AND 0 < $skip AS previous, $skip + $limit < count AS next
+        `,
+        {series, skip, limit},
+      )
+      .then((result) => ({
+        count: result.records[0].get('count').toNumber(),
+        hasNext: result.records[0].get('next'),
+        hasPrevious: result.records[0].get('previous'),
+        skip,
+        limit,
+      }));
+  }
+
+  async unionFromSeries(
+    series: SeriesEntity,
+    {skip = 0, limit = 0}: {skip?: number; limit?: number},
+  ): Promise<SeriesPartsPayloadEntity> {
+    return {
+      parts: await this.getPartsFromSeries(series, {skip, limit}),
+      ...(await this.getMetaFromSeries(series, {skip, limit})),
+    };
+  }
+
   async connectSeriesAndBook(
     {bookId, seriesId}: {bookId: string; seriesId: string},
     props: {volume?: number} = {},
-  ): Promise<PartOfSeriesEntity> {
+  ): Promise<SeriesPartEntity> {
     return this.neo4jService
       .write(
         `

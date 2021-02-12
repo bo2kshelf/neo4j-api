@@ -1,9 +1,9 @@
-import {Field, Float, ObjectType} from '@nestjs/graphql';
+import {Field, Float, Int, ObjectType} from '@nestjs/graphql';
 import {BookEntity} from '../books/book.entity';
 import {SeriesEntity} from '../series/series.entity';
 
 @ObjectType('SeriesPart')
-export class PartOfSeriesEntity {
+export class SeriesPartEntity {
   @Field(() => SeriesEntity)
   series!: SeriesEntity;
 
@@ -12,4 +12,25 @@ export class PartOfSeriesEntity {
 
   @Field(() => Float, {nullable: true})
   volume?: number;
+}
+
+@ObjectType('SeriesPartsPayload')
+export class SeriesPartsPayloadEntity {
+  @Field(() => [SeriesPartEntity])
+  parts!: SeriesPartEntity[];
+
+  @Field(() => Int)
+  count!: number;
+
+  @Field(() => Int)
+  skip!: number;
+
+  @Field(() => Int)
+  limit!: number;
+
+  @Field(() => Boolean)
+  hasPrevious!: boolean;
+
+  @Field(() => Boolean)
+  hasNext!: boolean;
 }

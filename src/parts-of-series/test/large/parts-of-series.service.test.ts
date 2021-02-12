@@ -80,10 +80,6 @@ describe(PartsOfSeriesService.name, () => {
 
   describe('getFromSeries()', () => {
     it.each([
-      [{}, {length: 0}],
-      [{skip: 0}, {length: 0}],
-      [{limit: 0}, {length: 0}],
-      [{limit: 10}, {length: 10}],
       [{skip: 0, limit: 0}, {length: 0}],
       [{skip: 0, limit: 5}, {length: 5}],
       [{skip: 0, limit: 10}, {length: 10}],
@@ -124,7 +120,7 @@ describe(PartsOfSeriesService.name, () => {
         ),
       );
 
-      const actual = await partsService.getFromSeries(series1, args);
+      const actual = await partsService.getPartsFromSeries(series1, args);
       expect(actual).toHaveLength(expected.length);
       for (const connection of actual) {
         expect(series1).toStrictEqual(connection.series);
@@ -135,9 +131,6 @@ describe(PartsOfSeriesService.name, () => {
 
   describe('getFromBook()', () => {
     it.each([
-      [{}, {length: 0}],
-      [{skip: 0}, {length: 0}],
-      [{limit: 1}, {length: 1}],
       [{skip: 0, limit: 0}, {length: 0}],
       [{skip: 0, limit: 1}, {length: 1}],
       [{skip: 0, limit: 2}, {length: 1}],

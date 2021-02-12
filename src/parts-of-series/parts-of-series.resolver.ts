@@ -4,18 +4,21 @@ import {SeriesEntity} from '../series/series.entity';
 import {SeriesPartsArgs} from './dto/author-writes.dto';
 import {BookSeriesOfArgs} from './dto/book-writed-by.dto';
 import {ConnectBookToSeriesArgs} from './dto/connect-book-to-series.dto';
-import {PartOfSeriesEntity} from './part-of-series.entity';
+import {
+  SeriesPartEntity,
+  SeriesPartsPayloadEntity,
+} from './part-of-series.entity';
 import {PartsOfSeriesService} from './parts-of-series.service';
 
-@Resolver(() => PartOfSeriesEntity)
+@Resolver(() => SeriesPartEntity)
 export class PartsOfSeriesResolver {
   constructor(private readonly partsService: PartsOfSeriesService) {}
 
-  @Mutation(() => PartOfSeriesEntity)
+  @Mutation(() => SeriesPartEntity)
   async connectBookToSeries(
     @Args({type: () => ConnectBookToSeriesArgs})
     {bookId, seriesId, ...rest}: ConnectBookToSeriesArgs,
-  ): Promise<PartOfSeriesEntity> {
+  ): Promise<SeriesPartEntity> {
     return this.partsService.connectSeriesAndBook({bookId, seriesId}, rest);
   }
 }
@@ -24,12 +27,12 @@ export class PartsOfSeriesResolver {
 export class BookSeriesOfResolver {
   constructor(private readonly partsService: PartsOfSeriesService) {}
 
-  @ResolveField(() => [PartOfSeriesEntity])
+  @ResolveField(() => SeriesPartsPayloadEntity)
   async seriesOf(
     @Parent() book: BookEntity,
     @Args({type: () => BookSeriesOfArgs}) args: BookSeriesOfArgs,
-  ): Promise<PartOfSeriesEntity[]> {
-    return this.partsService.getFromBook(book, args);
+  ): Promise<SeriesPartsPayloadEntity> {
+    return this.partsService.unionFromBook(book, args);
   }
 }
 
@@ -37,11 +40,11 @@ export class BookSeriesOfResolver {
 export class SeriesPartsResolver {
   constructor(private readonly partsService: PartsOfSeriesService) {}
 
-  @ResolveField(() => [PartOfSeriesEntity])
+  @ResolveField(() => SeriesPartsPayloadEntity)
   async parts(
     @Parent() series: SeriesEntity,
     @Args({type: () => SeriesPartsArgs}) args: SeriesPartsArgs,
-  ): Promise<PartOfSeriesEntity[]> {
-    return this.partsService.getFromSeries(series, args);
+  ): Promise<SeriesPartsPayloadEntity> {
+    return this.partsService.unionFromSeries(series, args);
   }
 }
