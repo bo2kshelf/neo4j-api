@@ -11,36 +11,36 @@ import {
 export class StackedBooksService {
   constructor(private readonly neo4jService: Neo4jService) {}
 
-  async getStackedBookRecordsFromAccount(
-    account: UserEntity,
+  async getStackedBookRecordsFromUser(
+    user: UserEntity,
     {skip, limit}: {skip: number; limit: number},
   ): Promise<StackedRecordEntity[]> {
     return this.neo4jService
       .read(
         `
-        MATCH (a:Account {id: $account.id})
-        MATCH p = (a)-[:HAS]->(b)
-        WHERE NOT EXISTS ((a)-[:READS]->(b))
+        MATCH (u:User {id: $user.id})
+        MATCH p = (u)-[:HAS]->(b)
+        WHERE NOT EXISTS ((u)-[:READS]->(b))
         RETURN a,b
         SKIP $skip LIMIT $limit
         `,
         {
-          account,
+          user,
           skip: int(skip),
           limit: int(limit),
         },
       )
       .then((result) =>
         result.records.map((record) => ({
-          account: record.get('a').properties,
+          user: record.get('u').properties,
           book: record.get('b').properties,
           have: true,
         })),
       );
   }
 
-  async countStackedBookRecordsFromAccount(
-    account: UserEntity,
+  async countStackedBookRecordsFromUser(
+    user: UserEntity,
     {skip, limit}: {skip: number; limit: number},
   ): Promise<{
     count: number;
@@ -52,13 +52,13 @@ export class StackedBooksService {
     return this.neo4jService
       .read(
         `
-        MATCH (a:Account {id: $account.id})
-        MATCH p = (a)-[:HAS]->(b)
-        WHERE NOT EXISTS ((a)-[:READS]->(b))
+        MATCH (u:User {id: $user.id})
+        MATCH p = (u)-[:HAS]->(b)
+        WHERE NOT EXISTS ((u)-[:READS]->(b))
         WITH count(p) AS count
         RETURN count, 0 < count AND 0 < $skip AS previous, $skip + $limit < count AS next
         `,
-        {account, skip, limit},
+        {user, skip, limit},
       )
       .then((result) => ({
         count: result.records[0].get('count').toNumber(),
@@ -70,15 +70,15 @@ export class StackedBooksService {
   }
 
   async unionResult(
-    account: UserEntity,
+    user: UserEntity,
     {skip = 0, limit = 0}: {skip?: number; limit?: number},
   ): Promise<StackedBooksPayloadEntity> {
     return {
-      ...(await this.countStackedBookRecordsFromAccount(account, {
+      ...(await this.countStackedBookRecordsFromUser(user, {
         skip,
         limit,
       })),
-      records: await this.getStackedBookRecordsFromAccount(account, {
+      records: await this.getStackedBookRecordsFromUser(user, {
         skip,
         limit,
       }),

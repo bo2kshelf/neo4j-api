@@ -11,27 +11,27 @@ import {
 export class WishReadBooksService {
   constructor(private readonly neo4jService: Neo4jService) {}
 
-  async getWishBookRecordsFromAccount(
-    account: UserEntity,
+  async getWishBookRecordsFromUser(
+    user: UserEntity,
     {skip, limit}: {skip: number; limit: number},
   ): Promise<WishReadBookRecordEntity[]> {
     return this.neo4jService
       .read(
         `
-        MATCH (a:Account {id: $account.id})
-        MATCH (a)-[r:WANTS_TO_READ]->(b:Book)
+        MATCH (u:User {id: $user.id})
+        MATCH (u)-[r:WANTS_TO_READ]->(b:Book)
         RETURN *
         SKIP $skip LIMIT $limit
         `,
         {
-          account,
+          user,
           skip: int(skip),
           limit: int(limit),
         },
       )
       .then((result) =>
         result.records.map((record) => ({
-          account: record.get('a').properties,
+          user: record.get('u').properties,
           book: record.get('b').properties,
           have: true,
           ...record.get('r').properties,
@@ -39,8 +39,8 @@ export class WishReadBooksService {
       );
   }
 
-  async countWishBookRecordsFromAccount(
-    account: UserEntity,
+  async countWishBookRecordsFromUser(
+    user: UserEntity,
     {skip, limit}: {skip: number; limit: number},
   ): Promise<{
     count: number;
@@ -52,11 +52,11 @@ export class WishReadBooksService {
     return this.neo4jService
       .read(
         `
-        MATCH p=(:Account {id: $account.id})-[:WANTS_TO_READ]->()
+        MATCH p=(:User {id: $user.id})-[:WANTS_TO_READ]->()
         WITH count(p) AS count
         RETURN count, 0 < count AND 0 < $skip AS previous, $skip + $limit < count AS next
         `,
-        {account, skip, limit},
+        {user, skip, limit},
       )
       .then((result) => ({
         count: result.records[0].get('count').toNumber(),
@@ -68,34 +68,34 @@ export class WishReadBooksService {
   }
 
   async unionResult(
-    account: UserEntity,
+    user: UserEntity,
     {skip = 0, limit = 0}: {skip?: number; limit?: number},
   ): Promise<WishReadBooksPayloadEntity> {
     return {
-      ...(await this.countWishBookRecordsFromAccount(account, {skip, limit})),
-      records: await this.getWishBookRecordsFromAccount(account, {skip, limit}),
+      ...(await this.countWishBookRecordsFromUser(user, {skip, limit})),
+      records: await this.getWishBookRecordsFromUser(user, {skip, limit}),
     };
   }
 
   async createWishReadBookRecord({
     bookId,
-    accountId,
+    userId,
   }: {
     bookId: string;
-    accountId: string;
+    userId: string;
   }): Promise<WishReadBookRecordEntity> {
     return this.neo4jService
       .read(
         `
       MATCH (b:Book {id: $bookId})
-      MERGE (a:Account {id: $accountId})
-      MERGE (a)-[r:WANTS_TO_READ]->(b)
+      MERGE (u:User {id: $userId})
+      MERGE (u)-[r:WANTS_TO_READ]->(b)
       RETURN *
       `,
-        {accountId, bookId},
+        {userId, bookId},
       )
       .then((result) => ({
-        account: result.records[0].get('a').properties,
+        user: result.records[0].get('u').properties,
         book: result.records[0].get('b').properties,
         wish: true,
         ...result.records[0].get('r').properties,
@@ -104,24 +104,24 @@ export class WishReadBooksService {
 
   async deleteWishReadBookRecord({
     bookId,
-    accountId,
+    userId,
   }: {
     bookId: string;
-    accountId: string;
+    userId: string;
   }): Promise<WishReadBookRecordEntity> {
     return this.neo4jService
       .read(
         `
-      MATCH (a:Account {id: $accountId})
+      MATCH (u:User {id: $userId})
       MATCH (b:Book {id: $bookId})
-      OPTIONAL MATCH (a)-[r:WANTS_TO_READ]->(b)
+      OPTIONAL MATCH (u)-[r:WANTS_TO_READ]->(b)
       DELETE r
       RETURN *
       `,
-        {accountId, bookId},
+        {userId, bookId},
       )
       .then((result) => ({
-        account: result.records[0].get('a').properties,
+        user: result.records[0].get('u').properties,
         book: result.records[0].get('b').properties,
         wish: false,
       }));

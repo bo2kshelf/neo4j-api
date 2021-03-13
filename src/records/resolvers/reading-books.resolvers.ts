@@ -10,10 +10,13 @@ export class ReadingBookRecordsResolver {
   @Mutation(() => ReadingBookRecordEntity)
   switchReadingRecord(
     @Args({type: () => SwitchReadingBookRecordArgs})
-    {bookId, accountId, reading}: SwitchReadingBookRecordArgs,
+    {bookId, userId, reading}: SwitchReadingBookRecordArgs,
   ) {
     return reading
-      ? this.readingService.createReadingBookRecord({bookId, accountId})
-      : this.readingService.deleteReadingBookRecord({bookId, accountId});
+      ? this.readingService.createReadingBookRecord({bookId, userId})
+      : this.readingService.deleteReadingBookRecord({
+          bookId,
+          userId,
+        });
   }
 }

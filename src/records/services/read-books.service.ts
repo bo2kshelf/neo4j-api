@@ -11,27 +11,27 @@ import {
 export class ReadBooksService {
   constructor(private readonly neo4jService: Neo4jService) {}
 
-  async getReadBookRecordsFromAccount(
-    account: UserEntity,
+  async getReadBookRecordsFromUser(
+    user: UserEntity,
     {skip, limit}: {skip: number; limit: number},
   ): Promise<ReadBookRecordEntity[]> {
     return this.neo4jService
       .read(
         `
-        MATCH (a:Account {id: $account.id})
-        MATCH (a)-[r:READS]->(b:Book)
+        MATCH (u:User {id: $user.id})
+        MATCH (u)-[r:READS]->(b:Book)
         RETURN *
         SKIP $skip LIMIT $limit
         `,
         {
-          account,
+          user,
           skip: int(skip),
           limit: int(limit),
         },
       )
       .then((result) =>
         result.records.map((record) => ({
-          account: record.get('a').properties,
+          user: record.get('u').properties,
           book: record.get('b').properties,
           have: true,
           ...record.get('r').properties,
@@ -39,8 +39,8 @@ export class ReadBooksService {
       );
   }
 
-  async countReadBookRecordFromAccount(
-    account: UserEntity,
+  async countReadBookRecordFromUser(
+    user: UserEntity,
     {skip, limit}: {skip: number; limit: number},
   ): Promise<{
     count: number;
@@ -52,11 +52,11 @@ export class ReadBooksService {
     return this.neo4jService
       .read(
         `
-        MATCH p=(:Account {id: $account.id})-[:READS]->()
+        MATCH p=(:User {id: $user.id})-[:READS]->()
         WITH count(p) AS count
         RETURN count, 0 < count AND 0 < $skip AS previous, $skip + $limit < count AS next
         `,
-        {account, skip, limit},
+        {user, skip, limit},
       )
       .then((result) => ({
         count: result.records[0].get('count').toNumber(),
@@ -68,22 +68,22 @@ export class ReadBooksService {
   }
 
   async unionResult(
-    account: UserEntity,
+    user: UserEntity,
     {skip = 0, limit = 0}: {skip?: number; limit?: number},
   ): Promise<ReadBooksPayloadEntity> {
     return {
-      ...(await this.countReadBookRecordFromAccount(account, {skip, limit})),
-      records: await this.getReadBookRecordsFromAccount(account, {skip, limit}),
+      ...(await this.countReadBookRecordFromUser(user, {skip, limit})),
+      records: await this.getReadBookRecordsFromUser(user, {skip, limit}),
     };
   }
 
   async createReadBookRecord(
     {
       bookId,
-      accountId,
+      userId,
     }: {
       bookId: string;
-      accountId: string;
+      userId: string;
     },
     {date, ...props}: {date: string},
   ): Promise<ReadBookRecordEntity> {
@@ -91,20 +91,20 @@ export class ReadBooksService {
       .read(
         `
       MATCH (b:Book {id: $bookId})
-      MERGE (a:Account {id: $accountId})
+      MERGE (a:User {id: $userId})
       MERGE (a)-[r:READS {date: $props.date}]->(b)
       SET r = $props
       RETURN *
       `,
         {
-          accountId,
+          userId,
           bookId,
           props: {date: types.Date.fromStandardDate(new Date(date))},
         },
       )
       .then((result) => ({
         ...result.records[0].get('r').properties,
-        account: result.records[0].get('a').properties,
+        user: result.records[0].get('u').properties,
         book: result.records[0].get('b').properties,
         date,
       }));

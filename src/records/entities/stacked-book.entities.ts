@@ -5,7 +5,7 @@ import {UserEntity} from '../../users/users.entity';
 @ObjectType('StackedBookRecord')
 export class StackedRecordEntity {
   @Field(() => UserEntity)
-  account!: UserEntity;
+  user!: UserEntity;
 
   @Field(() => BookEntity)
   book!: BookEntity;

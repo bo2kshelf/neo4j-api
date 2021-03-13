@@ -4,5 +4,5 @@ import {UsersService} from './users.service';
 
 @Resolver(() => UserEntity)
 export class UsersResolver {
-  constructor(private readonly accountsService: UsersService) {}
+  constructor(private readonly usersService: UsersService) {}
 }

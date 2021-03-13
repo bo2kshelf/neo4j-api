@@ -10,8 +10,8 @@ export class ReadBookRecordsResolver {
   @Mutation(() => ReadBookRecordEntity)
   createReadRecord(
     @Args({type: () => CreateReadBookRecord})
-    {bookId, accountId, date}: CreateReadBookRecord,
+    {bookId, userId, date}: CreateReadBookRecord,
   ) {
-    return this.readService.createReadBookRecord({bookId, accountId}, {date});
+    return this.readService.createReadBookRecord({bookId, userId}, {date});
   }
 }

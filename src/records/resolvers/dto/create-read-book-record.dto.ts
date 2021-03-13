@@ -4,7 +4,7 @@ import {LocalDateResolver} from 'graphql-scalars';
 @ArgsType()
 export class CreateReadBookRecord {
   @Field(() => ID)
-  accountId!: string;
+  userId!: string;
 
   @Field(() => ID)
   bookId!: string;

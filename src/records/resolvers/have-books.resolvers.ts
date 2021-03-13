@@ -10,10 +10,13 @@ export class HaveBookRecordResolver {
   @Mutation(() => HaveBookRecordEntity)
   switchHaveRecord(
     @Args({type: () => SwitchHaveBookRecordArgs})
-    {bookId, accountId, have}: SwitchHaveBookRecordArgs,
+    {bookId, userId, have}: SwitchHaveBookRecordArgs,
   ) {
     return have
-      ? this.haveService.createHaveBookRecordEntity({bookId, accountId})
-      : this.haveService.deleteHaveBookRecordEntity({bookId, accountId});
+      ? this.haveService.createHaveBookRecordEntity({bookId, userId})
+      : this.haveService.deleteHaveBookRecordEntity({
+          bookId,
+          userId,
+        });
   }
 }

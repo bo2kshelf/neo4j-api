@@ -3,7 +3,7 @@ import {ArgsType, Field, ID} from '@nestjs/graphql';
 @ArgsType()
 export class SwitchReadingBookRecordArgs {
   @Field(() => ID)
-  accountId!: string;
+  userId!: string;
 
   @Field(() => ID)
   bookId!: string;

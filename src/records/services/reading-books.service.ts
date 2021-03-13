@@ -11,27 +11,27 @@ import {
 export class ReadingBooksService {
   constructor(private readonly neo4jService: Neo4jService) {}
 
-  async getReadingBookRecordsFromAccount(
-    account: UserEntity,
+  async getReadingBookRecordsFromUser(
+    user: UserEntity,
     {skip, limit}: {skip: number; limit: number},
   ): Promise<ReadingBookRecordEntity[]> {
     return this.neo4jService
       .read(
         `
-        MATCH (a:Account {id: $account.id})
-        MATCH (a)-[r:READING]->(b:Book)
+        MATCH (u:User {id: $user.id})
+        MATCH (u)-[r:READING]->(b:Book)
         RETURN *
         SKIP $skip LIMIT $limit
         `,
         {
-          account,
+          user,
           skip: int(skip),
           limit: int(limit),
         },
       )
       .then((result) =>
         result.records.map((record) => ({
-          account: record.get('a').properties,
+          user: record.get('u').properties,
           book: record.get('b').properties,
           have: true,
           ...record.get('r').properties,
@@ -39,8 +39,8 @@ export class ReadingBooksService {
       );
   }
 
-  async countReadingBookRecordsFromAccount(
-    account: UserEntity,
+  async countReadingBookRecordsFromUser(
+    user: UserEntity,
     {skip, limit}: {skip: number; limit: number},
   ): Promise<{
     count: number;
@@ -52,11 +52,11 @@ export class ReadingBooksService {
     return this.neo4jService
       .read(
         `
-        MATCH p=(:Account {id: $account.id})-[:READING]->()
+        MATCH p=(:User {id: $user.id})-[:READING]->()
         WITH count(p) AS count
         RETURN count, 0 < count AND 0 < $skip AS previous, $skip + $limit < count AS next
         `,
-        {account, skip, limit},
+        {user, skip, limit},
       )
       .then((result) => ({
         count: result.records[0].get('count').toNumber(),
@@ -68,15 +68,15 @@ export class ReadingBooksService {
   }
 
   async unionResult(
-    account: UserEntity,
+    user: UserEntity,
     {skip = 0, limit = 0}: {skip?: number; limit?: number},
   ): Promise<ReadingBooksPayloadEntity> {
     return {
-      ...(await this.countReadingBookRecordsFromAccount(account, {
+      ...(await this.countReadingBookRecordsFromUser(user, {
         skip,
         limit,
       })),
-      records: await this.getReadingBookRecordsFromAccount(account, {
+      records: await this.getReadingBookRecordsFromUser(user, {
         skip,
         limit,
       }),
@@ -85,23 +85,23 @@ export class ReadingBooksService {
 
   async createReadingBookRecord({
     bookId,
-    accountId,
+    userId,
   }: {
     bookId: string;
-    accountId: string;
+    userId: string;
   }): Promise<ReadingBookRecordEntity> {
     return this.neo4jService
       .read(
         `
       MATCH (b:Book {id: $bookId})
-      MERGE (a:Account {id: $accountId})
-      MERGE (a)-[r:READING]->(b)
+      MERGE (u:User {id: $userId})
+      MERGE (u)-[r:READING]->(b)
       RETURN *
       `,
-        {accountId, bookId},
+        {userId, bookId},
       )
       .then((result) => ({
-        account: result.records[0].get('a').properties,
+        user: result.records[0].get('u').properties,
         book: result.records[0].get('b').properties,
         reading: true,
         ...result.records[0].get('r').properties,
@@ -110,24 +110,24 @@ export class ReadingBooksService {
 
   async deleteReadingBookRecord({
     bookId,
-    accountId,
+    userId,
   }: {
     bookId: string;
-    accountId: string;
+    userId: string;
   }): Promise<ReadingBookRecordEntity> {
     return this.neo4jService
       .read(
         `
-      MATCH (a:Account {id: $accountId})
+      MATCH (u:User {id: $userId})
       MATCH (b:Book {id: $bookId})
-      OPTIONAL MATCH (a)-[r:READING]->(b)
+      OPTIONAL MATCH (u)-[r:READING]->(b)
       DELETE r
       RETURN *
       `,
-        {accountId, bookId},
+        {userId, bookId},
       )
       .then((result) => ({
-        account: result.records[0].get('a').properties,
+        user: result.records[0].get('u').properties,
         book: result.records[0].get('b').properties,
         reading: false,
       }));

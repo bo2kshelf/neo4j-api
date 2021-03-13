@@ -10,14 +10,14 @@ import {ReadBooksService} from '../services/read-books.service';
 import {ReadingBooksService} from '../services/reading-books.service';
 import {StackedBooksService} from '../services/stacked-books.service';
 import {WishReadBooksService} from '../services/wish-read-books.service';
-import {AccountHaveBooksArgs} from './dto/account-have-books.dto';
-import {AccountReadBooksArgs} from './dto/account-read-books.dto';
-import {AccountReadingBooksArgs} from './dto/account-reading-books.dto';
-import {AccountStackedBooksArgs} from './dto/account-stacked-books.dto';
-import {AccountWishBooksArgs} from './dto/account-wish-books.dto';
+import {UserHaveBooksArgs} from './dto/user-have-books.dto';
+import {UserReadBooksArgs} from './dto/user-read-books.dto';
+import {UserReadingBooksArgs} from './dto/user-reading-books.dto';
+import {UserStackedBooksArgs} from './dto/user-stacked-books.dto';
+import {UserWishBooksArgs} from './dto/user-wish-books.dto';
 
 @Resolver(() => UserEntity)
-export class AccountRecordsResolver {
+export class UserRecordsResolver {
   constructor(
     private readonly readService: ReadBooksService,
     private readonly readingService: ReadingBooksService,
@@ -28,41 +28,41 @@ export class AccountRecordsResolver {
 
   @ResolveField(() => ReadBooksPayloadEntity)
   async readBooks(
-    @Parent() account: UserEntity,
-    @Args({type: () => AccountReadBooksArgs}) args: AccountReadBooksArgs,
+    @Parent() user: UserEntity,
+    @Args({type: () => UserReadBooksArgs}) args: UserReadBooksArgs,
   ): Promise<ReadBooksPayloadEntity> {
-    return this.readService.unionResult(account, args);
+    return this.readService.unionResult(user, args);
   }
 
   @ResolveField(() => ReadingBooksPayloadEntity)
   async readingBooks(
-    @Parent() account: UserEntity,
-    @Args({type: () => AccountReadingBooksArgs}) args: AccountReadingBooksArgs,
+    @Parent() user: UserEntity,
+    @Args({type: () => UserReadingBooksArgs}) args: UserReadingBooksArgs,
   ): Promise<ReadingBooksPayloadEntity> {
-    return this.readingService.unionResult(account, args);
+    return this.readingService.unionResult(user, args);
   }
 
   @ResolveField(() => WishReadBooksPayloadEntity)
   async wishReadBooks(
-    @Parent() account: UserEntity,
-    @Args({type: () => AccountWishBooksArgs}) args: AccountWishBooksArgs,
+    @Parent() user: UserEntity,
+    @Args({type: () => UserWishBooksArgs}) args: UserWishBooksArgs,
   ): Promise<WishReadBooksPayloadEntity> {
-    return this.wishService.unionResult(account, args);
+    return this.wishService.unionResult(user, args);
   }
 
   @ResolveField(() => HaveBooksPayloadEntity)
   async haveBooks(
-    @Parent() account: UserEntity,
-    @Args({type: () => AccountHaveBooksArgs}) args: AccountHaveBooksArgs,
+    @Parent() user: UserEntity,
+    @Args({type: () => UserHaveBooksArgs}) args: UserHaveBooksArgs,
   ): Promise<HaveBooksPayloadEntity> {
-    return this.haveService.unionResult(account, args);
+    return this.haveService.unionResult(user, args);
   }
 
   @ResolveField(() => StackedBooksPayloadEntity)
   async stackedBooks(
-    @Parent() account: UserEntity,
-    @Args({type: () => AccountStackedBooksArgs}) args: AccountStackedBooksArgs,
+    @Parent() user: UserEntity,
+    @Args({type: () => UserStackedBooksArgs}) args: UserStackedBooksArgs,
   ): Promise<StackedBooksPayloadEntity> {
-    return this.stackedService.unionResult(account, args);
+    return this.stackedService.unionResult(user, args);
   }
 }

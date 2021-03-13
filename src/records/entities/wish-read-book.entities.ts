@@ -5,7 +5,7 @@ import {UserEntity} from '../../users/users.entity';
 @ObjectType('WishReadBookRecord')
 export class WishReadBookRecordEntity {
   @Field(() => UserEntity)
-  account!: UserEntity;
+  user!: UserEntity;
 
   @Field(() => BookEntity)
   book!: BookEntity;

@@ -10,10 +10,10 @@ export class WishReadBookRecordsResolver {
   @Mutation(() => WishReadBookRecordEntity)
   switchWishReadRecord(
     @Args({type: () => SwitchWishReadBookRecordArgs})
-    {bookId, accountId, wish}: SwitchWishReadBookRecordArgs,
+    {bookId, userId, wish}: SwitchWishReadBookRecordArgs,
   ) {
     return wish
-      ? this.wishService.createWishReadBookRecord({bookId, accountId})
-      : this.wishService.deleteWishReadBookRecord({bookId, accountId});
+      ? this.wishService.createWishReadBookRecord({bookId, userId})
+      : this.wishService.deleteWishReadBookRecord({bookId, userId});
   }
 }
