@@ -1,7 +1,6 @@
 import {Module} from '@nestjs/common';
 import {ConfigModule, ConfigType} from '@nestjs/config';
 import {GraphQLFederationModule} from '@nestjs/graphql';
-import {AccountsModule} from './accounts/accounts.module';
 import {AuthorSeriesRelationsModule} from './author-series-relation/author-series-relations.module';
 import {AuthorsModule} from './authors/authors.module';
 import {BooksModule} from './books/books.module';
@@ -11,6 +10,7 @@ import {PartsOfSeriesModule} from './parts-of-series/parts-of-series.module';
 import {PublishersModule} from './publishers/publishers.module';
 import {RecordsModule} from './records/records.module';
 import {SeriesModule} from './series/series.module';
+import {UsersModule} from './users/users.module';
 import {WritingsModule} from './writings/writings.module';
 
 @Module({
@@ -33,7 +33,7 @@ import {WritingsModule} from './writings/writings.module';
     WritingsModule,
     PartsOfSeriesModule,
     AuthorSeriesRelationsModule,
-    AccountsModule,
+    UsersModule,
     RecordsModule,
     PublishersModule,
   ],

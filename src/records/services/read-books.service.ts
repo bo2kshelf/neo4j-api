@@ -1,7 +1,7 @@
 import {Injectable} from '@nestjs/common';
 import {int, types} from 'neo4j-driver';
-import {AccountEntity} from '../../accounts/account.entity';
 import {Neo4jService} from '../../neo4j/neo4j.service';
+import {UserEntity} from '../../users/users.entity';
 import {
   ReadBookRecordEntity,
   ReadBooksPayloadEntity,
@@ -12,7 +12,7 @@ export class ReadBooksService {
   constructor(private readonly neo4jService: Neo4jService) {}
 
   async getReadBookRecordsFromAccount(
-    account: AccountEntity,
+    account: UserEntity,
     {skip, limit}: {skip: number; limit: number},
   ): Promise<ReadBookRecordEntity[]> {
     return this.neo4jService
@@ -40,7 +40,7 @@ export class ReadBooksService {
   }
 
   async countReadBookRecordFromAccount(
-    account: AccountEntity,
+    account: UserEntity,
     {skip, limit}: {skip: number; limit: number},
   ): Promise<{
     count: number;
@@ -68,7 +68,7 @@ export class ReadBooksService {
   }
 
   async unionResult(
-    account: AccountEntity,
+    account: UserEntity,
     {skip = 0, limit = 0}: {skip?: number; limit?: number},
   ): Promise<ReadBooksPayloadEntity> {
     return {

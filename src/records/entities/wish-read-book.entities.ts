@@ -1,11 +1,11 @@
 import {Field, Int, ObjectType} from '@nestjs/graphql';
-import {AccountEntity} from '../../accounts/account.entity';
 import {BookEntity} from '../../books/book.entity';
+import {UserEntity} from '../../users/users.entity';
 
 @ObjectType('WishReadBookRecord')
 export class WishReadBookRecordEntity {
-  @Field(() => AccountEntity)
-  account!: AccountEntity;
+  @Field(() => UserEntity)
+  account!: UserEntity;
 
   @Field(() => BookEntity)
   book!: BookEntity;

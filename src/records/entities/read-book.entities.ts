@@ -1,12 +1,12 @@
 import {Field, Int, ObjectType} from '@nestjs/graphql';
 import {LocalDateResolver} from 'graphql-scalars';
-import {AccountEntity} from '../../accounts/account.entity';
 import {BookEntity} from '../../books/book.entity';
+import {UserEntity} from '../../users/users.entity';
 
 @ObjectType('ReadBookRecord')
 export class ReadBookRecordEntity {
-  @Field(() => AccountEntity)
-  account!: AccountEntity;
+  @Field(() => UserEntity)
+  account!: UserEntity;
 
   @Field(() => BookEntity)
   book!: BookEntity;

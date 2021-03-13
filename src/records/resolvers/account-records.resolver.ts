@@ -1,5 +1,5 @@
 import {Args, Parent, ResolveField, Resolver} from '@nestjs/graphql';
-import {AccountEntity} from '../../accounts/account.entity';
+import {UserEntity} from '../../users/users.entity';
 import {HaveBooksPayloadEntity} from '../entities/have-book.entities';
 import {ReadBooksPayloadEntity} from '../entities/read-book.entities';
 import {ReadingBooksPayloadEntity} from '../entities/reading-book.entities';
@@ -16,7 +16,7 @@ import {AccountReadingBooksArgs} from './dto/account-reading-books.dto';
 import {AccountStackedBooksArgs} from './dto/account-stacked-books.dto';
 import {AccountWishBooksArgs} from './dto/account-wish-books.dto';
 
-@Resolver(() => AccountEntity)
+@Resolver(() => UserEntity)
 export class AccountRecordsResolver {
   constructor(
     private readonly readService: ReadBooksService,
@@ -28,7 +28,7 @@ export class AccountRecordsResolver {
 
   @ResolveField(() => ReadBooksPayloadEntity)
   async readBooks(
-    @Parent() account: AccountEntity,
+    @Parent() account: UserEntity,
     @Args({type: () => AccountReadBooksArgs}) args: AccountReadBooksArgs,
   ): Promise<ReadBooksPayloadEntity> {
     return this.readService.unionResult(account, args);
@@ -36,7 +36,7 @@ export class AccountRecordsResolver {
 
   @ResolveField(() => ReadingBooksPayloadEntity)
   async readingBooks(
-    @Parent() account: AccountEntity,
+    @Parent() account: UserEntity,
     @Args({type: () => AccountReadingBooksArgs}) args: AccountReadingBooksArgs,
   ): Promise<ReadingBooksPayloadEntity> {
     return this.readingService.unionResult(account, args);
@@ -44,7 +44,7 @@ export class AccountRecordsResolver {
 
   @ResolveField(() => WishReadBooksPayloadEntity)
   async wishReadBooks(
-    @Parent() account: AccountEntity,
+    @Parent() account: UserEntity,
     @Args({type: () => AccountWishBooksArgs}) args: AccountWishBooksArgs,
   ): Promise<WishReadBooksPayloadEntity> {
     return this.wishService.unionResult(account, args);
@@ -52,7 +52,7 @@ export class AccountRecordsResolver {
 
   @ResolveField(() => HaveBooksPayloadEntity)
   async haveBooks(
-    @Parent() account: AccountEntity,
+    @Parent() account: UserEntity,
     @Args({type: () => AccountHaveBooksArgs}) args: AccountHaveBooksArgs,
   ): Promise<HaveBooksPayloadEntity> {
     return this.haveService.unionResult(account, args);
@@ -60,7 +60,7 @@ export class AccountRecordsResolver {
 
   @ResolveField(() => StackedBooksPayloadEntity)
   async stackedBooks(
-    @Parent() account: AccountEntity,
+    @Parent() account: UserEntity,
     @Args({type: () => AccountStackedBooksArgs}) args: AccountStackedBooksArgs,
   ): Promise<StackedBooksPayloadEntity> {
     return this.stackedService.unionResult(account, args);
