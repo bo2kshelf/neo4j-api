@@ -42,7 +42,7 @@ prettier:
 
 hadolint:
   stage: lint
-  image: hadolint/hadolint:latest
+  image: hadolint/hadolint:latest@sha256:b13bac7f210404e41e97d218667c14b3461ec0c3a62f8829596dad1a12ed75c1
   script:
     - hadolint Dockerfile
 
@@ -118,7 +118,7 @@ test-e2e:
 
 deploy_develop:
   stage: deploy
-  image: docker
+  image: docker@sha256:584001a955e828310dec75bd4e82afae406f14a37963f100efc12c651f319dd3
   rules:
     - if: '$CI_COMMIT_BRANCH == "develop"'
   variables:
@@ -131,7 +131,7 @@ deploy_develop:
 
 deploy_merge_requests:
   stage: deploy
-  image: docker
+  image: docker@sha256:584001a955e828310dec75bd4e82afae406f14a37963f100efc12c651f319dd3
   rules:
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop"'
   variables:
