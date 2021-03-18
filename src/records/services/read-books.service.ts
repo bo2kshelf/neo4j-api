@@ -91,8 +91,8 @@ export class ReadBooksService {
       .read(
         `
       MATCH (b:Book {id: $bookId})
-      MERGE (a:User {id: $userId})
-      MERGE (a)-[r:READS {date: $props.date}]->(b)
+      MERGE (u:User {id: $userId})
+      MERGE (u)-[r:READS {date: $props.date}]->(b)
       SET r = $props
       RETURN *
       `,

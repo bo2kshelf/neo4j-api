@@ -21,7 +21,7 @@ export class StackedBooksService {
         MATCH (u:User {id: $user.id})
         MATCH p = (u)-[:HAS]->(b)
         WHERE NOT EXISTS ((u)-[:READS]->(b))
-        RETURN a,b
+        RETURN u,b
         SKIP $skip LIMIT $limit
         `,
         {
