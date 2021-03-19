@@ -9,5 +9,8 @@ export class BookEntity {
   @Field(() => String)
   title!: string;
 
+  @Field(() => String, {nullable: true})
+  subtitle?: string;
+
   isbn?: string;
 }
