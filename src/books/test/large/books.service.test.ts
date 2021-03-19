@@ -51,6 +51,15 @@ describe(BooksService.name, () => {
         {title: 'A', isbn: '9784832272460'},
         {id: expect.any(String), title: 'A', isbn: '9784832272460'},
       ],
+      [
+        {title: 'A', subtitle: 'B', isbn: '9784832272460'},
+        {
+          id: expect.any(String),
+          title: 'A',
+          subtitle: 'B',
+          isbn: '9784832272460',
+        },
+      ],
     ])('成功 %#', async (data, expected) => {
       const actual = await booksSerivce.createBook(data);
 

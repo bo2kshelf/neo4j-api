@@ -7,6 +7,9 @@ export class CreateBookDataInput {
   title!: string;
 
   @Field(() => String, {nullable: true})
+  subtitle?: string;
+
+  @Field(() => String, {nullable: true})
   isbn?: string;
 }
 
