@@ -68,13 +68,18 @@ export class PublishersService {
 
   async getPublicationsFromPublisher(
     publisher: PublisherEntity,
-    {skip = 0, limit = 0}: {skip?: number; limit?: number},
+    {
+      skip = 0,
+      limit = 0,
+      except = [],
+    }: {skip?: number; limit?: number; except?: string[]},
   ): Promise<PublicationEntity[]> {
     return this.neo4jService
       .read(
         `
     MATCH (p:Publisher {id: $publisher.id})
     MATCH (p)-[r:PUBLISHES]->(b)
+    WHERE NOT b.id IN $except
     RETURN p,r,b
     SKIP $skip LIMIT $limit
     `,
@@ -82,6 +87,7 @@ export class PublishersService {
           publisher,
           skip: int(skip),
           limit: int(limit),
+          except,
         },
       )
       .then((result) =>
