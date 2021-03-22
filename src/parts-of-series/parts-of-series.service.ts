@@ -99,10 +99,12 @@ export class PartsOfSeriesService {
     {
       skip,
       limit,
+      except,
       orderBy,
     }: {
       skip: number;
       limit: number;
+      except: string[];
       orderBy: Parameters<PartsOfSeriesService['orderByBuilder']>[0];
     },
   ): Promise<SeriesPartEntity[]> {
@@ -111,6 +113,7 @@ export class PartsOfSeriesService {
         `
       MATCH (s:Series {id: $series.id})
       MATCH (s)-[r:PART_OF_SERIES]->(b)
+      WHERE NOT b.id IN $except
       RETURN s,r,b
       ${this.orderByBuilder(orderBy, {series: 's', relation: 'r', book: 'b'})}
       SKIP $skip LIMIT $limit
@@ -119,6 +122,7 @@ export class PartsOfSeriesService {
           series,
           skip: int(skip),
           limit: int(limit),
+          except,
         },
       )
       .then((result) =>
@@ -132,7 +136,7 @@ export class PartsOfSeriesService {
 
   async getMetaFromSeries(
     series: SeriesEntity,
-    {skip, limit}: {skip: number; limit: number},
+    {skip, limit, except}: {skip: number; limit: number; except: string[]},
   ): Promise<{
     count: number;
     skip: number;
@@ -143,11 +147,12 @@ export class PartsOfSeriesService {
     return this.neo4jService
       .read(
         `
-        MATCH p=(:Series {id: $series.id})-[:PART_OF_SERIES]->()
+        MATCH p=(:Series {id: $series.id})-[:PART_OF_SERIES]->(b)
+        WHERE NOT b.id IN $except
         WITH count(p) AS count
         RETURN count, 0 < count AND 0 < $skip AS previous, $skip + $limit < count AS next
         `,
-        {series, skip, limit},
+        {series, skip, limit, except},
       )
       .then((result) => ({
         count: result.records[0].get('count').toNumber(),
@@ -164,15 +169,22 @@ export class PartsOfSeriesService {
       skip = 0,
       limit = 0,
       orderBy = {},
+      except = [],
     }: {
       skip?: number;
       limit?: number;
+      except?: string[];
       orderBy?: Parameters<PartsOfSeriesService['orderByBuilder']>[0];
     },
   ): Promise<SeriesPartsPayloadEntity> {
     return {
-      parts: await this.getPartsFromSeries(series, {skip, limit, orderBy}),
-      ...(await this.getMetaFromSeries(series, {skip, limit})),
+      parts: await this.getPartsFromSeries(series, {
+        skip,
+        limit,
+        except,
+        orderBy,
+      }),
+      ...(await this.getMetaFromSeries(series, {skip, limit, except})),
     };
   }
 

@@ -4,7 +4,7 @@ import {SeriesModule} from '../series/series.module';
 import {PartsOfSeriesService} from './parts-of-series.service';
 import {BookSeriesOfResolver} from './resolvers/book-series-of.resolver';
 import {PartsOfSeriesResolver} from './resolvers/parts-of-series.resolver';
-import {SeriesPartsResolver} from './resolvers/series-books-of.resolver';
+import {SeriesBooksOfResolver} from './resolvers/series-books-of.resolver';
 
 @Module({
   imports: [BooksModule, SeriesModule],
@@ -12,7 +12,7 @@ import {SeriesPartsResolver} from './resolvers/series-books-of.resolver';
     PartsOfSeriesService,
     PartsOfSeriesResolver,
     BookSeriesOfResolver,
-    SeriesPartsResolver,
+    SeriesBooksOfResolver,
   ],
   exports: [PartsOfSeriesService],
 })

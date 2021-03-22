@@ -1,8 +1,8 @@
-import {ArgsType, Field, InputType, Int} from '@nestjs/graphql';
+import {ArgsType, Field, ID, InputType, Int} from '@nestjs/graphql';
 import {OrderBy} from '../../../common/order-by.enum';
 
 @InputType()
-export class SeriesPartsArgsOrderBy {
+export class ResolveBooksOfArgsOrderBy {
   @Field(() => OrderBy, {nullable: true})
   title?: OrderBy;
 
@@ -11,13 +11,16 @@ export class SeriesPartsArgsOrderBy {
 }
 
 @ArgsType()
-export class SeriesPartsArgs {
+export class ResolveBooksOfArgs {
   @Field(() => Int, {nullable: true})
   skip?: number;
 
   @Field(() => Int, {nullable: true})
   limit?: number;
 
-  @Field(() => SeriesPartsArgsOrderBy, {nullable: true})
-  orderBy?: SeriesPartsArgsOrderBy;
+  @Field(() => ResolveBooksOfArgsOrderBy, {nullable: true})
+  orderBy?: ResolveBooksOfArgsOrderBy;
+
+  @Field(() => [ID]!, {nullable: true})
+  except?: string[];
 }
