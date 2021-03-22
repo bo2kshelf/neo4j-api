@@ -40,13 +40,18 @@ export class WritingsService {
 
   async getFromAuthor(
     author: AuthorEntity,
-    {skip = 0, limit = 0}: {skip?: number; limit?: number},
+    {
+      skip = 0,
+      limit = 0,
+      except = [],
+    }: {skip?: number; limit?: number; except?: string[]},
   ): Promise<WritingEntity[]> {
     return this.neo4jService
       .read(
         `
       MATCH (a:Author {id: $author.id})
       MATCH (a)-[r:WRITES]->(b)
+      WHERE NOT b.id IN $except
       RETURN a,r,b
       SKIP $skip LIMIT $limit
       `,
@@ -54,6 +59,7 @@ export class WritingsService {
           author,
           skip: int(skip),
           limit: int(limit),
+          except,
         },
       )
       .then(this.transferRecords);

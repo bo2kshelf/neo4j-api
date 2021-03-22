@@ -1,4 +1,4 @@
-import {ArgsType, Field, Int} from '@nestjs/graphql';
+import {ArgsType, Field, ID, Int} from '@nestjs/graphql';
 
 @ArgsType()
 export class AuthorWritesArgs {
@@ -7,4 +7,7 @@ export class AuthorWritesArgs {
 
   @Field(() => Int, {nullable: true})
   limit?: number;
+
+  @Field(() => [ID]!, {nullable: true})
+  except?: string[];
 }
