@@ -122,6 +122,7 @@ describe(PartsOfSeriesService.name, () => {
 
       const actual = await partsService.getPartsFromSeries(series1, {
         ...args,
+        except: [],
         orderBy: {},
       });
       expect(actual).toHaveLength(expected.length);
