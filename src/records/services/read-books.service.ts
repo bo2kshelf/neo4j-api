@@ -1,5 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {int, types} from 'neo4j-driver';
+import {OrderBy} from '../../common/order-by.enum';
 import {Neo4jService} from '../../neo4j/neo4j.service';
 import {UserEntity} from '../../users/users.entity';
 import {
@@ -13,7 +14,15 @@ export class ReadBooksService {
 
   async getReadBookRecordsFromUser(
     user: UserEntity,
-    {skip, limit}: {skip: number; limit: number},
+    {
+      skip,
+      limit,
+      orderBy,
+    }: {
+      skip: number;
+      limit: number;
+      orderBy: {date?: OrderBy};
+    },
   ): Promise<ReadBookRecordEntity[]> {
     return this.neo4jService
       .read(
@@ -21,6 +30,7 @@ export class ReadBooksService {
         MATCH (u:User {id: $user.id})
         MATCH (u)-[r:READS]->(b:Book)
         RETURN *
+        ORDER BY r.date ${orderBy.date || OrderBy.DESC}
         SKIP $skip LIMIT $limit
         `,
         {
@@ -69,11 +79,19 @@ export class ReadBooksService {
 
   async unionResult(
     user: UserEntity,
-    {skip = 0, limit = 0}: {skip?: number; limit?: number},
+    {
+      skip = 0,
+      limit = 0,
+      orderBy = {},
+    }: {skip?: number; limit?: number; orderBy?: {date?: OrderBy}},
   ): Promise<ReadBooksPayloadEntity> {
     return {
       ...(await this.countReadBookRecordFromUser(user, {skip, limit})),
-      records: await this.getReadBookRecordsFromUser(user, {skip, limit}),
+      records: await this.getReadBookRecordsFromUser(user, {
+        skip,
+        limit,
+        orderBy,
+      }),
     };
   }
 
