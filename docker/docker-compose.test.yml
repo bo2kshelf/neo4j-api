@@ -3,7 +3,7 @@ version: '3.8'
 services:
   neo4j:
     container_name: contents-api-test-neo4j
-    image: neo4j:latest@sha256:7ac9387fd60c7fc2f2b983567dd838e181de40fb99c8c6aec6147b6699012dfb
+    image: neo4j:latest@sha256:732105228bb4baefe77361def4cd4709c31061abc98387bf9d09730447cd8ece
     ports:
       - 7474:7474 # http
       - 7687:7687 # bolt
