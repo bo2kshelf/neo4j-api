@@ -1,20 +1,29 @@
 version: 2.1
 
 orbs:
-  node: circleci/node@4.1.0
   docker: circleci/docker@1.5.0
   codecov: codecov/codecov@1.1.3
 
+commands:
+  berry-install-packages:
+    description: "install packages by yarn v2 (berry)"
+    steps:
+      - run: yarn install --immutable --immutable-cache
+
 jobs:
+  check-yarn-cache:
+    docker:
+      - image: circleci/node:14.15.3
+    steps:
+      - checkout
+      - run: yarn install --check-cache
+
   build:
     docker:
       - image: cimg/node:14.15.3
     steps:
       - checkout
-      - node/install-packages: &yarn-v2-install
-          pkg-manager: yarn
-          override-ci-command: yarn install --immutable --immutable-cache
-          cache-path: .yarn/berry/cache
+      - berry-install-packages
       - run: yarn run build
       - store_artifacts:
           path: ./dist
@@ -24,7 +33,7 @@ jobs:
       - image: cimg/node:14.15.3
     steps:
       - checkout
-      - node/install-packages: *yarn-v2-install
+      - berry-install-packages
       - run: yarn run lint:prettier
 
   lint-eslint:
@@ -32,7 +41,7 @@ jobs:
       - image: cimg/node:14.15.3
     steps:
       - checkout
-      - node/install-packages: *yarn-v2-install
+      - berry-install-packages
       - restore_cache:
           keys:
             - eslintcache-{{ .Branch }}-{{ checksum ".eslintrc" }}-{{ checksum "yarn.lock" }}
@@ -49,10 +58,10 @@ jobs:
 
   ts-check:
     docker:
-      - image: cimg/node:14.15.3
+      - image: circleci/node:14.15.3
     steps:
       - checkout
-      - node/install-packages: *yarn-v2-install
+      - berry-install-packages
       - run: yarn run ts-check
 
   test-small:
@@ -60,7 +69,7 @@ jobs:
       - image: cimg/node:14.15.3
     steps:
       - checkout
-      - node/install-packages: *yarn-v2-install
+      - berry-install-packages
       - run:
           command: |
             yarn run test:small --ci --runInBand \
@@ -83,7 +92,7 @@ jobs:
       - image: cimg/node:14.15.3
     steps:
       - checkout
-      - node/install-packages: *yarn-v2-install
+      - berry-install-packages
       - run:
           command: |
             yarn run test:medium --ci --runInBand \
@@ -115,7 +124,7 @@ jobs:
           NEO4J_apoc_import_file_use__neo4j__config: 'true'
     steps:
       - checkout
-      - node/install-packages: *yarn-v2-install
+      - berry-install-packages
       - run:
           command: |
             yarn run test:large --ci --forceExit \
@@ -137,7 +146,7 @@ jobs:
       - image: cimg/node:14.15.3
     steps:
       - checkout
-      - node/install-packages: *yarn-v2-install
+      - berry-install-packages
       - run:
           command: |
             yarn run test:e2e --ci --forceExit
@@ -146,6 +155,7 @@ workflows:
   version: 2
   develop:
     jobs:
+      - check-yarn-cache
       - lint-eslint
       - lint-prettier
       - docker/hadolint:
