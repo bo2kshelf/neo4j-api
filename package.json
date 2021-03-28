@@ -25,7 +25,7 @@
     "lint:hadolint": "scripty",
     "lint:prettier": "scripty",
     "lint:renovate": "scripty",
-    "fmt": "run-s -cn fmt:*",
+    "fmt": "run-s -nlc fmt:eslint fmt:prettier",
     "fmt:eslint": "yarn lint:eslint --fix",
     "fmt:prettier": "yarn lint:prettier --write"
   },
