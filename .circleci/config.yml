@@ -34,10 +34,14 @@ jobs:
       - node/install-packages:
           pkg-manager: yarn
       - restore_cache:
-          key: eslint-{{ .Branch }}-{{ checksum "yarn.lock" }}
-      - run: yarn run lint:eslint --cache --format junit --output-file ./junit/eslint.xml
+          keys:
+            - eslintcache-{{ .Branch }}-{{ checksum ".eslintrc" }}-{{ checksum "yarn.lock" }}
+            - eslintcache-{{ .Branch }}-{{ checksum ".eslintrc" }}
+            - eslintcache-{{ .Branch }}
+            - eslintcache
+      - run: yarn run lint:eslint --format junit --output-file ./junit/eslint.xml
       - save_cache:
-          key: eslint-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          key: eslintcache-{{ .Branch }}-{{ checksum ".eslintrc" }}-{{ checksum "yarn.lock" }}
           paths:
             - .eslintcache
       - store_test_results:
