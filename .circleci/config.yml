@@ -13,8 +13,8 @@ jobs:
       - checkout
       - node/install-packages: &yarn-v2-install
           pkg-manager: yarn
-          override-ci-command: yarn install --immutable --immutable-cache --check-cache
-          cache-path: .yarn/cache
+          override-ci-command: yarn install --immutable --immutable-cache
+          cache-path: .yarn/berry/cache
       - run: yarn run build
       - store_artifacts:
           path: ./dist
