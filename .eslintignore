@@ -8,3 +8,6 @@ dist/
 # docker
 docker/*
 !docker/*.yml
+
+# yarn v2
+.yarn

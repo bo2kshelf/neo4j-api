@@ -1,38 +1,47 @@
 version: 2.1
 
 orbs:
-  node: circleci/node@4.1.0
   docker: circleci/docker@1.5.0
   codecov: codecov/codecov@1.1.3
 
+commands:
+  berry-install-packages:
+    description: "install packages by yarn v2 (berry)"
+    steps:
+      - run: yarn install --immutable --immutable-cache
+
 jobs:
-  build:
+  check-yarn-cache:
     docker:
       - image: circleci/node:14.15.3
     steps:
       - checkout
-      - node/install-packages:
-          pkg-manager: yarn
+      - run: yarn install --check-cache
+
+  build:
+    docker:
+      - image: cimg/node:14.15.3
+    steps:
+      - checkout
+      - berry-install-packages
       - run: yarn run build
       - store_artifacts:
           path: ./dist
 
   lint-prettier:
     docker:
-      - image: circleci/node:14.15.3
+      - image: cimg/node:14.15.3
     steps:
       - checkout
-      - node/install-packages:
-          pkg-manager: yarn
+      - berry-install-packages
       - run: yarn run lint:prettier
 
   lint-eslint:
     docker:
-      - image: circleci/node:14.15.3
+      - image: cimg/node:14.15.3
     steps:
       - checkout
-      - node/install-packages:
-          pkg-manager: yarn
+      - berry-install-packages
       - restore_cache:
           keys:
             - eslintcache-{{ .Branch }}-{{ checksum ".eslintrc" }}-{{ checksum "yarn.lock" }}
@@ -52,17 +61,15 @@ jobs:
       - image: circleci/node:14.15.3
     steps:
       - checkout
-      - node/install-packages:
-          pkg-manager: yarn
+      - berry-install-packages
       - run: yarn run ts-check
 
   test-small:
     docker:
-      - image: circleci/node:14.15.3
+      - image: cimg/node:14.15.3
     steps:
       - checkout
-      - node/install-packages:
-          pkg-manager: yarn
+      - berry-install-packages
       - run:
           command: |
             yarn run test:small --ci --runInBand \
@@ -82,11 +89,10 @@ jobs:
 
   test-medium:
     docker:
-      - image: circleci/node:14.15.3
+      - image: cimg/node:14.15.3
     steps:
       - checkout
-      - node/install-packages:
-          pkg-manager: yarn
+      - berry-install-packages
       - run:
           command: |
             yarn run test:medium --ci --runInBand \
@@ -108,7 +114,7 @@ jobs:
     environment:
       NEO4J_TEST_URL: bolt://localhost:7687
     docker:
-      - image: circleci/node:14.15.3
+      - image: cimg/node:14.15.3
       - image: neo4j:4.2.3
         environment:
           NEO4J_AUTH: none
@@ -118,8 +124,7 @@ jobs:
           NEO4J_apoc_import_file_use__neo4j__config: 'true'
     steps:
       - checkout
-      - node/install-packages:
-          pkg-manager: yarn
+      - berry-install-packages
       - run:
           command: |
             yarn run test:large --ci --forceExit \
@@ -138,11 +143,10 @@ jobs:
 
   test-e2e:
     docker:
-      - image: circleci/node:14.15.3
+      - image: cimg/node:14.15.3
     steps:
       - checkout
-      - node/install-packages:
-          pkg-manager: yarn
+      - berry-install-packages
       - run:
           command: |
             yarn run test:e2e --ci --forceExit
@@ -151,6 +155,7 @@ workflows:
   version: 2
   develop:
     jobs:
+      - check-yarn-cache
       - lint-eslint
       - lint-prettier
       - docker/hadolint:
@@ -182,6 +187,7 @@ workflows:
             - ghcr
           requires:
             - docker/hadolint
+            - check-yarn-cache
             - build
           filters:
             branches:
@@ -194,6 +200,7 @@ workflows:
             - ghcr
           requires:
             - docker/hadolint
+            - check-yarn-cache
             - build
           filters:
             branches:
