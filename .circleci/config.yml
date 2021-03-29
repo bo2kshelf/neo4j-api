@@ -13,14 +13,14 @@ commands:
 jobs:
   check-yarn-cache:
     docker:
-      - image: circleci/node:14.15.3
+      - image: circleci/node:14.16.0
     steps:
       - checkout
       - run: yarn install --check-cache
 
   build:
     docker:
-      - image: cimg/node:14.15.3
+      - image: cimg/node:14.16.0
     steps:
       - checkout
       - berry-install-packages
@@ -30,7 +30,7 @@ jobs:
 
   lint-prettier:
     docker:
-      - image: cimg/node:14.15.3
+      - image: cimg/node:14.16.0
     steps:
       - checkout
       - berry-install-packages
@@ -38,7 +38,7 @@ jobs:
 
   lint-eslint:
     docker:
-      - image: cimg/node:14.15.3
+      - image: cimg/node:14.16.0
     steps:
       - checkout
       - berry-install-packages
@@ -58,7 +58,7 @@ jobs:
 
   ts-check:
     docker:
-      - image: circleci/node:14.15.3
+      - image: circleci/node:14.16.0
     steps:
       - checkout
       - berry-install-packages
@@ -66,7 +66,7 @@ jobs:
 
   test-small:
     docker:
-      - image: cimg/node:14.15.3
+      - image: cimg/node:14.16.0
     steps:
       - checkout
       - berry-install-packages
@@ -89,7 +89,7 @@ jobs:
 
   test-medium:
     docker:
-      - image: cimg/node:14.15.3
+      - image: cimg/node:14.16.0
     steps:
       - checkout
       - berry-install-packages
@@ -114,7 +114,7 @@ jobs:
     environment:
       NEO4J_TEST_URL: bolt://localhost:7687
     docker:
-      - image: cimg/node:14.15.3
+      - image: cimg/node:14.16.0
       - image: neo4j:4.2.3
         environment:
           NEO4J_AUTH: none
@@ -143,7 +143,7 @@ jobs:
 
   test-e2e:
     docker:
-      - image: cimg/node:14.15.3
+      - image: cimg/node:14.16.0
     steps:
       - checkout
       - berry-install-packages
