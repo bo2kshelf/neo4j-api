@@ -577,7 +577,7 @@ __metadata:
     jest: 26.6.3
     jest-junit: 12.0.0
     nanoid: 3.1.20
-    neo4j-driver: 4.2.2
+    neo4j-driver: 4.2.3
     npm-run-all: 4.1.5
     prettier: 2.2.1
     prettier-plugin-optipack: 1.1.2
@@ -8759,15 +8759,15 @@ fsevents@~2.1.2:
   languageName: node
   linkType: hard
 
-"neo4j-driver@npm:4.2.2":
-  version: 4.2.2
-  resolution: "neo4j-driver@npm:4.2.2"
+"neo4j-driver@npm:4.2.3":
+  version: 4.2.3
+  resolution: "neo4j-driver@npm:4.2.3"
   dependencies:
     "@babel/runtime": ^7.5.5
     rxjs: ^6.6.3
     text-encoding-utf-8: ^1.0.2
     uri-js: ^4.4.0
-  checksum: 2000b18026ef593f34ad02cbecf56190346f92e05d9bc3b28efb1ef725730ccaa6eb5ff96c898f4017b6edb038dca352f3075e25cee00b119f76c1fc8a4fcb4b
+  checksum: 138e2ca5f961f519fc13a685769ea4fad6c9d3dd3c506166b3d37a8029d8e5742c0f13861b6ccf1b012b92ad03674db2bc2621f574a72212ff98cd791640076b
   languageName: node
   linkType: hard
 
