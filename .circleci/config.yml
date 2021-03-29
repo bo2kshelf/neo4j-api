@@ -187,6 +187,7 @@ workflows:
             - ghcr
           requires:
             - docker/hadolint
+            - check-yarn-cache
             - build
           filters:
             branches:
@@ -199,6 +200,7 @@ workflows:
             - ghcr
           requires:
             - docker/hadolint
+            - check-yarn-cache
             - build
           filters:
             branches:
