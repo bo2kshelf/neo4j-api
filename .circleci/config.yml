@@ -13,7 +13,7 @@ commands:
 jobs:
   check-yarn-cache:
     docker:
-      - image: circleci/node:14.15.3
+      - image: cimg/node:14.15.3
     steps:
       - checkout
       - run: yarn install --check-cache
