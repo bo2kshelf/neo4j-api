@@ -1,17 +1,17 @@
 import {Module} from '@nestjs/common';
 import {
-  AuthorRelatedSeriesResolver,
-  AuthorSeriesRelationResolver,
+  AuthorsResolver,
+  RelationResolver,
   SeriesRelatedAuthorsResolver,
-} from './author-series-relations.resolver';
-import {AuthorSeriesRelationsService} from './author-series-relations.service';
+} from './resolvers/author-series.resolvers';
+import {AuthorSeriesRelationsService} from './services/author-series.service';
 
 @Module({
   imports: [],
   providers: [
     AuthorSeriesRelationsService,
-    AuthorSeriesRelationResolver,
-    AuthorRelatedSeriesResolver,
+    RelationResolver,
+    AuthorsResolver,
     SeriesRelatedAuthorsResolver,
   ],
   exports: [AuthorSeriesRelationsService],

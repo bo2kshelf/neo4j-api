@@ -1,10 +1,8 @@
 import {Injectable} from '@nestjs/common';
 import {int} from 'neo4j-driver';
-import {AuthorEntity} from '../authors/entities/author.entity';
-import {BookEntity} from '../books/entities/book.entity';
-import {Neo4jService} from '../neo4j/neo4j.service';
-import {SeriesEntity} from '../series/entities/series.entity';
-import {AuthorSeriesRelationEntity} from './author-series-relation.entity';
+import {BookEntity} from '../../books/entities/book.entity';
+import {Neo4jService} from '../../neo4j/neo4j.service';
+import {AuthorSeriesRelationEntity} from '../entities/author-series.entity';
 
 @Injectable()
 export class AuthorSeriesRelationsService {
@@ -17,12 +15,12 @@ export class AuthorSeriesRelationsService {
     return this.neo4jService
       .read(
         `
-    MATCH (a:Author {id: $author.id})
-    MATCH (s:Series {id: $series.id})
-    MATCH (a)-[:WRITES]->(b)<-[:PART_OF_SERIES]-(s)
-    RETURN DISTINCT b
-    SKIP $skip LIMIT $limit
-    `,
+        MATCH (a:Author {id: $author.id})
+        MATCH (s:Series {id: $series.id})
+        MATCH (a)-[:WRITES]->(b)<-[:PART_OF_SERIES]-(s)
+        RETURN DISTINCT b
+        SKIP $skip LIMIT $limit
+        `,
         {
           author,
           series,
@@ -36,53 +34,53 @@ export class AuthorSeriesRelationsService {
   }
 
   async getFromAuthor(
-    author: AuthorEntity,
-    {skip = 0, limit = 0}: {skip?: number; limit?: number},
+    authorId: string,
+    {skip, limit}: {skip: number; limit: number},
   ): Promise<AuthorSeriesRelationEntity[]> {
     return this.neo4jService
       .read(
         `
-      MATCH (author:Author {id: $author.id})
-      MATCH (author)-[r:WRITES]->()<-[:PART_OF_SERIES]-(series)
-      RETURN DISTINCT author,series
+      MATCH (a:Author {id: $authorId})
+      MATCH (a)-[r:WRITED_BOOK]->()<-[:IS_PART_OF_SERIES]-(s:Series)
+      RETURN DISTINCT a,s
       SKIP $skip LIMIT $limit
       `,
         {
-          author,
+          authorId,
           skip: int(skip),
           limit: int(limit),
         },
       )
       .then((result) =>
         result.records.map((record) => ({
-          author: record.get('author').properties,
-          series: record.get('series').properties,
+          author: record.get('a').properties,
+          series: record.get('s').properties,
         })),
       );
   }
 
   async getFromSeries(
-    series: SeriesEntity,
-    {skip = 0, limit = 0}: {skip?: number; limit?: number},
+    seriesId: string,
+    {skip, limit}: {skip: number; limit: number},
   ): Promise<AuthorSeriesRelationEntity[]> {
     return this.neo4jService
       .read(
         `
-      MATCH (series:Series {id: $series.id})
-      MATCH (author)-[r:WRITES]->()<-[:PART_OF_SERIES]-(series)
-      RETURN DISTINCT author,series
+      MATCH (s:Series {id: $series.id})
+      MATCH (a)-[r:WRITED_BOOK]->()<-[:PART_OF_SERIES]-(s)
+      RETURN DISTINCT a,s
       SKIP $skip LIMIT $limit
       `,
         {
-          series,
+          seriesId,
           skip: int(skip),
           limit: int(limit),
         },
       )
       .then((result) =>
         result.records.map((record) => ({
-          author: record.get('author').properties,
-          series: record.get('series').properties,
+          author: record.get('a').properties,
+          series: record.get('s').properties,
         })),
       );
   }
