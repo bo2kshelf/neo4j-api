@@ -1,7 +1,7 @@
 import {Injectable} from '@nestjs/common';
-import {IDService} from '../id/id.service';
-import {Neo4jService} from '../neo4j/neo4j.service';
-import {SeriesEntity} from './series.entity';
+import {IDService} from '../../id/id.service';
+import {Neo4jService} from '../../neo4j/neo4j.service';
+import {SeriesEntity} from '../entities/series.entity';
 
 @Injectable()
 export class SeriesService {

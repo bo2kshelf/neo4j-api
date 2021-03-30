@@ -5,10 +5,10 @@ import {
   Resolver,
   ResolveReference,
 } from '@nestjs/graphql';
+import {SeriesEntity} from '../entities/series.entity';
+import {SeriesService} from '../services/series.service';
 import {CreateSeriesArgs} from './dto/create-series.dto';
 import {GetSeriesArgs} from './dto/get-series.dto';
-import {SeriesEntity} from './series.entity';
-import {SeriesService} from './series.service';
 
 @Resolver(() => SeriesEntity)
 export class SeriesResolver {

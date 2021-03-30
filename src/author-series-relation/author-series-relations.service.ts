@@ -3,7 +3,7 @@ import {int} from 'neo4j-driver';
 import {AuthorEntity} from '../authors/entities/author.entity';
 import {BookEntity} from '../books/entities/book.entity';
 import {Neo4jService} from '../neo4j/neo4j.service';
-import {SeriesEntity} from '../series/series.entity';
+import {SeriesEntity} from '../series/entities/series.entity';
 import {AuthorSeriesRelationEntity} from './author-series-relation.entity';
 
 @Injectable()

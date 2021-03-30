@@ -1,6 +1,6 @@
 import {Field, Float, Int, ObjectType} from '@nestjs/graphql';
 import {BookEntity} from '../books/entities/book.entity';
-import {SeriesEntity} from '../series/series.entity';
+import {SeriesEntity} from '../series/entities/series.entity';
 
 @ObjectType('SeriesPart')
 export class SeriesPartEntity {

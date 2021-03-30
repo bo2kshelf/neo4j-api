@@ -9,7 +9,7 @@ import {Neo4jTestModule} from '../../../neo4j/neo4j-test.module';
 import {Neo4jService} from '../../../neo4j/neo4j.service';
 import {PartsOfSeriesModule} from '../../../parts-of-series/parts-of-series.module';
 import {PartsOfSeriesService} from '../../../parts-of-series/parts-of-series.service';
-import {SeriesService} from '../../../series/series.service';
+import {SeriesService} from '../../../series/services/series.service';
 import {AuthorSeriesRelationsService} from '../../author-series-relations.service';
 
 describe(AuthorSeriesRelationsService.name, () => {

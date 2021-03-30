@@ -1,7 +1,7 @@
 import {Args, Parent, ResolveField, Resolver} from '@nestjs/graphql';
 import {AuthorEntity} from '../authors/entities/author.entity';
 import {BookEntity} from '../books/entities/book.entity';
-import {SeriesEntity} from '../series/series.entity';
+import {SeriesEntity} from '../series/entities/series.entity';
 import {AuthorSeriesRelationEntity} from './author-series-relation.entity';
 import {AuthorSeriesRelationsService} from './author-series-relations.service';
 import {AuthorRelatedSeriesArgs} from './dto/author-related-series.dto';
