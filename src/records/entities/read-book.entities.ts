@@ -1,7 +1,7 @@
 import {Field, Int, ObjectType} from '@nestjs/graphql';
 import {LocalDateResolver} from 'graphql-scalars';
 import {BookEntity} from '../../books/book.entity';
-import {UserEntity} from '../../users/users.entity';
+import {UserEntity} from '../../users/entities/users.entity';
 
 @ObjectType('ReadBookRecord')
 export class ReadBookRecordEntity {

@@ -2,7 +2,7 @@ import {Injectable} from '@nestjs/common';
 import {int, types} from 'neo4j-driver';
 import {OrderBy} from '../../common/order-by.enum';
 import {Neo4jService} from '../../neo4j/neo4j.service';
-import {UserEntity} from '../../users/users.entity';
+import {UserEntity} from '../../users/entities/users.entity';
 import {
   ReadBookRecordEntity,
   ReadBooksPayloadEntity,

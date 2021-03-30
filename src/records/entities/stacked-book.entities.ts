@@ -1,6 +1,6 @@
 import {Field, Int, ObjectType} from '@nestjs/graphql';
 import {BookEntity} from '../../books/book.entity';
-import {UserEntity} from '../../users/users.entity';
+import {UserEntity} from '../../users/entities/users.entity';
 
 @ObjectType('StackedBookRecord')
 export class StackedRecordEntity {
