@@ -46,9 +46,10 @@ export class AuthorsResolver {
 
   @Mutation(() => AuthorEntity)
   async createAuthor(
-    @Args({type: () => CreateAuthorArgs}) {data}: CreateAuthorArgs,
+    @Args({type: () => CreateAuthorArgs})
+    args: CreateAuthorArgs,
   ): Promise<AuthorEntity> {
-    return this.authorsService.create(data);
+    return this.authorsService.create(args);
   }
 
   @Mutation(() => WritingEntity)

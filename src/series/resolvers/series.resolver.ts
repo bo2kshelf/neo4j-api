@@ -28,7 +28,7 @@ export class SeriesResolver {
   }
 
   @ResolveField(() => SeriesPartsPayloadEntity)
-  async booksOf(
+  async parts(
     @Parent() {id: seriesId}: SeriesEntity,
     @Args({type: () => ResolveSeriesPartsArgs})
     args: ResolveSeriesPartsArgs,
@@ -50,9 +50,9 @@ export class SeriesResolver {
 
   @Mutation(() => SeriesEntity)
   async createSeries(
-    @Args({type: () => CreateSeriesArgs}) {data}: CreateSeriesArgs,
+    @Args({type: () => CreateSeriesArgs}) args: CreateSeriesArgs,
   ): Promise<SeriesEntity> {
-    return this.seriesService.createSeries(data);
+    return this.seriesService.createSeries(args);
   }
 
   @Mutation(() => SeriesPartEntity)

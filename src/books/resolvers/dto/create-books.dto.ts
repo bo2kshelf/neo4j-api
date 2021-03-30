@@ -1,8 +1,7 @@
-import {ArgsType, Field, InputType} from '@nestjs/graphql';
-import {ValidateNested} from 'class-validator';
+import {ArgsType, Field} from '@nestjs/graphql';
 
-@InputType()
-export class CreateBookDataInput {
+@ArgsType()
+export class CreateBookArgs {
   @Field(() => String)
   title!: string;
 
@@ -11,11 +10,4 @@ export class CreateBookDataInput {
 
   @Field(() => String, {nullable: true})
   isbn?: string;
-}
-
-@ArgsType()
-export class CreateBookArgs {
-  @Field(() => CreateBookDataInput)
-  @ValidateNested()
-  data!: CreateBookDataInput;
 }

@@ -1,15 +1,7 @@
-import {ArgsType, Field, InputType} from '@nestjs/graphql';
-import {ValidateNested} from 'class-validator';
-
-@InputType()
-export class CreateAuthorDataInput {
-  @Field(() => String)
-  name!: string;
-}
+import {ArgsType, Field} from '@nestjs/graphql';
 
 @ArgsType()
 export class CreateAuthorArgs {
-  @Field(() => CreateAuthorDataInput)
-  @ValidateNested()
-  data!: CreateAuthorDataInput;
+  @Field(() => String)
+  name!: string;
 }

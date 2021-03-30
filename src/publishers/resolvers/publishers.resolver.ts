@@ -52,9 +52,9 @@ export class PublishersResolver {
   @Mutation(() => PublisherEntity)
   async createPublisher(
     @Args({type: () => CreatePublisherArgs})
-    {data}: CreatePublisherArgs,
+    args: CreatePublisherArgs,
   ): Promise<PublisherEntity> {
-    return this.publishersService.create(data);
+    return this.publishersService.create(args);
   }
 
   @Mutation(() => PublicationEntity)
