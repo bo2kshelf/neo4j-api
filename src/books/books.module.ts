@@ -1,5 +1,5 @@
 import {Module} from '@nestjs/common';
-import {IDModule} from '../id/id.module';
+import {IDModule} from '../common/id/id.module';
 import {BooksResolver} from './resolvers/books.resolver';
 import {BooksService} from './services/books.service';
 

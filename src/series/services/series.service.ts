@@ -1,6 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {int} from 'neo4j-driver';
-import {IDService} from '../../id/id.service';
+import {IDService} from '../../common/id/id.service';
 import {Neo4jService} from '../../neo4j/neo4j.service';
 import {
   SeriesPartEntity,
