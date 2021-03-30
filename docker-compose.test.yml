@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  neo4j-api-test-neo4j:
+    restart: always
+    image: neo4j:4.2@sha256:7ac9387fd60c7fc2f2b983567dd838e181de40fb99c8c6aec6147b6699012dfb
+    ports:
+      - published: $NEO4J_API_NEO4J_HTTP_PORT
+        target: 7474
+      - published: $NEO4J_API_NEO4J_BOLT_PORT
+        target: 7687
+    environment:
+      NEO4J_AUTH: none
+      NEO4JLABS_PLUGINS: '["apoc"]'
+      NEO4J_apoc_export_file_enabled: "true"
+      NEO4J_apoc_import_file_enabled: "true"
+      NEO4J_apoc_import_file_use__neo4j__config: "true"
