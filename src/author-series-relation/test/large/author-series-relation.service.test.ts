@@ -7,8 +7,6 @@ import {IDModule} from '../../../id/id.module';
 import {IDService} from '../../../id/id.service';
 import {Neo4jTestModule} from '../../../neo4j/neo4j-test.module';
 import {Neo4jService} from '../../../neo4j/neo4j.service';
-import {PartsOfSeriesModule} from '../../../parts-of-series/parts-of-series.module';
-import {PartsOfSeriesService} from '../../../parts-of-series/parts-of-series.service';
 import {SeriesService} from '../../../series/services/series.service';
 import {AuthorSeriesRelationsService} from '../../author-series-relations.service';
 
@@ -23,18 +21,16 @@ describe(AuthorSeriesRelationsService.name, () => {
   let seriesService: SeriesService;
 
   let booksService: BooksService;
-  let partsService: PartsOfSeriesService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      imports: [Neo4jTestModule, IDModule, PartsOfSeriesModule],
+      imports: [Neo4jTestModule, IDModule],
       providers: [
         IDService,
         AuthorSeriesRelationsService,
         BooksService,
         AuthorsService,
         SeriesService,
-        PartsOfSeriesService,
       ],
     }).compile();
 
@@ -50,8 +46,6 @@ describe(AuthorSeriesRelationsService.name, () => {
     authorsService = module.get<AuthorsService>(AuthorsService);
     booksService = module.get<BooksService>(BooksService);
     seriesService = module.get<SeriesService>(SeriesService);
-
-    partsService = module.get<PartsOfSeriesService>(PartsOfSeriesService);
   });
 
   beforeEach(async () => {
@@ -86,7 +80,7 @@ describe(AuthorSeriesRelationsService.name, () => {
 
       await Promise.all(
         books.map(({id: bookId}) =>
-          partsService.connectSeriesAndBook({bookId, seriesId: series.id}),
+          seriesService.addBookToSeries({bookId, seriesId: series.id}),
         ),
       );
 
@@ -130,7 +124,7 @@ describe(AuthorSeriesRelationsService.name, () => {
           );
           await Promise.all(
             books.map(({id: bookId}) =>
-              partsService.connectSeriesAndBook({bookId, seriesId: series.id}),
+              seriesService.addBookToSeries({bookId, seriesId: series.id}),
             ),
           );
           return {series, books};
@@ -165,7 +159,7 @@ describe(AuthorSeriesRelationsService.name, () => {
 
       await Promise.all(
         books.map(({id: bookId}) =>
-          partsService.connectSeriesAndBook({bookId, seriesId: series.id}),
+          seriesService.addBookToSeries({bookId, seriesId: series.id}),
         ),
       );
 
@@ -212,7 +206,7 @@ describe(AuthorSeriesRelationsService.name, () => {
           );
           await Promise.all(
             books.map(({id: bookId}) =>
-              partsService.connectSeriesAndBook({bookId, seriesId: series.id}),
+              seriesService.addBookToSeries({bookId, seriesId: series.id}),
             ),
           );
           return {author, books};
@@ -258,7 +252,7 @@ describe(AuthorSeriesRelationsService.name, () => {
 
         await Promise.all(
           books.map(({id: bookId}) =>
-            partsService.connectSeriesAndBook({bookId, seriesId: series.id}),
+            seriesService.addBookToSeries({bookId, seriesId: series.id}),
           ),
         );
 

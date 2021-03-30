@@ -1,7 +1,7 @@
 import {ArgsType, Field, Float, ID} from '@nestjs/graphql';
 
 @ArgsType()
-export class ConnectBookToSeriesArgs {
+export class AddBookToSeriesArgs {
   @Field(() => ID)
   bookId!: string;
 
@@ -9,5 +9,8 @@ export class ConnectBookToSeriesArgs {
   seriesId!: string;
 
   @Field(() => Float, {nullable: true})
-  volume?: number;
+  order?: number;
+
+  @Field(() => String, {nullable: true})
+  displayAs?: string;
 }
