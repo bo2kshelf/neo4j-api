@@ -7,8 +7,8 @@ import {
   Resolver,
   ResolveReference,
 } from '@nestjs/graphql';
-import {BookEntity} from './book.entity';
-import {BooksService} from './books.service';
+import {BookEntity} from '../entities/book.entity';
+import {BooksService} from '../services/books.service';
 import {CreateBookArgs} from './dto/create-books.dto';
 import {GetBookArgs} from './dto/get-book.dto';
 import {BookISBNArgs} from './dto/isbn.dto';

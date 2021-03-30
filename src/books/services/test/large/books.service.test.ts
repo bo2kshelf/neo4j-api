@@ -1,10 +1,10 @@
 import {INestApplication} from '@nestjs/common';
 import {Test} from '@nestjs/testing';
 import * as faker from 'faker';
-import {IDModule} from '../../../id/id.module';
-import {IDService} from '../../../id/id.service';
-import {Neo4jTestModule} from '../../../neo4j/neo4j-test.module';
-import {Neo4jService} from '../../../neo4j/neo4j.service';
+import {IDModule} from '../../../../id/id.module';
+import {IDService} from '../../../../id/id.service';
+import {Neo4jTestModule} from '../../../../neo4j/neo4j-test.module';
+import {Neo4jService} from '../../../../neo4j/neo4j.service';
 import {BooksService} from '../../books.service';
 
 describe(BooksService.name, () => {

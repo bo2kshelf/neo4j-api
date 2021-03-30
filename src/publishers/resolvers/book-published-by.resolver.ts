@@ -1,5 +1,5 @@
 import {Args, Parent, ResolveField, Resolver} from '@nestjs/graphql';
-import {BookEntity} from '../../books/book.entity';
+import {BookEntity} from '../../books/entities/book.entity';
 import {PublicationEntity} from '../publisher.entity';
 import {PublishersService} from '../publishers.service';
 import {BookPublishedByArgs} from './dto/book-published-by.dto';

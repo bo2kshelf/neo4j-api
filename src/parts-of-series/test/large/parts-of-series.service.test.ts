@@ -1,6 +1,6 @@
 import {INestApplication} from '@nestjs/common';
 import {Test} from '@nestjs/testing';
-import {BooksService} from '../../../books/books.service';
+import {BooksService} from '../../../books/services/books.service';
 import {IDModule} from '../../../id/id.module';
 import {IDService} from '../../../id/id.service';
 import {Neo4jTestModule} from '../../../neo4j/neo4j-test.module';

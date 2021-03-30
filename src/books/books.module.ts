@@ -1,7 +1,7 @@
 import {Module} from '@nestjs/common';
 import {IDModule} from '../id/id.module';
-import {BooksResolver} from './books.resolver';
-import {BooksService} from './books.service';
+import {BooksResolver} from './resolvers/books.resolver';
+import {BooksService} from './services/books.service';
 
 @Module({
   imports: [IDModule],

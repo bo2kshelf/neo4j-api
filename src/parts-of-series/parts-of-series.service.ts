@@ -1,6 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {int} from 'neo4j-driver';
-import {BookEntity} from '../books/book.entity';
+import {BookEntity} from '../books/entities/book.entity';
 import {OrderBy} from '../common/order-by.enum';
 import {Neo4jService} from '../neo4j/neo4j.service';
 import {SeriesEntity} from '../series/series.entity';

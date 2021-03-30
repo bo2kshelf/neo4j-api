@@ -1,5 +1,5 @@
 import {Directive, Field, ID, ObjectType} from '@nestjs/graphql';
-import {BookEntity} from '../books/book.entity';
+import {BookEntity} from '../books/entities/book.entity';
 
 @ObjectType('Publisher')
 @Directive('@key(fields: "id")')
