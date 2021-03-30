@@ -1,7 +1,7 @@
 import {ArgsType, Field, ID} from '@nestjs/graphql';
 
 @ArgsType()
-export class ConnectBookToAuthorArgs {
+export class WritedBookArgs {
   @Field(() => ID)
   bookId!: string;
 

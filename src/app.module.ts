@@ -11,7 +11,6 @@ import {PublishersModule} from './publishers/publishers.module';
 import {RecordsModule} from './records/records.module';
 import {SeriesModule} from './series/series.module';
 import {UsersModule} from './users/users.module';
-import {WritingsModule} from './writings/writings.module';
 
 @Module({
   imports: [
@@ -30,7 +29,6 @@ import {WritingsModule} from './writings/writings.module';
     BooksModule,
     AuthorsModule,
     SeriesModule,
-    WritingsModule,
     PartsOfSeriesModule,
     AuthorSeriesRelationsModule,
     UsersModule,

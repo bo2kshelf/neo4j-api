@@ -10,8 +10,6 @@ import {Neo4jService} from '../../../neo4j/neo4j.service';
 import {PartsOfSeriesModule} from '../../../parts-of-series/parts-of-series.module';
 import {PartsOfSeriesService} from '../../../parts-of-series/parts-of-series.service';
 import {SeriesService} from '../../../series/series.service';
-import {WritingsModule} from '../../../writings/writings.module';
-import {WritingsService} from '../../../writings/writings.service';
 import {AuthorSeriesRelationsService} from '../../author-series-relations.service';
 
 describe(AuthorSeriesRelationsService.name, () => {
@@ -25,19 +23,17 @@ describe(AuthorSeriesRelationsService.name, () => {
   let seriesService: SeriesService;
 
   let booksService: BooksService;
-  let writingService: WritingsService;
   let partsService: PartsOfSeriesService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      imports: [Neo4jTestModule, IDModule, WritingsModule, PartsOfSeriesModule],
+      imports: [Neo4jTestModule, IDModule, PartsOfSeriesModule],
       providers: [
         IDService,
         AuthorSeriesRelationsService,
         BooksService,
         AuthorsService,
         SeriesService,
-        WritingsService,
         PartsOfSeriesService,
       ],
     }).compile();
@@ -56,7 +52,6 @@ describe(AuthorSeriesRelationsService.name, () => {
     seriesService = module.get<SeriesService>(SeriesService);
 
     partsService = module.get<PartsOfSeriesService>(PartsOfSeriesService);
-    writingService = module.get<WritingsService>(WritingsService);
   });
 
   beforeEach(async () => {
@@ -74,7 +69,7 @@ describe(AuthorSeriesRelationsService.name, () => {
 
   describe('getFromAuthor()', () => {
     it('1:N:1で正常', async () => {
-      const author = await authorsService.createAuthor({name: 'Author'});
+      const author = await authorsService.create({name: 'Author'});
       const series = await seriesService.createSeries({title: 'Series'});
 
       const books = await Promise.all(
@@ -85,7 +80,7 @@ describe(AuthorSeriesRelationsService.name, () => {
 
       await Promise.all(
         books.map(({id: bookId}) =>
-          writingService.connectBookToAuthor({bookId, authorId: author.id}),
+          authorsService.writedBook({bookId, authorId: author.id}),
         ),
       );
 
@@ -116,7 +111,7 @@ describe(AuthorSeriesRelationsService.name, () => {
       [{skip: 2, limit: 2, M: 4}, {length: 2}],
       [{skip: 4, limit: 2, M: 4}, {length: 0}],
     ])('1:N:Mで正常 %#', async ({M, ...args}, {length: expectedLength}) => {
-      const author = await authorsService.createAuthor({name: 'Author'});
+      const author = await authorsService.create({name: 'Author'});
 
       const {series} = await Promise.all(
         [...Array.from({length: M})].map(async (_, seriesI) => {
@@ -130,7 +125,7 @@ describe(AuthorSeriesRelationsService.name, () => {
           );
           await Promise.all(
             books.map(({id: bookId}) =>
-              writingService.connectBookToAuthor({bookId, authorId: author.id}),
+              authorsService.writedBook({bookId, authorId: author.id}),
             ),
           );
           await Promise.all(
@@ -153,7 +148,7 @@ describe(AuthorSeriesRelationsService.name, () => {
 
   describe('getFromSeries()', () => {
     it('1:N:1で正常', async () => {
-      const author = await authorsService.createAuthor({name: 'Author'});
+      const author = await authorsService.create({name: 'Author'});
       const series = await seriesService.createSeries({title: 'Series'});
 
       const books = await Promise.all(
@@ -164,7 +159,7 @@ describe(AuthorSeriesRelationsService.name, () => {
 
       await Promise.all(
         books.map(({id: bookId}) =>
-          writingService.connectBookToAuthor({bookId, authorId: author.id}),
+          authorsService.writedBook({bookId, authorId: author.id}),
         ),
       );
 
@@ -201,7 +196,7 @@ describe(AuthorSeriesRelationsService.name, () => {
 
       const {authors} = await Promise.all(
         [...Array.from({length: M})].map(async (_, authorI) => {
-          const author = await authorsService.createAuthor({
+          const author = await authorsService.create({
             name: `Author ${authorI}`,
           });
 
@@ -212,7 +207,7 @@ describe(AuthorSeriesRelationsService.name, () => {
           );
           await Promise.all(
             books.map(({id: bookId}) =>
-              writingService.connectBookToAuthor({bookId, authorId: author.id}),
+              authorsService.writedBook({bookId, authorId: author.id}),
             ),
           );
           await Promise.all(
@@ -246,7 +241,7 @@ describe(AuthorSeriesRelationsService.name, () => {
     ])(
       '1:N:1で正常 %#',
       async ({books: booksLength, ...args}, {length: expectedLength}) => {
-        const author = await authorsService.createAuthor({name: 'Author'});
+        const author = await authorsService.create({name: 'Author'});
         const series = await seriesService.createSeries({title: 'Series'});
 
         const books = await Promise.all(
@@ -257,7 +252,7 @@ describe(AuthorSeriesRelationsService.name, () => {
 
         await Promise.all(
           books.map(({id: bookId}) =>
-            writingService.connectBookToAuthor({bookId, authorId: author.id}),
+            authorsService.writedBook({bookId, authorId: author.id}),
           ),
         );
 

@@ -1,6 +1,6 @@
 import {Field, ObjectType} from '@nestjs/graphql';
-import {AuthorEntity} from '../authors/entities/author.entity';
-import {BookEntity} from '../books/book.entity';
+import {BookEntity} from '../../books/book.entity';
+import {AuthorEntity} from './author.entity';
 
 @ObjectType('Writing')
 export class WritingEntity {

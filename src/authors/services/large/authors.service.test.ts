@@ -48,7 +48,7 @@ describe(AuthorsService.name, () => {
     it.each([[{name: 'A'}, {id: expect.any(String), name: 'A'}]])(
       '成功 %#',
       async (data, expected) => {
-        const actual = await authorsService.createAuthor(data);
+        const actual = await authorsService.create(data);
 
         expect(actual).toStrictEqual(expected);
       },
@@ -58,7 +58,7 @@ describe(AuthorsService.name, () => {
   describe('findAuthorById()', () => {
     let expected: AuthorEntity;
     beforeEach(async () => {
-      expected = await authorsService.createAuthor({name: 'A'});
+      expected = await authorsService.create({name: 'A'});
     });
 
     it('成功', async () => {
@@ -69,12 +69,11 @@ describe(AuthorsService.name, () => {
 
   describe('findAllSeries()', () => {
     beforeEach(async () => {
-      for (let i = 0; i < 10; i++)
-        await authorsService.createAuthor({name: 'A'});
+      for (let i = 0; i < 10; i++) await authorsService.create({name: 'A'});
     });
 
     it('成功', async () => {
-      const actual = await authorsService.findAllAuthors();
+      const actual = await authorsService.findAll();
       expect(actual).toHaveLength(10);
     });
   });
