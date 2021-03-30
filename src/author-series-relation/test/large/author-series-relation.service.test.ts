@@ -79,7 +79,7 @@ describe(AuthorSeriesRelationsService.name, () => {
 
       const books = await Promise.all(
         [...Array.from({length: 10})].map((_, i) =>
-          booksService.createBook({title: `Book ${i}`}),
+          booksService.create({title: `Book ${i}`}),
         ),
       );
 
@@ -125,7 +125,7 @@ describe(AuthorSeriesRelationsService.name, () => {
           });
           const books = await Promise.all(
             [...Array.from({length: 2})].map((_, bookI) =>
-              booksService.createBook({title: `Book ${seriesI}-${bookI}`}),
+              booksService.create({title: `Book ${seriesI}-${bookI}`}),
             ),
           );
           await Promise.all(
@@ -158,7 +158,7 @@ describe(AuthorSeriesRelationsService.name, () => {
 
       const books = await Promise.all(
         [...Array.from({length: 10})].map((_, i) =>
-          booksService.createBook({title: `Book ${i}`}),
+          booksService.create({title: `Book ${i}`}),
         ),
       );
 
@@ -207,7 +207,7 @@ describe(AuthorSeriesRelationsService.name, () => {
 
           const books = await Promise.all(
             [...Array.from({length: 2})].map((_, bookI) =>
-              booksService.createBook({title: `Book ${authorI}-${bookI}`}),
+              booksService.create({title: `Book ${authorI}-${bookI}`}),
             ),
           );
           await Promise.all(
@@ -251,7 +251,7 @@ describe(AuthorSeriesRelationsService.name, () => {
 
         const books = await Promise.all(
           [...Array.from({length: booksLength})].map((_, i) =>
-            booksService.createBook({title: `Book ${i}`}),
+            booksService.create({title: `Book ${i}`}),
           ),
         );
 

@@ -10,29 +10,31 @@ export class BooksService {
     private readonly idService: IDService,
   ) {}
 
-  async findBookById(id: string): Promise<BookEntity> {
-    return this.neo4jService
-      .read(`MATCH (n:Book {id: $id}) RETURN n`, {id})
-      .then((res) => res.records[0].get(0).properties);
+  async create(data: {title: string; isbn?: string}): Promise<BookEntity> {
+    const id = this.idService.generate();
+    const result = await this.neo4jService.write(
+      `
+      CREATE (b:Book {id: $id})
+      SET b += $data
+      RETURN b
+    `,
+      {id, data},
+    );
+    return result.records[0].get(0).properties;
   }
 
-  async findAllBooks(): Promise<BookEntity[]> {
+  async findAll(): Promise<BookEntity[]> {
     return this.neo4jService
-      .read(`MATCH (n:Book) RETURN n`)
+      .read(`MATCH (b:Book) RETURN b`)
       .then((res) => res.records.map((record) => record.get(0).properties));
   }
 
-  async createBook(data: {title: string; isbn?: string}): Promise<BookEntity> {
-    const result = await this.neo4jService.write(
-      `
-      CREATE (n:Book {id: $id})
-      SET n += $data
-      RETURN n`,
-      {
-        id: this.idService.generate(),
-        data,
-      },
+  async findById(id: string): Promise<BookEntity> {
+    const result = await this.neo4jService.read(
+      `MATCH (b:Book {id: $id}) RETURN b`,
+      {id},
     );
+    if (result.records.length === 0) throw new Error('Not Found');
     return result.records[0].get(0).properties;
   }
 }

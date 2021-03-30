@@ -52,7 +52,7 @@ describe(PartsOfSeriesService.name, () => {
   describe('connectSeriesAndBook()', () => {
     it.each([[{}], [{volume: 1}]])('成功 %#', async (props) => {
       const series = await seriesService.createSeries({title: 'Series'});
-      const book = await booksService.createBook({title: `Book`});
+      const book = await booksService.create({title: `Book`});
 
       const actual = await partsService.connectSeriesAndBook(
         {
@@ -93,12 +93,12 @@ describe(PartsOfSeriesService.name, () => {
       const series2 = await seriesService.createSeries({title: 'Series 2'});
       const books1 = await Promise.all(
         [...Array.from({length: 10})].map((_, i) =>
-          booksService.createBook({title: `Book 1-${i}`}),
+          booksService.create({title: `Book 1-${i}`}),
         ),
       );
       const books2 = await Promise.all(
         [...Array.from({length: 10})].map((_, i) =>
-          booksService.createBook({title: `Book 1-${i}`}),
+          booksService.create({title: `Book 1-${i}`}),
         ),
       );
 
@@ -144,12 +144,12 @@ describe(PartsOfSeriesService.name, () => {
       const series2 = await seriesService.createSeries({title: 'Series 2'});
       const books1 = await Promise.all(
         [...Array.from({length: 10})].map((_, i) =>
-          booksService.createBook({title: `Book 1-${i}`}),
+          booksService.create({title: `Book 1-${i}`}),
         ),
       );
       const books2 = await Promise.all(
         [...Array.from({length: 10})].map((_, i) =>
-          booksService.createBook({title: `Book 2-${i}`}),
+          booksService.create({title: `Book 2-${i}`}),
         ),
       );
 
@@ -191,7 +191,7 @@ describe(PartsOfSeriesService.name, () => {
       const series2 = await seriesService.createSeries({title: 'Series 2'});
       const books1 = await Promise.all(
         [...Array.from({length: 10})].map((_, i) =>
-          booksService.createBook({title: `Book 1-${i}`}),
+          booksService.create({title: `Book 1-${i}`}),
         ),
       );
 

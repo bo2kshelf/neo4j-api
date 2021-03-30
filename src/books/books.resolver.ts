@@ -19,7 +19,7 @@ export class BooksResolver {
 
   @ResolveReference()
   resolveReference(reference: {__typename: string; id: string}) {
-    return this.booksService.findBookById(reference.id);
+    return this.booksService.findById(reference.id);
   }
 
   @ResolveField(() => String, {nullable: true})
@@ -35,12 +35,12 @@ export class BooksResolver {
   async book(
     @Args({type: () => GetBookArgs}) {id}: GetBookArgs,
   ): Promise<BookEntity> {
-    return this.booksService.findBookById(id);
+    return this.booksService.findById(id);
   }
 
   @Query(() => [BookEntity])
   async allBooks(): Promise<BookEntity[]> {
-    return this.booksService.findAllBooks();
+    return this.booksService.findAll();
   }
 
   @Mutation(() => BookEntity)
@@ -48,6 +48,6 @@ export class BooksResolver {
     @Args({type: () => CreateBookArgs})
     {data}: CreateBookArgs,
   ): Promise<BookEntity> {
-    return this.booksService.createBook(data);
+    return this.booksService.create(data);
   }
 }
