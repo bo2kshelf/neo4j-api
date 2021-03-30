@@ -1,7 +1,7 @@
 import {ArgsType, Field, ID} from '@nestjs/graphql';
 
 @ArgsType()
-export class SwitchWishReadBookRecordArgs {
+export class HasBookArgs {
   @Field(() => ID)
   userId!: string;
 
@@ -9,5 +9,5 @@ export class SwitchWishReadBookRecordArgs {
   bookId!: string;
 
   @Field(() => Boolean)
-  wish!: boolean;
+  have!: boolean;
 }

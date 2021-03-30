@@ -1,7 +1,7 @@
 import {ArgsType, Field, ID} from '@nestjs/graphql';
 
 @ArgsType()
-export class SwitchReadingBookRecordArgs {
+export class IsReadingBookArgs {
   @Field(() => ID)
   userId!: string;
 
