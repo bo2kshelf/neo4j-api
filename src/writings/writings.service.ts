@@ -1,6 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {int, QueryResult} from 'neo4j-driver';
-import {AuthorEntity} from '../authors/author.entity';
+import {AuthorEntity} from '../authors/entities/author.entity';
 import {BookEntity} from '../books/book.entity';
 import {Neo4jService} from '../neo4j/neo4j.service';
 import {WritingEntity} from './writing.entity';

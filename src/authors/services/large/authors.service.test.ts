@@ -4,8 +4,8 @@ import {IDModule} from '../../../id/id.module';
 import {IDService} from '../../../id/id.service';
 import {Neo4jTestModule} from '../../../neo4j/neo4j-test.module';
 import {Neo4jService} from '../../../neo4j/neo4j.service';
-import {AuthorEntity} from '../../author.entity';
-import {AuthorsService} from '../../authors.service';
+import {AuthorEntity} from '../../entities/author.entity';
+import {AuthorsService} from '../authors.service';
 
 describe(AuthorsService.name, () => {
   let app: INestApplication;

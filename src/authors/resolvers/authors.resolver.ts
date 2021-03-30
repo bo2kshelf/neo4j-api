@@ -5,8 +5,8 @@ import {
   Resolver,
   ResolveReference,
 } from '@nestjs/graphql';
-import {AuthorEntity} from './author.entity';
-import {AuthorsService} from './authors.service';
+import {AuthorEntity} from '../entities/author.entity';
+import {AuthorsService} from '../services/authors.service';
 import {CreateAuthorArgs} from './dto/create-author.dto';
 import {GetAuthorArgs} from './dto/get-author.dto';
 

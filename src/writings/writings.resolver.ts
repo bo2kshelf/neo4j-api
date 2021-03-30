@@ -1,5 +1,5 @@
 import {Args, Mutation, Parent, ResolveField, Resolver} from '@nestjs/graphql';
-import {AuthorEntity} from '../authors/author.entity';
+import {AuthorEntity} from '../authors/entities/author.entity';
 import {BookEntity} from '../books/book.entity';
 import {AuthorWritesArgs} from './dto/author-writes.dto';
 import {BookWritedByArgs} from './dto/book-writed-by.dto';

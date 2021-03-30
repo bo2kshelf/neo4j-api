@@ -1,6 +1,6 @@
 import {INestApplication} from '@nestjs/common';
 import {Test} from '@nestjs/testing';
-import {AuthorsService} from '../../../authors/authors.service';
+import {AuthorsService} from '../../../authors/services/authors.service';
 import {BooksService} from '../../../books/books.service';
 import {IDModule} from '../../../id/id.module';
 import {IDService} from '../../../id/id.service';

@@ -1,7 +1,7 @@
 import {Injectable} from '@nestjs/common';
-import {IDService} from '../id/id.service';
-import {Neo4jService} from '../neo4j/neo4j.service';
-import {AuthorEntity} from './author.entity';
+import {IDService} from '../../id/id.service';
+import {Neo4jService} from '../../neo4j/neo4j.service';
+import {AuthorEntity} from '../entities/author.entity';
 
 @Injectable()
 export class AuthorsService {
