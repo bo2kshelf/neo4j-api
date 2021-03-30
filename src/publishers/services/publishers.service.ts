@@ -1,9 +1,9 @@
 import {Injectable} from '@nestjs/common';
 import {int} from 'neo4j-driver';
-import {BookEntity} from '../books/entities/book.entity';
-import {IDService} from '../id/id.service';
-import {Neo4jService} from '../neo4j/neo4j.service';
-import {PublicationEntity, PublisherEntity} from './publisher.entity';
+import {IDService} from '../../id/id.service';
+import {Neo4jService} from '../../neo4j/neo4j.service';
+import {PublicationEntity} from '../entities/publication.entity';
+import {PublisherEntity} from '../entities/publisher.entity';
 
 @Injectable()
 export class PublishersService {
@@ -12,19 +12,19 @@ export class PublishersService {
     private readonly idService: IDService,
   ) {}
 
-  async getPublisherById(id: string): Promise<PublisherEntity> {
+  async findById(id: string): Promise<PublisherEntity> {
     return this.neo4jService
       .read(`MATCH (n:Publisher {id: $id}) RETURN n`, {id})
       .then((res) => res.records[0].get(0).properties);
   }
 
-  async getAllPublishers(): Promise<PublisherEntity[]> {
+  async findAll(): Promise<PublisherEntity[]> {
     return this.neo4jService
       .read(`MATCH (n:Publisher) RETURN n`)
       .then((res) => res.records.map((record) => record.get(0).properties));
   }
 
-  async createPublisher(data: {name: string}): Promise<PublisherEntity> {
+  async create(data: {name: string}): Promise<PublisherEntity> {
     const result = await this.neo4jService.write(
       `
       CREATE (n:Publisher {id: $id})
@@ -40,19 +40,19 @@ export class PublishersService {
   }
 
   async getPublicationsFromBook(
-    book: BookEntity,
+    bookId: string,
     {skip = 0, limit = 0}: {skip?: number; limit?: number},
   ): Promise<PublicationEntity[]> {
     return this.neo4jService
       .read(
         `
-    MATCH (b:Book {id: $book.id})
-    MATCH (p)-[r:PUBLISHES]->(b)
+    MATCH (b:Book {id: $bookId})
+    MATCH (p)-[r:PUBLISHED_BOOK]->(b)
     RETURN p,r,b
     SKIP $skip LIMIT $limit
     `,
         {
-          book,
+          bookId,
           skip: int(skip),
           limit: int(limit),
         },
@@ -67,7 +67,7 @@ export class PublishersService {
   }
 
   async getPublicationsFromPublisher(
-    publisher: PublisherEntity,
+    publisherId: string,
     {
       skip = 0,
       limit = 0,
@@ -77,14 +77,14 @@ export class PublishersService {
     return this.neo4jService
       .read(
         `
-    MATCH (p:Publisher {id: $publisher.id})
-    MATCH (p)-[r:PUBLISHES]->(b)
+    MATCH (p:Publisher {id: $publisherId})
+    MATCH (p)-[r:PUBLISHED_BOOK]->(b)
     WHERE NOT b.id IN $except
     RETURN p,r,b
     SKIP $skip LIMIT $limit
     `,
         {
-          publisher,
+          publisherId,
           skip: int(skip),
           limit: int(limit),
           except,
@@ -111,7 +111,7 @@ export class PublishersService {
         `
         MATCH (p:Publisher {id: $publisherId})
         MATCH (b:Book {id: $bookId})
-        MERGE (p)-[:PUBLISHES]->(b)
+        MERGE (p)-[:PUBLISHED_BOOK]->(b)
         RETURN p,b
       `,
         {bookId, publisherId},
