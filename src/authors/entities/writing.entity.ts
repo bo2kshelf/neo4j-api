@@ -5,6 +5,6 @@ export class WritingEntity {
   authorId!: string;
   bookId!: string;
 
-  @Field(() => [String], {nullable: true})
-  roles?: string[];
+  @Field(() => [String])
+  roles!: string[];
 }

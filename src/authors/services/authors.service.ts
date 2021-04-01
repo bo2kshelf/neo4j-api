@@ -13,9 +13,12 @@ export class AuthorsService {
   ) {}
 
   async findById(id: string): Promise<AuthorEntity> {
-    return this.neo4jService
-      .read(`MATCH (n:Author {id: $id}) RETURN n`, {id})
-      .then((res) => res.records[0].get(0).properties);
+    const result = await this.neo4jService.read(
+      `MATCH (n:Author {id: $id}) RETURN n`,
+      {id},
+    );
+    if (result.records.length === 0) throw new Error('Not Found');
+    return result.records[0].get(0).properties;
   }
 
   async findAll(): Promise<AuthorEntity[]> {
@@ -39,24 +42,19 @@ export class AuthorsService {
     return result.records[0].get(0).properties;
   }
 
-  async writedBook({
-    authorId,
-    bookId,
-    ...props
-  }: {
-    authorId: string;
-    bookId: string;
-    roles?: string[];
-  }): Promise<WritingEntity> {
+  async writedBook(
+    {authorId, bookId}: {authorId: string; bookId: string},
+    {roles = []}: {roles?: string[]},
+  ): Promise<WritingEntity> {
     const result = await this.neo4jService.write(
       `
         MATCH (a:Author {id: $authorId})
         MATCH (b:Book {id: $bookId})
-        MERGE (a)-[r:WRITES]->(b)
+        MERGE (a)-[r:WRITED_BOOK]->(b)
         SET r = $props
         RETURN a,r,b
       `,
-      {bookId, authorId, props},
+      {bookId, authorId, props: {roles}},
     );
     return result.records.map((record) => ({
       ...record.get('r').properties,
