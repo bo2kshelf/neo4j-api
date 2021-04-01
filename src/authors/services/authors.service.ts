@@ -1,6 +1,7 @@
 import {Injectable} from '@nestjs/common';
 import {int} from 'neo4j-driver';
 import {IDService} from '../../common/id/id.service';
+import {OrderBy} from '../../common/order-by.enum';
 import {Neo4jService} from '../../neo4j/neo4j.service';
 import {AuthorEntity} from '../entities/author.entity';
 import {WritingEntity} from '../entities/writing.entity';
@@ -65,14 +66,25 @@ export class AuthorsService {
 
   async getWritingFromAuthor(
     authorId: string,
-    {skip, limit, except}: {skip: number; limit: number; except: string[]},
+    {
+      skip,
+      limit,
+      except,
+      orderBy,
+    }: {
+      skip: number;
+      limit: number;
+      except: string[];
+      orderBy: {title: OrderBy};
+    },
   ): Promise<WritingEntity[]> {
     const result = await this.neo4jService.read(
       `
     MATCH (a:Author {id: $authorId})
-    MATCH (a)-[r:WRITES]->(b)
+    MATCH (a)-[r:WRITED_BOOK]->(b)
     WHERE NOT b.id IN $except
     RETURN a,r,b
+    ORDER BY b.title ${orderBy.title}
     SKIP $skip LIMIT $limit
     `,
       {
@@ -90,21 +102,17 @@ export class AuthorsService {
   }
 
   async getWritingFromBook(
-    authorId: string,
-    {skip, limit}: {skip: number; limit: number},
+    bookId: string,
+    {orderBy}: {orderBy: {name: OrderBy}},
   ): Promise<WritingEntity[]> {
     const result = await this.neo4jService.read(
       `
-      MATCH (b:Book {id: $book.id})
-      MATCH (a)-[r:WRITES]->(b)
+      MATCH (b:Book {id: $bookId})
+      MATCH (a)-[r:WRITED_BOOK]->(b)
       RETURN a,r,b
-      SKIP $skip LIMIT $limit
+      ORDER BY a.name ${orderBy.name}
     `,
-      {
-        authorId,
-        skip: int(skip),
-        limit: int(limit),
-      },
+      {bookId},
     );
     return result.records.map((record) => ({
       ...record.get('r').properties,

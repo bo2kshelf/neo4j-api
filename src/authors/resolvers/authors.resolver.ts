@@ -55,8 +55,8 @@ export class AuthorsResolver {
   @Mutation(() => WritingEntity)
   async writedBook(
     @Args({type: () => WritedBookArgs})
-    args: WritedBookArgs,
+    {authorId, bookId, ...props}: WritedBookArgs,
   ) {
-    return this.authorsService.writedBook(args);
+    return this.authorsService.writedBook({authorId, bookId}, props);
   }
 }

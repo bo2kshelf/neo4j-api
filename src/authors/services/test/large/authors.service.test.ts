@@ -3,6 +3,7 @@ import {Test} from '@nestjs/testing';
 import * as faker from 'faker';
 import {IDModule} from '../../../../common/id/id.module';
 import {IDService} from '../../../../common/id/id.service';
+import {OrderBy} from '../../../../common/order-by.enum';
 import {Neo4jTestModule} from '../../../../neo4j/neo4j-test.module';
 import {Neo4jService} from '../../../../neo4j/neo4j.service';
 import {AuthorsService} from '../../authors.service';
@@ -172,6 +173,129 @@ describe(AuthorsService.name, () => {
       expect(actual.bookId).toBe(expectedBook.id);
 
       expect(actual.roles).toStrictEqual(rightProps.roles);
+    });
+  });
+
+  describe('getWritingFromAuthor()', () => {
+    const expectedAuthor = {id: 'author1', name: faker.lorem.words(2)};
+    const expectedBooks = [
+      {id: 'book1', title: 'A'},
+      {id: 'book2', title: 'B'},
+      {id: 'book3', title: 'C'},
+    ];
+
+    beforeEach(async () => {
+      await neo4jService.write(
+        `CREATE (b:Author {id: $author.id, title: $author.name}) RETURN *`,
+        {author: expectedAuthor},
+      );
+      await Promise.all(
+        expectedBooks.map((expectedBook) =>
+          neo4jService.write(
+            `
+            CREATE (b:Book {id: $book.id, title: $book.title})
+            CREATE (a:Author {id: $author.id})-[r:WRITED_BOOK]->(b)
+            RETURN *
+            `,
+            {author: expectedAuthor, book: expectedBook},
+          ),
+        ),
+      );
+    });
+
+    it.each([
+      [
+        {skip: 0, limit: 0, except: [], orderBy: {title: OrderBy.ASC}},
+        {books: []},
+      ],
+      [
+        {skip: 0, limit: 3, except: [], orderBy: {title: OrderBy.ASC}},
+        {books: [expectedBooks[0], expectedBooks[1], expectedBooks[2]]},
+      ],
+      [
+        {
+          skip: 0,
+          limit: 3,
+          except: [expectedBooks[1].id],
+          orderBy: {title: OrderBy.ASC},
+        },
+        {books: [expectedBooks[0], expectedBooks[2]]},
+      ],
+      [
+        {skip: 0, limit: 3, except: [], orderBy: {title: OrderBy.DESC}},
+        {books: [expectedBooks[2], expectedBooks[1], expectedBooks[0]]},
+      ],
+      [
+        {skip: 0, limit: 1, except: [], orderBy: {title: OrderBy.ASC}},
+        {books: [expectedBooks[0]]},
+      ],
+      [
+        {skip: 1, limit: 1, except: [], orderBy: {title: OrderBy.ASC}},
+        {books: [expectedBooks[1]]},
+      ],
+      [
+        {skip: 3, limit: 3, except: [], orderBy: {title: OrderBy.ASC}},
+        {books: []},
+      ],
+    ])('正常な動作 %j', async (props, expected) => {
+      const actual = await authorsService.getWritingFromAuthor(
+        expectedAuthor.id,
+        props,
+      );
+
+      expect(actual).toHaveLength(expected.books.length);
+      actual.map(({bookId}, i) => {
+        expect(bookId).toBe(expected.books[i].id);
+      });
+    });
+  });
+
+  describe('getWritingFromBook()', () => {
+    const expectedBook = {id: 'book1', title: faker.lorem.words(2)};
+    const expectedAuthors = [
+      {id: 'author1', name: 'A'},
+      {id: 'author2', name: 'B'},
+      {id: 'author3', name: 'C'},
+    ];
+
+    beforeEach(async () => {
+      await neo4jService.write(
+        `CREATE (b:Book {id: $book.id, title: $book.title}) RETURN *`,
+        {book: expectedBook},
+      );
+      await Promise.all(
+        expectedAuthors.map((expectedAuthor) =>
+          neo4jService.write(
+            `
+            CREATE (a:Author {id: $author.id, name: $author.name})
+            CREATE (a)-[r:WRITED_BOOK]->(:Book {id: $book.id})
+            RETURN *
+            `,
+            {author: expectedAuthor, book: expectedBook},
+          ),
+        ),
+      );
+    });
+
+    it.each([
+      [
+        {orderBy: {name: OrderBy.ASC}},
+        {sort: [expectedAuthors[0], expectedAuthors[1], expectedAuthors[2]]},
+      ],
+      [
+        {orderBy: {name: OrderBy.DESC}},
+        {sort: [expectedAuthors[2], expectedAuthors[1], expectedAuthors[0]]},
+      ],
+    ])('正常な動作 %j', async (props, expected) => {
+      const actual = await authorsService.getWritingFromBook(
+        expectedBook.id,
+        props,
+      );
+
+      expect(actual).toHaveLength(expectedAuthors.length);
+      actual.map(({authorId}, i) => {
+        expect(authorId).toBe(expected.sort[i].id);
+      });
     });
   });
 });

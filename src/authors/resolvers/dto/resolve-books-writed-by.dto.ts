@@ -1,10 +1,17 @@
-import {ArgsType, Field, Int} from '@nestjs/graphql';
+import {ArgsType, Field, InputType} from '@nestjs/graphql';
+import {OrderBy} from '../../../common/order-by.enum';
+
+@InputType()
+export class BookWritedByArgsOrderBy {
+  @Field(() => OrderBy, {nullable: true, defaultValue: OrderBy.ASC})
+  name!: OrderBy;
+}
 
 @ArgsType()
 export class BookWritedByArgs {
-  @Field(() => Int, {nullable: true, defaultValue: 0})
-  skip = 0;
-
-  @Field(() => Int, {nullable: true, defaultValue: 0})
-  limit = 0;
+  @Field(() => BookWritedByArgsOrderBy, {
+    nullable: true,
+    defaultValue: new BookWritedByArgsOrderBy(),
+  })
+  orderBy!: BookWritedByArgsOrderBy;
 }
