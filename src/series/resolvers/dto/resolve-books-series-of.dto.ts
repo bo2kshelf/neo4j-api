@@ -17,16 +17,4 @@ export class BooksPartOfSeriesReturn {
 
   @Field(() => Int)
   count!: number;
-
-  @Field(() => Int)
-  skip!: number;
-
-  @Field(() => Int)
-  limit!: number;
-
-  @Field(() => Boolean)
-  hasPrevious!: boolean;
-
-  @Field(() => Boolean)
-  hasNext!: boolean;
 }

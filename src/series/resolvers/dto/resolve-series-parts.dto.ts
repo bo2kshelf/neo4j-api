@@ -6,6 +6,9 @@ import {SeriesPartEntity} from '../../entities/series-part.entity';
 export class ResolveSeriesPartsArgsOrderBy {
   @Field(() => OrderBy, {nullable: true, defaultValue: OrderBy.ASC})
   order: OrderBy = OrderBy.ASC;
+
+  @Field(() => OrderBy, {nullable: true, defaultValue: OrderBy.ASC})
+  title: OrderBy = OrderBy.ASC;
 }
 
 @ArgsType()
