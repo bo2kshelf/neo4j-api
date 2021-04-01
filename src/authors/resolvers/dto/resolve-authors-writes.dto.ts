@@ -11,13 +11,13 @@ export class AuthorWritesArgsOrderBy {
 @ArgsType()
 export class AuthorWritesArgs {
   @Field(() => Int, {nullable: true, defaultValue: 0})
-  skip = 0;
+  skip!: number;
 
   @Field(() => Int, {nullable: true, defaultValue: 0})
-  limit = 0;
+  limit!: number;
 
-  @Field(() => [ID!], {nullable: true})
-  except: string[] = [];
+  @Field(() => [ID!], {nullable: true, defaultValue: []})
+  except!: string[];
 
   @Field(() => AuthorWritesArgsOrderBy, {
     nullable: true,
