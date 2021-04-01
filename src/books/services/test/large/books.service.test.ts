@@ -44,11 +44,6 @@ describe(BooksService.name, () => {
   });
 
   describe('create()', () => {
-    const expectedId = '1';
-    beforeEach(() => {
-      jest.spyOn(idService, 'generate').mockReturnValueOnce(expectedId);
-    });
-
     it.each([
       [
         {title: faker.lorem.words(2)},
@@ -86,21 +81,48 @@ describe(BooksService.name, () => {
   });
 
   describe('findAll()', () => {
-    it('10件作成して，10件取得できる', async () => {
-      for (let i = 0; i < 10; i++)
-        await booksSerivce.create({title: faker.lorem.words(2)});
+    const expectedArray = [
+      {id: '1', title: faker.lorem.words(2)},
+      {id: '2', title: faker.lorem.words(2)},
+      {id: '3', title: faker.lorem.words(2)},
+      {id: '4', title: faker.lorem.words(2)},
+      {id: '5', title: faker.lorem.words(2)},
+    ];
 
-      const actual = await booksSerivce.findAll();
-      expect(actual).toHaveLength(10);
+    beforeEach(async () => {
+      await Promise.all(
+        expectedArray.map((expected) =>
+          neo4jService.write(`CREATE (b:Book) SET b = $expected RETURN *`, {
+            expected,
+          }),
+        ),
+      );
+    });
+
+    it('全件取得できる', async () => {
+      const actualArray = await booksSerivce.findAll();
+
+      actualArray.map((actual) => {
+        const expected = expectedArray.find(({id}) => id === actual.id)!;
+
+        expect(expected).not.toBeUndefined();
+        expect(actual.id).toBe(expected.id);
+        expect(actual.title).toBe(expected.title);
+      });
     });
   });
 
   describe('findById()', () => {
-    it('1件作成して，そのIDによって取得できる', async () => {
-      const expected = await booksSerivce.create({
-        title: faker.lorem.words(2),
-      });
+    const expected = {id: '1', title: faker.lorem.words(2)};
 
+    beforeEach(async () => {
+      await neo4jService.write(
+        `CREATE (a:Book {id: $expected.id, title: $expected.title}) RETURN *`,
+        {expected},
+      );
+    });
+
+    it('指定したIDが存在するなら取得できる', async () => {
       const actual = await booksSerivce.findById(expected.id);
 
       expect(actual.id).toBe(expected.id);
@@ -108,12 +130,7 @@ describe(BooksService.name, () => {
     });
 
     it('存在しないIDによって取得しようとすると例外を投げる', async () => {
-      const created = await booksSerivce.create({
-        title: faker.lorem.words(2),
-      });
-
-      const failedId = `-${created.id}`;
-      await expect(() => booksSerivce.findById(failedId)).rejects.toThrow(
+      await expect(() => booksSerivce.findById('2')).rejects.toThrow(
         /Not Found/,
       );
     });
