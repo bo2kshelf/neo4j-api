@@ -32,8 +32,7 @@ describe(AuthorsService.name, () => {
 
   beforeEach(async () => {
     jest.clearAllMocks();
-
-    await neo4jService.clear();
+    await neo4jService.write(`MATCH (n) DETACH DELETE n`);
   });
 
   afterAll(async () => {
