@@ -8,6 +8,7 @@ import {Neo4jConfig} from './neo4j/neo4j.config';
 import {Neo4jModule} from './neo4j/neo4j.module';
 import {PublishersModule} from './publishers/publishers.module';
 import {AuthorSeriesRelationsModule} from './relations/author-series.module';
+import {SeriesPartModule} from './series/series-part.module';
 import {SeriesModule} from './series/series.module';
 import {UsersModule} from './users/users.module';
 
@@ -29,6 +30,7 @@ import {UsersModule} from './users/users.module';
     AuthorsModule,
     WritingsModule,
     SeriesModule,
+    SeriesPartModule,
     PublishersModule,
     UsersModule,
     AuthorSeriesRelationsModule,
