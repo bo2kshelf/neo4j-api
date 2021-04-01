@@ -77,9 +77,15 @@ export class AuthorsService {
       except: string[];
       orderBy: {title: OrderBy};
     },
-  ): Promise<WritingEntity[]> {
-    const result = await this.neo4jService.read(
-      `
+  ): Promise<{
+    writings: WritingEntity[];
+    count: number;
+    hasPrevious: boolean;
+    hasNext: boolean;
+  }> {
+    const writings = await this.neo4jService
+      .read(
+        `
     MATCH (a:Author {id: $authorId})
     MATCH (a)-[r:WRITED_BOOK]->(b)
     WHERE NOT b.id IN $except
@@ -87,18 +93,44 @@ export class AuthorsService {
     ORDER BY b.title ${orderBy.title}
     SKIP $skip LIMIT $limit
     `,
-      {
-        authorId,
-        skip: int(skip),
-        limit: int(limit),
-        except,
-      },
-    );
-    return result.records.map((record) => ({
-      ...record.get('r').properties,
-      authorId: record.get('a').properties.id,
-      bookId: record.get('b').properties.id,
-    }));
+        {
+          authorId,
+          skip: int(skip),
+          limit: int(limit),
+          except,
+        },
+      )
+      .then((result) =>
+        result.records.map((record) => ({
+          ...record.get('r').properties,
+          authorId: record.get('a').properties.id,
+          bookId: record.get('b').properties.id,
+        })),
+      );
+    const meta: {
+      count: number;
+      hasNext: boolean;
+      hasPrevious: boolean;
+    } = await this.neo4jService
+      .read(
+        `
+      MATCH (:Author {id: $authorId})-[r:WRITED_BOOK]->(b:Book)
+      WITH count(r) AS count
+      RETURN count, 0 < count AND 0 < $skip AS previous, $skip + $limit < count AS next
+      `,
+        {
+          authorId,
+          skip: int(skip),
+          limit: int(limit),
+          except,
+        },
+      )
+      .then((result) => ({
+        count: result.records[0].get('count').toNumber(),
+        hasNext: result.records[0].get('next'),
+        hasPrevious: result.records[0].get('previous'),
+      }));
+    return {writings, ...meta};
   }
 
   async getWritingFromBook(

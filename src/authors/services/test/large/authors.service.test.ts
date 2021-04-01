@@ -206,11 +206,19 @@ describe(AuthorsService.name, () => {
     it.each([
       [
         {skip: 0, limit: 0, except: [], orderBy: {title: OrderBy.ASC}},
-        {books: []},
+        {
+          books: [],
+          hasPrevious: false,
+          hasNext: true,
+        },
       ],
       [
         {skip: 0, limit: 3, except: [], orderBy: {title: OrderBy.ASC}},
-        {books: [expectedBooks[0], expectedBooks[1], expectedBooks[2]]},
+        {
+          books: [expectedBooks[0], expectedBooks[1], expectedBooks[2]],
+          hasPrevious: false,
+          hasNext: false,
+        },
       ],
       [
         {
@@ -219,23 +227,43 @@ describe(AuthorsService.name, () => {
           except: [expectedBooks[1].id],
           orderBy: {title: OrderBy.ASC},
         },
-        {books: [expectedBooks[0], expectedBooks[2]]},
+        {
+          books: [expectedBooks[0], expectedBooks[2]],
+          hasPrevious: false,
+          hasNext: false,
+        },
       ],
       [
         {skip: 0, limit: 3, except: [], orderBy: {title: OrderBy.DESC}},
-        {books: [expectedBooks[2], expectedBooks[1], expectedBooks[0]]},
+        {
+          books: [expectedBooks[2], expectedBooks[1], expectedBooks[0]],
+          hasPrevious: false,
+          hasNext: false,
+        },
       ],
       [
         {skip: 0, limit: 1, except: [], orderBy: {title: OrderBy.ASC}},
-        {books: [expectedBooks[0]]},
+        {
+          books: [expectedBooks[0]],
+          hasPrevious: false,
+          hasNext: true,
+        },
       ],
       [
         {skip: 1, limit: 1, except: [], orderBy: {title: OrderBy.ASC}},
-        {books: [expectedBooks[1]]},
+        {
+          books: [expectedBooks[1]],
+          hasPrevious: true,
+          hasNext: true,
+        },
       ],
       [
         {skip: 3, limit: 3, except: [], orderBy: {title: OrderBy.ASC}},
-        {books: []},
+        {
+          books: [],
+          hasPrevious: true,
+          hasNext: false,
+        },
       ],
     ])('正常な動作 %j', async (props, expected) => {
       const actual = await authorsService.getWritingFromAuthor(
@@ -243,8 +271,11 @@ describe(AuthorsService.name, () => {
         props,
       );
 
-      expect(actual).toHaveLength(expected.books.length);
-      actual.map(({bookId}, i) => {
+      expect(actual.writings).toHaveLength(expected.books.length);
+      expect(actual.hasPrevious).toBe(expected.hasPrevious);
+      expect(actual.hasNext).toBe(expected.hasNext);
+      expect(actual.count).toBe(expectedBooks.length);
+      actual.writings.map(({bookId}, i) => {
         expect(bookId).toBe(expected.books[i].id);
       });
     });

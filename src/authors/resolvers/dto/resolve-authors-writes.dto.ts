@@ -1,5 +1,6 @@
-import {ArgsType, Field, ID, InputType, Int} from '@nestjs/graphql';
+import {ArgsType, Field, ID, InputType, Int, ObjectType} from '@nestjs/graphql';
 import {OrderBy} from '../../../common/order-by.enum';
+import {WritingEntity} from '../../entities/writing.entity';
 
 @InputType()
 export class AuthorWritesArgsOrderBy {
@@ -23,4 +24,19 @@ export class AuthorWritesArgs {
     defaultValue: new AuthorWritesArgsOrderBy(),
   })
   orderBy!: AuthorWritesArgsOrderBy;
+}
+
+@ObjectType('AuthorWritesReturn')
+export class AuthorWritesReturnEntity {
+  @Field(() => [WritingEntity])
+  writings!: WritingEntity[];
+
+  @Field(() => Int)
+  count!: number;
+
+  @Field(() => Boolean)
+  hasPrevious!: boolean;
+
+  @Field(() => Boolean)
+  hasNext!: boolean;
 }
