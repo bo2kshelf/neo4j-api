@@ -1,14 +1,9 @@
 import {Field, ObjectType} from '@nestjs/graphql';
-import {BookEntity} from '../../books/entities/book.entity';
-import {AuthorEntity} from './author.entity';
 
 @ObjectType('Writing')
 export class WritingEntity {
-  @Field(() => AuthorEntity)
-  author!: AuthorEntity;
-
-  @Field(() => BookEntity)
-  book!: BookEntity;
+  authorId!: string;
+  bookId!: string;
 
   @Field(() => [String], {nullable: true})
   roles?: string[];

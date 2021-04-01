@@ -60,8 +60,8 @@ export class AuthorsService {
     );
     return result.records.map((record) => ({
       ...record.get('r').properties,
-      author: record.get('a').properties,
-      book: record.get('b').properties,
+      authorId: record.get('a').properties.id,
+      bookId: record.get('b').properties.id,
     }))[0];
   }
 
@@ -86,8 +86,8 @@ export class AuthorsService {
     );
     return result.records.map((record) => ({
       ...record.get('r').properties,
-      author: record.get('a').properties,
-      book: record.get('b').properties,
+      authorId: record.get('a').properties.id,
+      bookId: record.get('b').properties.id,
     }));
   }
 
@@ -110,8 +110,8 @@ export class AuthorsService {
     );
     return result.records.map((record) => ({
       ...record.get('r').properties,
-      author: record.get('a').properties,
-      book: record.get('b').properties,
+      authorId: record.get('a').properties.id,
+      bookId: record.get('b').properties.id,
     }));
   }
 }

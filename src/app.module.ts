@@ -2,6 +2,7 @@ import {Module} from '@nestjs/common';
 import {ConfigModule, ConfigType} from '@nestjs/config';
 import {GraphQLFederationModule} from '@nestjs/graphql';
 import {AuthorsModule} from './authors/authors.module';
+import {WritingsModule} from './authors/writings.module';
 import {BooksModule} from './books/books.module';
 import {Neo4jConfig} from './neo4j/neo4j.config';
 import {Neo4jModule} from './neo4j/neo4j.module';
@@ -26,6 +27,7 @@ import {UsersModule} from './users/users.module';
     }),
     BooksModule,
     AuthorsModule,
+    WritingsModule,
     SeriesModule,
     PublishersModule,
     UsersModule,
