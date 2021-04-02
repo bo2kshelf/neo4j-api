@@ -1,12 +1,7 @@
-import {Field, ObjectType} from '@nestjs/graphql';
-import {AuthorEntity} from '../../authors/entities/author.entity';
-import {SeriesEntity} from '../../series/entities/series.entity';
+import {ObjectType} from '@nestjs/graphql';
 
 @ObjectType('AuthorSeriesRelation')
 export class AuthorSeriesRelationEntity {
-  @Field(() => AuthorEntity)
-  author!: AuthorEntity;
-
-  @Field(() => SeriesEntity)
-  series!: SeriesEntity;
+  authorId!: string;
+  seriesId!: string;
 }

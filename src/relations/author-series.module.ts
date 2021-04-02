@@ -1,4 +1,6 @@
 import {Module} from '@nestjs/common';
+import {AuthorsModule} from '../authors/authors.module';
+import {SeriesModule} from '../series/series.module';
 import {
   AuthorsResolver,
   RelationResolver,
@@ -7,7 +9,7 @@ import {
 import {AuthorSeriesRelationsService} from './services/author-series.service';
 
 @Module({
-  imports: [],
+  imports: [AuthorsModule, SeriesModule],
   providers: [
     AuthorSeriesRelationsService,
     RelationResolver,
