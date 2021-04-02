@@ -1,5 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {int} from 'neo4j-driver';
+import {OrderBy} from '../../common/order-by.enum';
 import {Neo4jService} from '../../neo4j/neo4j.service';
 import {HaveBookRecordEntity} from '../entities/have-book-record.entity';
 import {ReadBookRecordEntity} from '../entities/read-book-record.entity';
@@ -21,97 +22,13 @@ export class UsersService {
     return result.records[0].get(0).properties;
   }
 
-  async readBook(
-    {bookId, userId}: {bookId: string; userId: string},
-    {date}: {date?: string},
-  ): Promise<ReadBookRecordEntity> {
-    return this.neo4jService
-      .read(
-        `
-        MATCH (b:Book {id: $bookId})
-        MERGE (u:User {id: $userId})
-        MERGE (u)-[r:READS]->(b)
-        RETURN *
-      `,
-        {userId, bookId},
-      )
-      .then((result) => ({
-        have: true,
-        user: result.records[0].get('u').properties,
-        book: result.records[0].get('b').properties,
-        ...result.records[0].get('r').properties,
-      }));
-  }
-
-  async setHaveBook(
-    {bookId, userId}: {bookId: string; userId: string},
-    {have}: {have: boolean},
-  ): Promise<HaveBookRecordEntity> {
-    return this.neo4jService
-      .read(
-        `
-        MATCH (b:Book {id: $bookId})
-        MERGE (u:User {id: $userId})
-        MERGE (u)-[r:HAS_BOOK {have: $have}]->(b)
-        RETURN *
-        `,
-        {userId, bookId, have},
-      )
-      .then((result) => ({
-        have,
-        user: result.records[0].get('u').properties,
-        book: result.records[0].get('b').properties,
-        ...result.records[0].get('r').properties,
-      }));
-  }
-
-  async isReadingBook(
-    {bookId, userId}: {bookId: string; userId: string},
-    {reading}: {reading: boolean},
-  ): Promise<ReadingBookRecordEntity> {
-    return this.neo4jService
-      .read(
-        `
-        MATCH (b:Book {id: $bookId})
-        MERGE (u:User {id: $userId})
-        MERGE (u)-[r:IS_READING_BOOK {reading: $reading}]->(b)
-        RETURN *
-        `,
-        {userId, bookId, reading},
-      )
-      .then((result) => ({
-        have: reading,
-        user: result.records[0].get('u').properties,
-        book: result.records[0].get('b').properties,
-        ...result.records[0].get('r').properties,
-      }));
-  }
-
-  async wishesToReadBook(
-    {bookId, userId}: {bookId: string; userId: string},
-    {wish}: {wish: boolean},
-  ): Promise<WishReadBookRecordEntity> {
-    return this.neo4jService
-      .read(
-        `
-        MATCH (b:Book {id: $bookId})
-        MERGE (u:User {id: $userId})
-        MERGE (u)-[r:WISHES_TO_READ_BOOK {wish: $wish}]->(b)
-        RETURN *
-        `,
-        {userId, bookId, wish},
-      )
-      .then((result) => ({
-        have: wish,
-        user: result.records[0].get('u').properties,
-        book: result.records[0].get('b').properties,
-        ...result.records[0].get('r').properties,
-      }));
-  }
-
   async getReadBooks(
     userId: string,
-    {skip, limit}: {skip: number; limit: number},
+    {
+      skip,
+      limit,
+      orderBy,
+    }: {skip: number; limit: number; orderBy: {date: OrderBy; title: OrderBy}},
   ): Promise<{
     count: number;
     hasNext: boolean;
@@ -121,18 +38,28 @@ export class UsersService {
     const records: ReadBookRecordEntity[] = await this.neo4jService
       .read(
         `
-      MATCH (u:User {id: $userId})
-      MATCH (u)-[r:READ_BOOK]->(b:Book)
-      RETURN *
-      SKIP $skip LIMIT $limit
+        MATCH (u:User {id: $userId})
+        CALL {
+            MATCH (u)-[r:READ_BOOK]->(b:Book)
+            WHERE r.recentReadAt IS NOT NULL
+            RETURN r,b
+            ORDER BY r.recentReadAt ${orderBy.date}, b.title ${orderBy.title}
+            UNION
+            MATCH (u)-[r:READ_BOOK]->(b:Book)
+            WHERE r.recentReadAt IS NULL
+            RETURN r,b
+            ORDER BY b.title ${orderBy.title}
+        }
+        RETURN u.id AS u, b.id AS b, toString(r.recentReadAt) AS recentReadAt
+        SKIP $skip LIMIT $limit
       `,
         {userId, skip: int(skip), limit: int(limit)},
       )
       .then((result) =>
         result.records.map((record) => ({
-          user: record.get('u').properties,
-          book: record.get('b').properties,
-          ...record.get('r').properties,
+          userId: record.get('u'),
+          bookId: record.get('b'),
+          recentReadAt: record.get('recentReadAt'),
         })),
       );
     const meta: {
@@ -142,7 +69,7 @@ export class UsersService {
     } = await this.neo4jService
       .read(
         `
-        MATCH p=(:User {id: $userId})-[:READ_BOOK]->()
+        MATCH p=(:User {id: $userId})-[:READ_BOOK]->(:Book)
         WITH count(p) AS count
         RETURN count, 0 < count AND 0 < $skip AS previous, $skip + $limit < count AS next
       `,
@@ -177,8 +104,8 @@ export class UsersService {
       )
       .then((result) =>
         result.records.map((record) => ({
-          user: record.get('u').properties,
-          book: record.get('b').properties,
+          userId: record.get('u').properties.id,
+          bookId: record.get('b').properties.id,
           ...record.get('r').properties,
         })),
       );
@@ -224,8 +151,8 @@ export class UsersService {
       )
       .then((result) =>
         result.records.map((record) => ({
-          user: record.get('u').properties,
-          book: record.get('b').properties,
+          userId: record.get('u').properties.id,
+          bookId: record.get('b').properties.id,
           ...record.get('r').properties,
         })),
       );
@@ -271,8 +198,8 @@ export class UsersService {
       )
       .then((result) =>
         result.records.map((record) => ({
-          user: record.get('u').properties,
-          book: record.get('b').properties,
+          userId: record.get('u').properties.id,
+          bookId: record.get('b').properties.id,
           ...record.get('r').properties,
         })),
       );
@@ -344,5 +271,92 @@ export class UsersService {
         hasPrevious: result.records[0].get('previous'),
       }));
     return {records, ...meta};
+  }
+
+  async readBook(
+    {bookId, userId}: {bookId: string; userId: string},
+    {date}: {date?: string},
+  ): Promise<ReadBookRecordEntity> {
+    return this.neo4jService
+      .read(
+        `
+        MATCH (b:Book {id: $bookId})
+        MERGE (u:User {id: $userId})
+        MERGE (u)-[r:READ_BOOK]->(b)
+        RETURN *
+      `,
+        {userId, bookId},
+      )
+      .then((result) => ({
+        userId: result.records[0].get('u').properties.id,
+        bookId: result.records[0].get('b').properties.id,
+        ...result.records[0].get('r').properties,
+      }));
+  }
+
+  async setHaveBook(
+    {bookId, userId}: {bookId: string; userId: string},
+    {have}: {have: boolean},
+  ): Promise<HaveBookRecordEntity> {
+    return this.neo4jService
+      .read(
+        `
+        MATCH (b:Book {id: $bookId})
+        MERGE (u:User {id: $userId})
+        MERGE (u)-[r:HAS_BOOK {have: $have}]->(b)
+        RETURN *
+        `,
+        {userId, bookId, have},
+      )
+      .then((result) => ({
+        have,
+        user: result.records[0].get('u').properties,
+        book: result.records[0].get('b').properties,
+        ...result.records[0].get('r').properties,
+      }));
+  }
+
+  async setReadingBook(
+    {bookId, userId}: {bookId: string; userId: string},
+    {reading}: {reading: boolean},
+  ): Promise<ReadingBookRecordEntity> {
+    return this.neo4jService
+      .read(
+        `
+        MATCH (b:Book {id: $bookId})
+        MERGE (u:User {id: $userId})
+        MERGE (u)-[r:IS_READING_BOOK {reading: $reading}]->(b)
+        RETURN *
+        `,
+        {userId, bookId, reading},
+      )
+      .then((result) => ({
+        have: reading,
+        user: result.records[0].get('u').properties,
+        book: result.records[0].get('b').properties,
+        ...result.records[0].get('r').properties,
+      }));
+  }
+
+  async setWishReadBook(
+    {bookId, userId}: {bookId: string; userId: string},
+    {wish}: {wish: boolean},
+  ): Promise<WishReadBookRecordEntity> {
+    return this.neo4jService
+      .read(
+        `
+        MATCH (b:Book {id: $bookId})
+        MERGE (u:User {id: $userId})
+        MERGE (u)-[r:WISHES_TO_READ_BOOK {wish: $wish}]->(b)
+        RETURN *
+        `,
+        {userId, bookId, wish},
+      )
+      .then((result) => ({
+        have: wish,
+        user: result.records[0].get('u').properties,
+        book: result.records[0].get('b').properties,
+        ...result.records[0].get('r').properties,
+      }));
   }
 }

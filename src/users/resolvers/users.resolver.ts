@@ -113,7 +113,7 @@ export class UsersResolver {
     @Args({type: () => SetReadingBookArgs})
     {bookId, userId, ...props}: SetReadingBookArgs,
   ) {
-    return this.usersService.isReadingBook({bookId, userId}, props);
+    return this.usersService.setReadingBook({bookId, userId}, props);
   }
 
   @Mutation(() => HaveBookRecordEntity)
@@ -125,10 +125,10 @@ export class UsersResolver {
   }
 
   @Mutation(() => WishReadBookRecordEntity)
-  async setWishReadBooks(
+  async setWishReadBook(
     @Args({type: () => SetWishReadBookArgs})
     {bookId, userId, ...props}: SetWishReadBookArgs,
   ) {
-    return this.usersService.wishesToReadBook({bookId, userId}, props);
+    return this.usersService.setWishReadBook({bookId, userId}, props);
   }
 }
