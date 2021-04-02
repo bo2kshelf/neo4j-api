@@ -2,7 +2,6 @@ version: '3.8'
 
 services:
   neo4j-api-test-neo4j:
-    restart: always
     image: neo4j:4.2@sha256:7ac9387fd60c7fc2f2b983567dd838e181de40fb99c8c6aec6147b6699012dfb
     ports:
       - published: $NEO4J_TEST_NEO4J_HTTP_PORT
