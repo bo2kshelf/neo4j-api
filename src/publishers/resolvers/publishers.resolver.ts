@@ -65,6 +65,6 @@ export class PublishersResolver {
     @Args({type: () => ConnectBookToPublisherArgs})
     args: ConnectBookToPublisherArgs,
   ): Promise<PublicationEntity> {
-    return this.publishersService.publishes(args);
+    return this.publishersService.publishedBook(args);
   }
 }

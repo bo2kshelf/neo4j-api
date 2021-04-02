@@ -18,7 +18,7 @@ export class PublicationsResolver {
   }
 
   @ResolveField(() => PublisherEntity)
-  async author(
+  async publisher(
     @Parent() {publisherId}: PublicationEntity,
   ): Promise<PublisherEntity> {
     return this.publishersService.findById(publisherId);

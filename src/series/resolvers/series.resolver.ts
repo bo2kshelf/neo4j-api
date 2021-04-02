@@ -14,9 +14,9 @@ import {AddBookToSeriesArgs} from './dto/add-book-to-series.dto';
 import {CreateSeriesArgs} from './dto/create-series.dto';
 import {GetSeriesArgs} from './dto/get-series.dto';
 import {
-  ResolveSeriesPartsArgs,
-  ResolveSeriesPartsReturnEntity,
-} from './dto/resolve-series-parts.dto';
+  ResolveSeriesConsistsOfArgs,
+  ResolveSeriesConsistsOfReturnEntity,
+} from './dto/resolve-series-consists-of.dto';
 
 @Resolver(() => SeriesEntity)
 export class SeriesResolver {
@@ -27,12 +27,12 @@ export class SeriesResolver {
     return this.seriesService.findById(reference.id);
   }
 
-  @ResolveField(() => ResolveSeriesPartsReturnEntity)
-  async parts(
+  @ResolveField(() => ResolveSeriesConsistsOfReturnEntity)
+  async consistsOf(
     @Parent() {id: seriesId}: SeriesEntity,
-    @Args({type: () => ResolveSeriesPartsArgs})
-    args: ResolveSeriesPartsArgs,
-  ): Promise<ResolveSeriesPartsReturnEntity> {
+    @Args({type: () => ResolveSeriesConsistsOfArgs})
+    args: ResolveSeriesConsistsOfArgs,
+  ): Promise<ResolveSeriesConsistsOfReturnEntity> {
     return this.seriesService.getPartsFromSeries(seriesId, args);
   }
 

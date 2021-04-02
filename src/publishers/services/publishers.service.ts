@@ -43,7 +43,7 @@ export class PublishersService {
     return result.records[0].get(0).properties;
   }
 
-  async publishes({
+  async publishedBook({
     bookId,
     publisherId,
   }: {

@@ -2,8 +2,8 @@ import {ArgsType, Field, ID, InputType, Int, ObjectType} from '@nestjs/graphql';
 import {OrderBy} from '../../../common/order-by.enum';
 import {SeriesPartEntity} from '../../entities/series-part.entity';
 
-@InputType()
-export class ResolveSeriesPartsArgsOrderBy {
+@InputType('SeriesConsistsOfArgsOrderBy')
+export class ResolveSeriesConsistsOfArgsOrderBy {
   @Field(() => OrderBy, {nullable: true, defaultValue: OrderBy.ASC})
   order: OrderBy = OrderBy.ASC;
 
@@ -12,24 +12,24 @@ export class ResolveSeriesPartsArgsOrderBy {
 }
 
 @ArgsType()
-export class ResolveSeriesPartsArgs {
+export class ResolveSeriesConsistsOfArgs {
   @Field(() => Int, {nullable: true, defaultValue: 0})
   skip!: number;
 
   @Field(() => Int, {nullable: true, defaultValue: 0})
   limit!: number;
 
-  @Field(() => ResolveSeriesPartsArgsOrderBy, {
+  @Field(() => ResolveSeriesConsistsOfArgsOrderBy, {
     nullable: true,
   })
-  orderBy: ResolveSeriesPartsArgsOrderBy = new ResolveSeriesPartsArgsOrderBy();
+  orderBy: ResolveSeriesConsistsOfArgsOrderBy = new ResolveSeriesConsistsOfArgsOrderBy();
 
   @Field(() => [ID!], {nullable: true})
   except: string[] = [];
 }
 
-@ObjectType('SeriesPartsReturn')
-export class ResolveSeriesPartsReturnEntity {
+@ObjectType('SeriesConsistsOfReturn')
+export class ResolveSeriesConsistsOfReturnEntity {
   @Field(() => [SeriesPartEntity])
   parts!: SeriesPartEntity[];
 

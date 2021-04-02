@@ -2,7 +2,7 @@ import {Args, Parent, ResolveField, Resolver} from '@nestjs/graphql';
 import {BookEntity} from '../../books/entities/book.entity';
 import {WritingEntity} from '../entities/writing.entity';
 import {AuthorsService} from '../services/authors.service';
-import {BookWritedByArgs} from './dto/resolve-books-writed-by.dto';
+import {ResolveBookWritedByArgs} from './dto/resolve-books-writed-by.dto';
 
 @Resolver(() => BookEntity)
 export class BooksResolver {
@@ -11,7 +11,7 @@ export class BooksResolver {
   @ResolveField(() => [WritingEntity])
   async writedBy(
     @Parent() book: BookEntity,
-    @Args({type: () => BookWritedByArgs}) args: BookWritedByArgs,
+    @Args({type: () => ResolveBookWritedByArgs}) args: ResolveBookWritedByArgs,
   ): Promise<WritingEntity[]> {
     return this.authorsService.getWritingFromBook(book.id, args);
   }

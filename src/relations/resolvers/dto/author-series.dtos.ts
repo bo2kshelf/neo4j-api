@@ -62,7 +62,7 @@ export class ResolveSeriesRelatedAuthorsReturn {
   hasNext!: boolean;
 }
 
-@InputType()
+@InputType('AuthorsRelatedSeriesArgsOrderBy')
 export class ResolveAuthorsRelatedSeriesArgsOrderBy {
   @Field(() => OrderBy, {nullable: true, defaultValue: OrderBy.ASC})
   title!: OrderBy;

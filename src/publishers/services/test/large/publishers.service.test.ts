@@ -113,7 +113,7 @@ describe(PublishersService.name, () => {
     });
   });
 
-  describe('publishes()', () => {
+  describe('publishedBook()', () => {
     const expectedPublisher = {id: 'publisher1', name: faker.lorem.words(2)};
     const expectedBook = {id: 'book1', title: faker.lorem.words(2)};
 
@@ -128,7 +128,7 @@ describe(PublishersService.name, () => {
     });
 
     it('正常な動作', async () => {
-      const actual = await publishersService.publishes({
+      const actual = await publishersService.publishedBook({
         publisherId: expectedPublisher.id,
         bookId: expectedBook.id,
       });

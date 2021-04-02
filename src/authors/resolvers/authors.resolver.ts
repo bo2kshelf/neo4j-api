@@ -13,8 +13,8 @@ import {AuthorsService} from '../services/authors.service';
 import {CreateAuthorArgs} from './dto/create-author.dto';
 import {GetAuthorArgs} from './dto/get-author.dto';
 import {
-  AuthorWritesArgs,
-  AuthorWritesReturnEntity,
+  ResolveAuthorWritesArgs,
+  ResolveAuthorWritesReturnEntity,
 } from './dto/resolve-authors-writes.dto';
 import {WritedBookArgs} from './dto/writed-book.dto';
 
@@ -27,11 +27,11 @@ export class AuthorsResolver {
     return this.authorsService.findById(reference.id);
   }
 
-  @ResolveField(() => AuthorWritesReturnEntity)
-  async writes(
+  @ResolveField(() => ResolveAuthorWritesReturnEntity)
+  async writed(
     @Parent() {id}: AuthorEntity,
-    @Args({type: () => AuthorWritesArgs}) args: AuthorWritesArgs,
-  ): Promise<AuthorWritesReturnEntity> {
+    @Args({type: () => ResolveAuthorWritesArgs}) args: ResolveAuthorWritesArgs,
+  ): Promise<ResolveAuthorWritesReturnEntity> {
     return this.authorsService.getWritingFromAuthor(id, args);
   }
 
