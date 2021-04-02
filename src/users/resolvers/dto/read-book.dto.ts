@@ -9,6 +9,6 @@ export class ReadBookArgs {
   @Field(() => ID)
   bookId!: string;
 
-  @Field(() => LocalDateResolver)
-  date!: string;
+  @Field(() => LocalDateResolver, {nullable: true, defaultValue: undefined})
+  date?: string;
 }

@@ -1,7 +1,7 @@
 import {ArgsType, Field, ID} from '@nestjs/graphql';
 
 @ArgsType()
-export class WishesToReadBookArgs {
+export class SetWishReadBookArgs {
   @Field(() => ID)
   userId!: string;
 

@@ -1,106 +1,134 @@
-import {Args, Mutation, Parent, ResolveField, Resolver} from '@nestjs/graphql';
 import {
-  HaveBooksPayloadEntity,
-  ReadBooksPayloadEntity,
-  ReadingBooksPayloadEntity,
-  StackedBooksPayloadEntity,
-  WishReadBooksPayloadEntity,
-} from '../entities/payload.entities';
-import {
-  HaveBookRecordEntity,
-  ReadBookRecordEntity,
-  ReadingBookRecordEntity,
-  WishReadBookRecordEntity,
-} from '../entities/record.entities';
+  Args,
+  ArgsType,
+  Field,
+  ID,
+  Mutation,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver,
+} from '@nestjs/graphql';
+import {HaveBookRecordEntity} from '../entities/have-book-record.entity';
+import {ReadBookRecordEntity} from '../entities/read-book-record.entity';
+import {ReadingBookRecordEntity} from '../entities/reading-book-record.entity';
 import {UserEntity} from '../entities/users.entity';
+import {WishReadBookRecordEntity} from '../entities/wish-read-book-record.entity';
 import {UsersService} from '../services/users.service';
-import {HasBookArgs} from './dto/has-book.dto';
-import {IsReadingBookArgs} from './dto/is-reading-book.dto';
 import {ReadBookArgs} from './dto/read-book.dto';
-import {ResolveUserHaveBooksArgs} from './dto/resolve-user-have-books.dto';
-import {ResolveUserReadBooksArgs} from './dto/resolve-user-read-books.dto';
-import {ResolveUserReadingBooksArgs} from './dto/resolve-user-reading-books.dto';
-import {ResolveUserStackedBooksArgs} from './dto/resolve-user-stacked-books.dto';
-import {UserWishBooksArgs} from './dto/resolve-user-wish-books.dto';
-import {WishesToReadBookArgs} from './dto/wishes-to-read-book.dto';
+import {
+  ResolveUsersHasBooksArgs,
+  ResolveUsersHasBooksReturnEntity,
+} from './dto/resolve-users-has-books.dto';
+import {
+  ResolveUsersReadBooksArgs,
+  ResolveUsersReadBooksReturnEntity,
+} from './dto/resolve-users-read-books.dto';
+import {
+  ResolveUsersReadingBooksArgs,
+  ResolveUsersReadingBooksReturnEntity,
+} from './dto/resolve-users-reading-books.dto';
+import {
+  ResolveUsersStackedBooksArgs,
+  ResolveUsersStackedBooksReturnEntity,
+} from './dto/resolve-users-stacked-books.dto';
+import {
+  ResolveUsersWishesReadBooksArgs,
+  ResolveUsersWishesReadBooksReturnEntity,
+} from './dto/resolve-users-wishes-read-books.dto';
+import {SetHaveBookArgs} from './dto/set-have-book.dto';
+import {SetReadingBookArgs} from './dto/set-reading-book.dto';
+import {SetWishReadBookArgs} from './dto/set-wish-read-book';
+
+@ArgsType()
+export class GetUserArgs {
+  @Field(() => ID)
+  id!: string;
+}
 
 @Resolver(() => UserEntity)
 export class UsersResolver {
   constructor(private readonly usersService: UsersService) {}
 
-  @ResolveField(() => ReadBooksPayloadEntity)
+  @Query(() => UserEntity)
+  async user(@Args({type: () => GetUserArgs}) {id}: GetUserArgs) {
+    return this.usersService.findById(id);
+  }
+
+  @ResolveField(() => ResolveUsersReadBooksReturnEntity)
   async readBooks(
     @Parent() {id: userId}: UserEntity,
-    @Args({type: () => ResolveUserReadBooksArgs})
-    args: ResolveUserReadBooksArgs,
-  ): Promise<ReadBooksPayloadEntity> {
+    @Args({type: () => ResolveUsersReadBooksArgs})
+    args: ResolveUsersReadBooksArgs,
+  ): Promise<ResolveUsersReadBooksReturnEntity> {
     return this.usersService.getReadBooks(userId, args);
   }
 
-  @ResolveField(() => ReadingBooksPayloadEntity)
+  @ResolveField(() => ResolveUsersReadingBooksReturnEntity)
   async readingBooks(
     @Parent() {id: userId}: UserEntity,
-    @Args({type: () => ResolveUserReadingBooksArgs})
-    args: ResolveUserReadingBooksArgs,
-  ): Promise<ReadingBooksPayloadEntity> {
+    @Args({type: () => ResolveUsersReadingBooksArgs})
+    args: ResolveUsersReadingBooksArgs,
+  ): Promise<ResolveUsersReadingBooksReturnEntity> {
     return this.usersService.getReadingBooks(userId, args);
   }
 
-  @ResolveField(() => HaveBooksPayloadEntity)
-  async haveBooks(
+  @ResolveField(() => ResolveUsersHasBooksReturnEntity)
+  async hasBooks(
     @Parent() {id: userId}: UserEntity,
-    @Args({type: () => ResolveUserHaveBooksArgs})
-    args: ResolveUserHaveBooksArgs,
-  ): Promise<HaveBooksPayloadEntity> {
+    @Args({type: () => ResolveUsersHasBooksArgs})
+    args: ResolveUsersHasBooksArgs,
+  ): Promise<ResolveUsersHasBooksReturnEntity> {
     return this.usersService.getHaveBooks(userId, args);
   }
 
-  @ResolveField(() => WishReadBooksPayloadEntity)
-  async wishReadBooks(
+  @ResolveField(() => ResolveUsersWishesReadBooksReturnEntity)
+  async wishesReadBooks(
     @Parent() {id: userId}: UserEntity,
-    @Args({type: () => UserWishBooksArgs}) args: UserWishBooksArgs,
-  ): Promise<WishReadBooksPayloadEntity> {
+    @Args({type: () => ResolveUsersWishesReadBooksArgs})
+    args: ResolveUsersWishesReadBooksArgs,
+  ): Promise<ResolveUsersWishesReadBooksReturnEntity> {
     return this.usersService.getWishesToReadBook(userId, args);
   }
 
-  @ResolveField(() => StackedBooksPayloadEntity)
+  @ResolveField(() => ResolveUsersStackedBooksReturnEntity)
   async stackedBooks(
     @Parent() {id: userId}: UserEntity,
-    @Args({type: () => ResolveUserStackedBooksArgs})
-    args: ResolveUserStackedBooksArgs,
-  ): Promise<StackedBooksPayloadEntity> {
+    @Args({type: () => ResolveUsersStackedBooksArgs})
+    args: ResolveUsersStackedBooksArgs,
+  ): Promise<ResolveUsersStackedBooksReturnEntity> {
     return this.usersService.getStackedBooks(userId, args);
   }
 
   @Mutation(() => ReadBookRecordEntity)
   async readBook(
     @Args({type: () => ReadBookArgs})
-    args: ReadBookArgs,
+    {bookId, userId, ...props}: ReadBookArgs,
   ) {
-    return this.usersService.readBook(args);
+    return this.usersService.readBook({bookId, userId}, props);
   }
 
   @Mutation(() => ReadingBookRecordEntity)
-  async isReadingBook(
-    @Args({type: () => IsReadingBookArgs})
-    args: IsReadingBookArgs,
+  async setReadingBook(
+    @Args({type: () => SetReadingBookArgs})
+    {bookId, userId, ...props}: SetReadingBookArgs,
   ) {
-    return this.usersService.isReadingBook(args);
+    return this.usersService.isReadingBook({bookId, userId}, props);
   }
 
   @Mutation(() => HaveBookRecordEntity)
-  async hasBook(
-    @Args({type: () => HasBookArgs})
-    args: HasBookArgs,
+  async setHaveBook(
+    @Args({type: () => SetHaveBookArgs})
+    {bookId, userId, ...props}: SetHaveBookArgs,
   ) {
-    return this.usersService.hasBook(args);
+    return this.usersService.setHaveBook({bookId, userId}, props);
   }
 
   @Mutation(() => WishReadBookRecordEntity)
-  async wishesToReadBook(
-    @Args({type: () => WishesToReadBookArgs})
-    args: WishesToReadBookArgs,
+  async setWishReadBooks(
+    @Args({type: () => SetWishReadBookArgs})
+    {bookId, userId, ...props}: SetWishReadBookArgs,
   ) {
-    return this.usersService.wishesToReadBook(args);
+    return this.usersService.wishesToReadBook({bookId, userId}, props);
   }
 }
