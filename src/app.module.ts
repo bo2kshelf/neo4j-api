@@ -6,6 +6,7 @@ import {WritingsModule} from './authors/writings.module';
 import {BooksModule} from './books/books.module';
 import {Neo4jConfig} from './neo4j/neo4j.config';
 import {Neo4jModule} from './neo4j/neo4j.module';
+import {PublicationsModule} from './publishers/publications.module';
 import {PublishersModule} from './publishers/publishers.module';
 import {AuthorSeriesRelationsModule} from './relations/author-series.module';
 import {SeriesPartModule} from './series/series-part.module';
@@ -32,6 +33,7 @@ import {UsersModule} from './users/users.module';
     SeriesModule,
     SeriesPartModule,
     PublishersModule,
+    PublicationsModule,
     UsersModule,
     AuthorSeriesRelationsModule,
   ],

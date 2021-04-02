@@ -13,7 +13,10 @@ import {PublishersService} from '../services/publishers.service';
 import {CreatePublisherArgs} from './dto/create-publisher.dto';
 import {GetPublisherArgs} from './dto/get-publisher.dto';
 import {ConnectBookToPublisherArgs} from './dto/published-book.dto';
-import {ResolvePublicationsArgs} from './dto/resolve-publisher-publications.dto';
+import {
+  PublishersPublicationsReturnEntity,
+  ResolvePublishersPublicationsArgs,
+} from './dto/resolve-publishers-publications.dto';
 
 @Resolver(() => PublisherEntity)
 export class PublishersResolver {
@@ -24,12 +27,12 @@ export class PublishersResolver {
     return this.publishersService.findById(reference.id);
   }
 
-  @ResolveField(() => [PublicationEntity])
+  @ResolveField(() => PublishersPublicationsReturnEntity)
   async publications(
     @Parent() {id: publisherId}: PublisherEntity,
-    @Args({type: () => ResolvePublicationsArgs})
-    args: ResolvePublicationsArgs,
-  ): Promise<PublicationEntity[]> {
+    @Args({type: () => ResolvePublishersPublicationsArgs})
+    args: ResolvePublishersPublicationsArgs,
+  ): Promise<PublishersPublicationsReturnEntity> {
     return this.publishersService.getPublicationsFromPublisher(
       publisherId,
       args,
@@ -62,6 +65,6 @@ export class PublishersResolver {
     @Args({type: () => ConnectBookToPublisherArgs})
     args: ConnectBookToPublisherArgs,
   ): Promise<PublicationEntity> {
-    return this.publishersService.connectBookToPublisher(args);
+    return this.publishersService.publishes(args);
   }
 }

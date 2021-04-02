@@ -1,12 +1,7 @@
-import {Field, ObjectType} from '@nestjs/graphql';
-import {BookEntity} from '../../books/entities/book.entity';
-import {PublisherEntity} from './publisher.entity';
+import {ObjectType} from '@nestjs/graphql';
 
 @ObjectType('Publication')
 export class PublicationEntity {
-  @Field(() => PublisherEntity)
-  publisher!: PublisherEntity;
-
-  @Field(() => BookEntity)
-  book!: BookEntity;
+  publisherId!: string;
+  bookId!: string;
 }
