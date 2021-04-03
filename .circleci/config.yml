@@ -11,13 +11,6 @@ commands:
       - run: yarn install --immutable --immutable-cache
 
 jobs:
-  check-yarn-cache:
-    docker:
-      - image: circleci/node:14.16.0
-    steps:
-      - checkout
-      - run: yarn install --check-cache
-
   build:
     docker:
       - image: cimg/node:14.16.0
@@ -155,7 +148,6 @@ workflows:
   version: 2
   develop:
     jobs:
-      - check-yarn-cache
       - lint-eslint
       - lint-prettier
       - docker/hadolint:
@@ -187,7 +179,6 @@ workflows:
             - ghcr
           requires:
             - docker/hadolint
-            - check-yarn-cache
             - build
           filters:
             branches:
@@ -200,7 +191,6 @@ workflows:
             - ghcr
           requires:
             - docker/hadolint
-            - check-yarn-cache
             - build
           filters:
             branches:
