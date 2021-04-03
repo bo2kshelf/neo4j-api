@@ -1,14 +1,4 @@
-import {
-  Args,
-  ArgsType,
-  Field,
-  ID,
-  Mutation,
-  Parent,
-  Query,
-  ResolveField,
-  Resolver,
-} from '@nestjs/graphql';
+import {Args, Mutation, Parent, ResolveField, Resolver} from '@nestjs/graphql';
 import {HaveBookRecordEntity} from '../entities/have-book-record.entity';
 import {ReadBookRecordEntity} from '../entities/read-book-record.entity';
 import {ReadingBookRecordEntity} from '../entities/reading-book-record.entity';
@@ -40,21 +30,9 @@ import {SetHaveBookArgs} from './dto/set-have-book.dto';
 import {SetReadingBookArgs} from './dto/set-reading-book.dto';
 import {SetWishReadBookArgs} from './dto/set-wish-read-book';
 
-@ArgsType()
-export class GetUserArgs {
-  @Field(() => ID)
-  id!: string;
-}
-
 @Resolver(() => UserEntity)
 export class UsersResolver {
   constructor(private readonly usersService: UsersService) {}
-
-  @Query(() => UserEntity)
-  async user(@Args({type: () => GetUserArgs}) {id}: GetUserArgs) {
-    return this.usersService.findById(id);
-  }
-
   @ResolveField(() => ResolveUsersReadBooksReturnEntity)
   async readBooks(
     @Parent() {id: userId}: UserEntity,
