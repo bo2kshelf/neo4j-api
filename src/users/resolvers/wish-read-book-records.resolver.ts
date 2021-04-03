@@ -12,7 +12,7 @@ export class WishReadBookRecordResolver {
     private readonly booksService: BooksService,
   ) {}
 
-  @ResolveField(() => BookEntity)
+  @ResolveField(() => UserEntity)
   async user(
     @Parent() {userId}: WishReadBookRecordEntity,
   ): Promise<UserEntity> {
