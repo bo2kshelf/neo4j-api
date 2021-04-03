@@ -336,4 +336,208 @@ describe(UsersService.name, () => {
       expect(actual.records[4].bookId).toBe('book5');
     });
   });
+
+  describe('setHaveBook()', () => {
+    const expectedUser = {id: 'user1'};
+    const expectedBook = {id: 'book1'};
+
+    it.each([
+      [
+        {have: true},
+        {
+          userId: expectedUser.id,
+          bookId: expectedBook.id,
+          have: true,
+          updatedAt: expect.any(Date),
+        },
+      ],
+      [
+        {have: false},
+        {
+          userId: expectedUser.id,
+          bookId: expectedBook.id,
+          have: false,
+          updatedAt: expect.any(Date),
+        },
+      ],
+    ])('Userが既に存在する場合 %p', async (props, expected) => {
+      await neo4jService.write(`CREATE (n:User) SET n=$expected RETURN *`, {
+        expected: expectedUser,
+      });
+      await neo4jService.write(`CREATE (n:Book) SET n=$expected RETURN *`, {
+        expected: expectedBook,
+      });
+      const actual = await usersService.setHaveBook(
+        {userId: expectedUser.id, bookId: expectedBook.id},
+        props,
+      );
+      expect(actual).toStrictEqual(expected);
+    });
+
+    it.each([
+      [
+        {have: true},
+        {
+          userId: expectedUser.id,
+          bookId: expectedBook.id,
+          have: true,
+          updatedAt: expect.any(Date),
+        },
+      ],
+      [
+        {have: false},
+        {
+          userId: expectedUser.id,
+          bookId: expectedBook.id,
+          have: false,
+          updatedAt: expect.any(Date),
+        },
+      ],
+    ])('Userが存在しない場合はMERGEで生成する %p', async (props, expected) => {
+      await neo4jService.write(`CREATE (n:Book) SET n=$expected RETURN *`, {
+        expected: expectedBook,
+      });
+      const actual = await usersService.setHaveBook(
+        {userId: expectedUser.id, bookId: expectedBook.id},
+        props,
+      );
+      expect(actual).toStrictEqual(expected);
+    });
+  });
+
+  describe('setReadingBook()', () => {
+    const expectedUser = {id: 'user1'};
+    const expectedBook = {id: 'book1'};
+
+    it.each([
+      [
+        {reading: true},
+        {
+          userId: expectedUser.id,
+          bookId: expectedBook.id,
+          reading: true,
+          updatedAt: expect.any(Date),
+        },
+      ],
+      [
+        {reading: false},
+        {
+          userId: expectedUser.id,
+          bookId: expectedBook.id,
+          reading: false,
+          updatedAt: expect.any(Date),
+        },
+      ],
+    ])('Userが既に存在する場合 %p', async (props, expected) => {
+      await neo4jService.write(`CREATE (n:User) SET n=$expected RETURN *`, {
+        expected: expectedUser,
+      });
+      await neo4jService.write(`CREATE (n:Book) SET n=$expected RETURN *`, {
+        expected: expectedBook,
+      });
+      const actual = await usersService.setReadingBook(
+        {userId: expectedUser.id, bookId: expectedBook.id},
+        props,
+      );
+      expect(actual).toStrictEqual(expected);
+    });
+
+    it.each([
+      [
+        {reading: true},
+        {
+          userId: expectedUser.id,
+          bookId: expectedBook.id,
+          reading: true,
+          updatedAt: expect.any(Date),
+        },
+      ],
+      [
+        {reading: false},
+        {
+          userId: expectedUser.id,
+          bookId: expectedBook.id,
+          reading: false,
+          updatedAt: expect.any(Date),
+        },
+      ],
+    ])('Userが存在しない場合はMERGEで生成する %p', async (props, expected) => {
+      await neo4jService.write(`CREATE (n:Book) SET n=$expected RETURN *`, {
+        expected: expectedBook,
+      });
+      const actual = await usersService.setReadingBook(
+        {userId: expectedUser.id, bookId: expectedBook.id},
+        props,
+      );
+      expect(actual).toStrictEqual(expected);
+    });
+  });
+
+  describe('setWishReadBook()', () => {
+    const expectedUser = {id: 'user1'};
+    const expectedBook = {id: 'book1'};
+
+    it.each([
+      [
+        {wish: true},
+        {
+          userId: expectedUser.id,
+          bookId: expectedBook.id,
+          wish: true,
+          updatedAt: expect.any(Date),
+        },
+      ],
+      [
+        {wish: false},
+        {
+          userId: expectedUser.id,
+          bookId: expectedBook.id,
+          wish: false,
+          updatedAt: expect.any(Date),
+        },
+      ],
+    ])('Userが既に存在する場合 %p', async (props, expected) => {
+      await neo4jService.write(`CREATE (n:User) SET n=$expected RETURN *`, {
+        expected: expectedUser,
+      });
+      await neo4jService.write(`CREATE (n:Book) SET n=$expected RETURN *`, {
+        expected: expectedBook,
+      });
+      const actual = await usersService.setWishReadBook(
+        {userId: expectedUser.id, bookId: expectedBook.id},
+        props,
+      );
+      expect(actual).toStrictEqual(expected);
+    });
+
+    it.each([
+      [
+        {wish: true},
+        {
+          userId: expectedUser.id,
+          bookId: expectedBook.id,
+          wish: true,
+          updatedAt: expect.any(Date),
+        },
+      ],
+      [
+        {wish: false},
+        {
+          userId: expectedUser.id,
+          bookId: expectedBook.id,
+          wish: false,
+          updatedAt: expect.any(Date),
+        },
+      ],
+    ])('Userが存在しない場合はMERGEで生成する %p', async (props, expected) => {
+      await neo4jService.write(`CREATE (n:Book) SET n=$expected RETURN *`, {
+        expected: expectedBook,
+      });
+      const actual = await usersService.setWishReadBook(
+        {userId: expectedUser.id, bookId: expectedBook.id},
+        props,
+      );
+      expect(actual).toStrictEqual(expected);
+    });
+  });
 });
