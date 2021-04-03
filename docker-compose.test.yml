@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   neo4j-api-test-neo4j:
-    image: neo4j:4.2@sha256:7ac9387fd60c7fc2f2b983567dd838e181de40fb99c8c6aec6147b6699012dfb
+    image: neo4j:4.2@sha256:44ae8c7bb6d605bea1f34c0f2457f45a1120b9054b3e501d942686d21e597061
     ports:
       - published: $NEO4J_TEST_NEO4J_HTTP_PORT
         target: 7474
