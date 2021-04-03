@@ -10,5 +10,5 @@ export class ReadBookArgs {
   bookId!: string;
 
   @Field(() => LocalDateResolver, {nullable: true, defaultValue: undefined})
-  date?: string;
+  readAt?: string;
 }

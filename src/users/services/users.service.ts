@@ -42,7 +42,7 @@ export class UsersService {
         CALL {
             MATCH (u)-[r:READ_BOOK]->(b:Book)
             WHERE r.readAt IS NOT NULL
-            WITH r,b,reverse(apoc.coll.sort(r.readAt))[0] AS latest
+            WITH r,b,head(reverse(apoc.coll.sort(r.readAt))) AS latest
             RETURN r,b
             ORDER BY latest ${orderBy.date}, b.title ${orderBy.title}
             UNION
@@ -51,7 +51,7 @@ export class UsersService {
             RETURN r,b
             ORDER BY b.title ${orderBy.title}
         }
-        RETURN u.id AS u, b.id AS b, toString(reverse(apoc.coll.sort(r.readAt))[0]) AS latest
+        RETURN u.id AS u, b.id AS b, r.readAt AS readAt, toString(head(reverse(apoc.coll.sort(r.readAt)))) AS latest
         SKIP $skip LIMIT $limit
       `,
         {userId, skip: int(skip), limit: int(limit)},
@@ -60,6 +60,7 @@ export class UsersService {
         result.records.map((record) => ({
           userId: record.get('u'),
           bookId: record.get('b'),
+          readAt: record.get('readAt'),
           latestReadAt: record.get('latest'),
         })),
       );
