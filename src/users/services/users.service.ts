@@ -125,7 +125,8 @@ export class UsersService {
     } = await this.neo4jService
       .read(
         `
-        MATCH p=(:User {id: $userId})-[:HAS_BOOK]->()
+        MATCH p=(:User {id: $userId})-[r:HAS_BOOK]->()
+        WHERE r.have = true
         WITH count(p) AS count
         RETURN count, 0 < count AND 0 < $skip AS previous, $skip + $limit < count AS next
         `,
@@ -179,7 +180,8 @@ export class UsersService {
     } = await this.neo4jService
       .read(
         `
-        MATCH p=(:User {id: $userId})-[:IS_READING_BOOK]->()
+        MATCH p=(:User {id: $userId})-[r:IS_READING_BOOK]->()
+        WHERE r.reading = true
         WITH count(p) AS count
         RETURN count, 0 < count AND 0 < $skip AS previous, $skip + $limit < count AS next
         `,
@@ -233,7 +235,8 @@ export class UsersService {
     } = await this.neo4jService
       .read(
         `
-        MATCH p=(:User {id: $userId})-[:WISHES_TO_READ_BOOK]->()
+        MATCH p=(:User {id: $userId})-[r:WISHES_TO_READ_BOOK]->()
+        WHERE r.wish = true
         WITH count(p) AS count
         RETURN count, 0 < count AND 0 < $skip AS previous, $skip + $limit < count AS next
         `,

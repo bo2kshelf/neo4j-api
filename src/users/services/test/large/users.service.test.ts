@@ -365,6 +365,766 @@ describe(UsersService.name, () => {
     });
   });
 
+  describe('getHaveBooks()', () => {
+    describe('一般的な場合', () => {
+      const expectedUser = {id: 'user1'};
+      const expectedBooks = [{id: 'book1'}, {id: 'book2'}, {id: 'book3'}];
+      const expectedRecords = [
+        {
+          userId: expectedUser.id,
+          bookId: expectedBooks[0].id,
+          updatedAt: '2020-01-01T00:00:00.000000000Z',
+          have: true,
+        },
+        {
+          userId: expectedUser.id,
+          bookId: expectedBooks[1].id,
+          updatedAt: '2020-01-02T00:00:00.000000000Z',
+          have: true,
+        },
+        {
+          userId: expectedUser.id,
+          bookId: expectedBooks[2].id,
+          updatedAt: '2020-01-03T00:00:00.000000000Z',
+          have: true,
+        },
+      ];
+
+      beforeEach(async () => {
+        await Promise.all(
+          expectedRecords.map(({userId, bookId, ...props}) =>
+            neo4jService.write(
+              `
+                MERGE (u:User {id: $userId})-[r:HAS_BOOK]->(b:Book {id: $bookId})
+                SET r=$props
+                RETURN *
+                `,
+              {userId, bookId, props},
+            ),
+          ),
+        );
+      });
+
+      it.each([
+        [
+          {skip: 0, limit: 0, orderBy: {updatedAt: OrderBy.ASC}},
+          {
+            count: 3,
+            hasPrevious: false,
+            hasNext: true,
+            records: [],
+          },
+        ],
+        [
+          {skip: 0, limit: 3, orderBy: {updatedAt: OrderBy.ASC}},
+          {
+            count: 3,
+            hasPrevious: false,
+            hasNext: false,
+            records: [
+              {
+                have: true,
+                userId: expectedUser.id,
+                bookId: expectedBooks[0].id,
+              },
+              {
+                have: true,
+                userId: expectedUser.id,
+                bookId: expectedBooks[1].id,
+              },
+              {
+                have: true,
+                userId: expectedUser.id,
+                bookId: expectedBooks[2].id,
+              },
+            ],
+          },
+        ],
+        [
+          {skip: 0, limit: 6, orderBy: {updatedAt: OrderBy.ASC}},
+          {
+            count: 3,
+            hasPrevious: false,
+            hasNext: false,
+            records: [
+              {
+                have: true,
+                userId: expectedUser.id,
+                bookId: expectedBooks[0].id,
+              },
+              {
+                have: true,
+                userId: expectedUser.id,
+                bookId: expectedBooks[1].id,
+              },
+              {
+                have: true,
+                userId: expectedUser.id,
+                bookId: expectedBooks[2].id,
+              },
+            ],
+          },
+        ],
+        [
+          {skip: 1, limit: 1, orderBy: {updatedAt: OrderBy.ASC}},
+          {
+            count: 3,
+            hasPrevious: true,
+            hasNext: true,
+            records: [
+              {
+                have: true,
+                userId: expectedUser.id,
+                bookId: expectedBooks[1].id,
+              },
+            ],
+          },
+        ],
+        [
+          {skip: 3, limit: 3, orderBy: {updatedAt: OrderBy.ASC}},
+          {
+            count: 3,
+            hasPrevious: true,
+            hasNext: false,
+            records: [],
+          },
+        ],
+        [
+          {skip: 0, limit: 3, orderBy: {updatedAt: OrderBy.DESC}},
+          {
+            count: 3,
+            hasPrevious: false,
+            hasNext: false,
+            records: [
+              {
+                have: true,
+                userId: expectedUser.id,
+                bookId: expectedBooks[2].id,
+              },
+              {
+                have: true,
+                userId: expectedUser.id,
+                bookId: expectedBooks[1].id,
+              },
+              {
+                have: true,
+                userId: expectedUser.id,
+                bookId: expectedBooks[0].id,
+              },
+            ],
+          },
+        ],
+      ])('正常な動作 %j', async (props, expected) => {
+        const actual = await usersService.getHaveBooks(expectedUser.id, props);
+
+        expect(actual.count).toBe(expected.count);
+        expect(actual.hasPrevious).toBe(expected.hasPrevious);
+        expect(actual.hasNext).toBe(expected.hasNext);
+        expect(actual.records).toHaveLength(expected.records.length);
+      });
+    });
+
+    it('have:falseが混ざっている場合', async () => {
+      await neo4jService.write(
+        `
+        CREATE (u:User {id: "user1"})
+        CREATE (b1:Book {id: "book1", title: "A"})
+        CREATE (b2:Book {id: "book2", title: "B"})
+        CREATE (b3:Book {id: "book3", title: "C"})
+        CREATE (u)-[:HAS_BOOK {updatedAt: "2020-01-01T00:00:00.000000000Z", have: true}]->(b1)
+        CREATE (u)-[:HAS_BOOK {updatedAt: "2020-01-02T00:00:00.000000000Z", have: true}]->(b2)
+        CREATE (u)-[:HAS_BOOK {updatedAt: "2020-01-03T00:00:00.000000000Z", have: false}]->(b3)
+        RETURN *
+        `,
+      );
+      const actual = await usersService.getHaveBooks('user1', {
+        skip: 0,
+        limit: 3,
+        orderBy: {updatedAt: OrderBy.DESC},
+      });
+      expect(actual.hasPrevious).toBe(false);
+      expect(actual.hasNext).toBe(false);
+      expect(actual.count).toBe(2);
+
+      expect(actual.records).toHaveLength(2);
+      expect(actual.records[0].bookId).toBe('book2');
+      expect(actual.records[1].bookId).toBe('book1');
+    });
+  });
+
+  describe('getReadingBooks()', () => {
+    describe('一般的な場合', () => {
+      const expectedUser = {id: 'user1'};
+      const expectedBooks = [{id: 'book1'}, {id: 'book2'}, {id: 'book3'}];
+      const expectedRecords = [
+        {
+          userId: expectedUser.id,
+          bookId: expectedBooks[0].id,
+          updatedAt: '2020-01-01T00:00:00.000000000Z',
+          reading: true,
+        },
+        {
+          userId: expectedUser.id,
+          bookId: expectedBooks[1].id,
+          updatedAt: '2020-01-02T00:00:00.000000000Z',
+          reading: true,
+        },
+        {
+          userId: expectedUser.id,
+          bookId: expectedBooks[2].id,
+          updatedAt: '2020-01-03T00:00:00.000000000Z',
+          reading: true,
+        },
+      ];
+
+      beforeEach(async () => {
+        await Promise.all(
+          expectedRecords.map(({userId, bookId, ...props}) =>
+            neo4jService.write(
+              `
+                MERGE (u:User {id: $userId})-[r:IS_READING_BOOK]->(b:Book {id: $bookId})
+                SET r=$props
+                RETURN *
+                `,
+              {userId, bookId, props},
+            ),
+          ),
+        );
+      });
+
+      it.each([
+        [
+          {skip: 0, limit: 0, orderBy: {updatedAt: OrderBy.ASC}},
+          {
+            count: 3,
+            hasPrevious: false,
+            hasNext: true,
+            records: [],
+          },
+        ],
+        [
+          {skip: 0, limit: 3, orderBy: {updatedAt: OrderBy.ASC}},
+          {
+            count: 3,
+            hasPrevious: false,
+            hasNext: false,
+            records: [
+              {
+                reading: true,
+                userId: expectedUser.id,
+                bookId: expectedBooks[0].id,
+              },
+              {
+                reading: true,
+                userId: expectedUser.id,
+                bookId: expectedBooks[1].id,
+              },
+              {
+                reading: true,
+                userId: expectedUser.id,
+                bookId: expectedBooks[2].id,
+              },
+            ],
+          },
+        ],
+        [
+          {skip: 0, limit: 6, orderBy: {updatedAt: OrderBy.ASC}},
+          {
+            count: 3,
+            hasPrevious: false,
+            hasNext: false,
+            records: [
+              {
+                reading: true,
+                userId: expectedUser.id,
+                bookId: expectedBooks[0].id,
+              },
+              {
+                reading: true,
+                userId: expectedUser.id,
+                bookId: expectedBooks[1].id,
+              },
+              {
+                reading: true,
+                userId: expectedUser.id,
+                bookId: expectedBooks[2].id,
+              },
+            ],
+          },
+        ],
+        [
+          {skip: 1, limit: 1, orderBy: {updatedAt: OrderBy.ASC}},
+          {
+            count: 3,
+            hasPrevious: true,
+            hasNext: true,
+            records: [
+              {
+                reading: true,
+                userId: expectedUser.id,
+                bookId: expectedBooks[1].id,
+              },
+            ],
+          },
+        ],
+        [
+          {skip: 3, limit: 3, orderBy: {updatedAt: OrderBy.ASC}},
+          {
+            count: 3,
+            hasPrevious: true,
+            hasNext: false,
+            records: [],
+          },
+        ],
+        [
+          {skip: 0, limit: 3, orderBy: {updatedAt: OrderBy.DESC}},
+          {
+            count: 3,
+            hasPrevious: false,
+            hasNext: false,
+            records: [
+              {
+                reading: true,
+                userId: expectedUser.id,
+                bookId: expectedBooks[2].id,
+              },
+              {
+                reading: true,
+                userId: expectedUser.id,
+                bookId: expectedBooks[1].id,
+              },
+              {
+                reading: true,
+                userId: expectedUser.id,
+                bookId: expectedBooks[0].id,
+              },
+            ],
+          },
+        ],
+      ])('正常な動作 %j', async (props, expected) => {
+        const actual = await usersService.getReadingBooks(
+          expectedUser.id,
+          props,
+        );
+
+        expect(actual.count).toBe(expected.count);
+        expect(actual.hasPrevious).toBe(expected.hasPrevious);
+        expect(actual.hasNext).toBe(expected.hasNext);
+        expect(actual.records).toHaveLength(expected.records.length);
+      });
+    });
+
+    it('reading:falseが混ざっている場合', async () => {
+      await neo4jService.write(
+        `
+        CREATE (u:User {id: "user1"})
+        CREATE (b1:Book {id: "book1", title: "A"})
+        CREATE (b2:Book {id: "book2", title: "B"})
+        CREATE (b3:Book {id: "book3", title: "C"})
+        CREATE (u)-[:IS_READING_BOOK {updatedAt: "2020-01-01T00:00:00.000000000Z", reading: true}]->(b1)
+        CREATE (u)-[:IS_READING_BOOK {updatedAt: "2020-01-02T00:00:00.000000000Z", reading: true}]->(b2)
+        CREATE (u)-[:IS_READING_BOOK {updatedAt: "2020-01-03T00:00:00.000000000Z", reading: false}]->(b3)
+        RETURN *
+        `,
+      );
+      const actual = await usersService.getReadingBooks('user1', {
+        skip: 0,
+        limit: 3,
+        orderBy: {updatedAt: OrderBy.DESC},
+      });
+      expect(actual.hasPrevious).toBe(false);
+      expect(actual.hasNext).toBe(false);
+      expect(actual.count).toBe(2);
+
+      expect(actual.records).toHaveLength(2);
+      expect(actual.records[0].bookId).toBe('book2');
+      expect(actual.records[1].bookId).toBe('book1');
+    });
+  });
+
+  describe('getWishesToReadBook()', () => {
+    describe('一般的な場合', () => {
+      const expectedUser = {id: 'user1'};
+      const expectedBooks = [{id: 'book1'}, {id: 'book2'}, {id: 'book3'}];
+      const expectedRecords = [
+        {
+          userId: expectedUser.id,
+          bookId: expectedBooks[0].id,
+          updatedAt: '2020-01-01T00:00:00.000000000Z',
+          wish: true,
+        },
+        {
+          userId: expectedUser.id,
+          bookId: expectedBooks[1].id,
+          updatedAt: '2020-01-02T00:00:00.000000000Z',
+          wish: true,
+        },
+        {
+          userId: expectedUser.id,
+          bookId: expectedBooks[2].id,
+          updatedAt: '2020-01-03T00:00:00.000000000Z',
+          wish: true,
+        },
+      ];
+
+      beforeEach(async () => {
+        await Promise.all(
+          expectedRecords.map(({userId, bookId, ...props}) =>
+            neo4jService.write(
+              `
+                MERGE (u:User {id: $userId})-[r:WISHES_TO_READ_BOOK]->(b:Book {id: $bookId})
+                SET r=$props
+                RETURN *
+                `,
+              {userId, bookId, props},
+            ),
+          ),
+        );
+      });
+
+      it.each([
+        [
+          {skip: 0, limit: 0, orderBy: {updatedAt: OrderBy.ASC}},
+          {
+            count: 3,
+            hasPrevious: false,
+            hasNext: true,
+            records: [],
+          },
+        ],
+        [
+          {skip: 0, limit: 3, orderBy: {updatedAt: OrderBy.ASC}},
+          {
+            count: 3,
+            hasPrevious: false,
+            hasNext: false,
+            records: [
+              {
+                wish: true,
+                userId: expectedUser.id,
+                bookId: expectedBooks[0].id,
+              },
+              {
+                wish: true,
+                userId: expectedUser.id,
+                bookId: expectedBooks[1].id,
+              },
+              {
+                wish: true,
+                userId: expectedUser.id,
+                bookId: expectedBooks[2].id,
+              },
+            ],
+          },
+        ],
+        [
+          {skip: 0, limit: 6, orderBy: {updatedAt: OrderBy.ASC}},
+          {
+            count: 3,
+            hasPrevious: false,
+            hasNext: false,
+            records: [
+              {
+                wish: true,
+                userId: expectedUser.id,
+                bookId: expectedBooks[0].id,
+              },
+              {
+                wish: true,
+                userId: expectedUser.id,
+                bookId: expectedBooks[1].id,
+              },
+              {
+                wish: true,
+                userId: expectedUser.id,
+                bookId: expectedBooks[2].id,
+              },
+            ],
+          },
+        ],
+        [
+          {skip: 1, limit: 1, orderBy: {updatedAt: OrderBy.ASC}},
+          {
+            count: 3,
+            hasPrevious: true,
+            hasNext: true,
+            records: [
+              {
+                wish: true,
+                userId: expectedUser.id,
+                bookId: expectedBooks[1].id,
+              },
+            ],
+          },
+        ],
+        [
+          {skip: 3, limit: 3, orderBy: {updatedAt: OrderBy.ASC}},
+          {
+            count: 3,
+            hasPrevious: true,
+            hasNext: false,
+            records: [],
+          },
+        ],
+        [
+          {skip: 0, limit: 3, orderBy: {updatedAt: OrderBy.DESC}},
+          {
+            count: 3,
+            hasPrevious: false,
+            hasNext: false,
+            records: [
+              {
+                wish: true,
+                userId: expectedUser.id,
+                bookId: expectedBooks[2].id,
+              },
+              {
+                wish: true,
+                userId: expectedUser.id,
+                bookId: expectedBooks[1].id,
+              },
+              {
+                wish: true,
+                userId: expectedUser.id,
+                bookId: expectedBooks[0].id,
+              },
+            ],
+          },
+        ],
+      ])('正常な動作 %j', async (props, expected) => {
+        const actual = await usersService.getWishesToReadBook(
+          expectedUser.id,
+          props,
+        );
+
+        expect(actual.count).toBe(expected.count);
+        expect(actual.hasPrevious).toBe(expected.hasPrevious);
+        expect(actual.hasNext).toBe(expected.hasNext);
+        expect(actual.records).toHaveLength(expected.records.length);
+      });
+    });
+
+    it('wish:falseが混ざっている場合', async () => {
+      await neo4jService.write(
+        `
+        CREATE (u:User {id: "user1"})
+        CREATE (b1:Book {id: "book1", title: "A"})
+        CREATE (b2:Book {id: "book2", title: "B"})
+        CREATE (b3:Book {id: "book3", title: "C"})
+        CREATE (u)-[:WISHES_TO_READ_BOOK {updatedAt: "2020-01-01T00:00:00.000000000Z", wish: true}]->(b1)
+        CREATE (u)-[:WISHES_TO_READ_BOOK {updatedAt: "2020-01-02T00:00:00.000000000Z", wish: true}]->(b2)
+        CREATE (u)-[:WISHES_TO_READ_BOOK {updatedAt: "2020-01-03T00:00:00.000000000Z", wish: false}]->(b3)
+        RETURN *
+        `,
+      );
+      const actual = await usersService.getWishesToReadBook('user1', {
+        skip: 0,
+        limit: 3,
+        orderBy: {updatedAt: OrderBy.DESC},
+      });
+      expect(actual.hasPrevious).toBe(false);
+      expect(actual.hasNext).toBe(false);
+      expect(actual.count).toBe(2);
+
+      expect(actual.records).toHaveLength(2);
+      expect(actual.records[0].bookId).toBe('book2');
+      expect(actual.records[0].wish).toBe(true);
+      expect(actual.records[1].bookId).toBe('book1');
+      expect(actual.records[1].wish).toBe(true);
+    });
+  });
+
+  describe('getStackedBooks()', () => {
+    describe('READ_BOOKが一つも無い状態', () => {
+      const expectedUser = {id: 'user1'};
+      const expectedBooks = [{id: 'book1'}, {id: 'book2'}, {id: 'book3'}];
+      const expectedRecords = [
+        {
+          userId: expectedUser.id,
+          bookId: expectedBooks[0].id,
+          updatedAt: '2020-01-01T00:00:00.000000000Z',
+          have: true,
+        },
+        {
+          userId: expectedUser.id,
+          bookId: expectedBooks[1].id,
+          updatedAt: '2020-01-02T00:00:00.000000000Z',
+          have: true,
+        },
+        {
+          userId: expectedUser.id,
+          bookId: expectedBooks[2].id,
+          updatedAt: '2020-01-03T00:00:00.000000000Z',
+          have: true,
+        },
+      ];
+
+      beforeEach(async () => {
+        await Promise.all(
+          expectedRecords.map(({userId, bookId, ...props}) =>
+            neo4jService.write(
+              `
+            MERGE (u:User {id: $userId})-[r:HAS_BOOK]->(b:Book {id: $bookId})
+            SET r=$props
+            RETURN *
+            `,
+              {userId, bookId, props},
+            ),
+          ),
+        );
+      });
+
+      it.each([
+        [
+          {skip: 0, limit: 0, orderBy: {updatedAt: OrderBy.ASC}},
+          {
+            count: 3,
+            hasPrevious: false,
+            hasNext: true,
+            records: [],
+          },
+        ],
+        [
+          {skip: 0, limit: 3, orderBy: {updatedAt: OrderBy.ASC}},
+          {
+            count: 3,
+            hasPrevious: false,
+            hasNext: false,
+            records: [
+              {
+                have: true,
+                userId: expectedUser.id,
+                bookId: expectedBooks[0].id,
+              },
+              {
+                have: true,
+                userId: expectedUser.id,
+                bookId: expectedBooks[1].id,
+              },
+              {
+                have: true,
+                userId: expectedUser.id,
+                bookId: expectedBooks[2].id,
+              },
+            ],
+          },
+        ],
+        [
+          {skip: 0, limit: 6, orderBy: {updatedAt: OrderBy.ASC}},
+          {
+            count: 3,
+            hasPrevious: false,
+            hasNext: false,
+            records: [
+              {
+                have: true,
+                userId: expectedUser.id,
+                bookId: expectedBooks[0].id,
+              },
+              {
+                have: true,
+                userId: expectedUser.id,
+                bookId: expectedBooks[1].id,
+              },
+              {
+                have: true,
+                userId: expectedUser.id,
+                bookId: expectedBooks[2].id,
+              },
+            ],
+          },
+        ],
+        [
+          {skip: 1, limit: 1, orderBy: {updatedAt: OrderBy.ASC}},
+          {
+            count: 3,
+            hasPrevious: true,
+            hasNext: true,
+            records: [
+              {
+                have: true,
+                userId: expectedUser.id,
+                bookId: expectedBooks[1].id,
+              },
+            ],
+          },
+        ],
+        [
+          {skip: 3, limit: 3, orderBy: {updatedAt: OrderBy.ASC}},
+          {
+            count: 3,
+            hasPrevious: true,
+            hasNext: false,
+            records: [],
+          },
+        ],
+        [
+          {skip: 0, limit: 3, orderBy: {updatedAt: OrderBy.DESC}},
+          {
+            count: 3,
+            hasPrevious: false,
+            hasNext: false,
+            records: [
+              {
+                have: true,
+                userId: expectedUser.id,
+                bookId: expectedBooks[2].id,
+              },
+              {
+                have: true,
+                userId: expectedUser.id,
+                bookId: expectedBooks[1].id,
+              },
+              {
+                have: true,
+                userId: expectedUser.id,
+                bookId: expectedBooks[0].id,
+              },
+            ],
+          },
+        ],
+      ])('正常な動作 %j', async (props, expected) => {
+        const actual = await usersService.getStackedBooks(
+          expectedUser.id,
+          props,
+        );
+
+        expect(actual.count).toBe(expected.count);
+        expect(actual.hasPrevious).toBe(expected.hasPrevious);
+        expect(actual.hasNext).toBe(expected.hasNext);
+        expect(actual.records).toHaveLength(expected.records.length);
+      });
+    });
+
+    it('READ_BOOKが混ざっている状況', async () => {
+      await neo4jService.write(
+        `
+        CREATE (u:User {id: "user1"})
+        CREATE (b1:Book {id: "book1", title: "A"})
+        CREATE (b2:Book {id: "book2", title: "B"})
+        CREATE (b3:Book {id: "book3", title: "C"})
+        CREATE (u)-[:HAS_BOOK {updatedAt: "2020-01-01T00:00:00.000000000Z", have: true}]->(b1)
+        CREATE (u)-[:HAS_BOOK {updatedAt: "2020-01-02T00:00:00.000000000Z", have: true}]->(b2)
+        CREATE (u)-[:HAS_BOOK {updatedAt: "2020-01-03T00:00:00.000000000Z", have: true}]->(b3)
+        CREATE (u)-[:READ_BOOK {readAt: ["2000-01-01"]}]->(b1)
+        RETURN *
+        `,
+      );
+      const actual = await usersService.getStackedBooks('user1', {
+        skip: 0,
+        limit: 3,
+        orderBy: {updatedAt: OrderBy.DESC},
+      });
+      expect(actual.hasPrevious).toBe(false);
+      expect(actual.hasNext).toBe(false);
+      expect(actual.count).toBe(2);
+
+      expect(actual.records).toHaveLength(2);
+      expect(actual.records[0].bookId).toBe('book3');
+      expect(actual.records[1].bookId).toBe('book2');
+    });
+  });
+
   describe('readBook()', () => {
     const expectedUser = {id: 'user1'};
     const expectedBook = {id: 'book1'};
