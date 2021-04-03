@@ -6,7 +6,7 @@ orbs:
 
 commands:
   berry-install-packages:
-    description: "install packages by yarn v2 (berry)"
+    description: 'install packages by yarn v2 (berry)'
     steps:
       - run: yarn install --immutable --immutable-cache
 

@@ -1,20 +1,26 @@
-import {Args, Mutation, Resolver} from '@nestjs/graphql';
-import {PublicationEntity} from '../publisher.entity';
-import {PublishersService} from '../publishers.service';
-import {ConnectBookToPublisherArgs} from './dto/connect-book-to-publisher.dto';
+import {Parent, ResolveField, Resolver} from '@nestjs/graphql';
+import {BookEntity} from '../../books/entities/book.entity';
+import {BooksService} from '../../books/services/books.service';
+import {PublicationEntity} from '../entities/publication.entity';
+import {PublisherEntity} from '../entities/publisher.entity';
+import {PublishersService} from '../services/publishers.service';
 
 @Resolver(() => PublicationEntity)
 export class PublicationsResolver {
-  constructor(private readonly publishersService: PublishersService) {}
+  constructor(
+    private readonly booksService: BooksService,
+    private readonly publishersService: PublishersService,
+  ) {}
 
-  @Mutation(() => PublicationEntity)
-  async connectBookToPublisher(
-    @Args({type: () => ConnectBookToPublisherArgs})
-    {bookId, publisherId}: ConnectBookToPublisherArgs,
-  ): Promise<PublicationEntity> {
-    return this.publishersService.connectBookToPublisher({
-      bookId,
-      publisherId,
-    });
+  @ResolveField(() => BookEntity)
+  async book(@Parent() {bookId}: PublicationEntity): Promise<BookEntity> {
+    return this.booksService.findById(bookId);
+  }
+
+  @ResolveField(() => PublisherEntity)
+  async publisher(
+    @Parent() {publisherId}: PublicationEntity,
+  ): Promise<PublisherEntity> {
+    return this.publishersService.findById(publisherId);
   }
 }

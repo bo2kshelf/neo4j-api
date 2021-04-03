@@ -1,15 +1,7 @@
-import {ArgsType, Field, InputType} from '@nestjs/graphql';
-import {ValidateNested} from 'class-validator';
-
-@InputType()
-export class CreatePublisherDataInput {
-  @Field(() => String)
-  name!: string;
-}
+import {ArgsType, Field} from '@nestjs/graphql';
 
 @ArgsType()
 export class CreatePublisherArgs {
-  @Field(() => CreatePublisherDataInput)
-  @ValidateNested()
-  data!: CreatePublisherDataInput;
+  @Field(() => String)
+  name!: string;
 }

@@ -43,10 +43,6 @@ export class Neo4jService implements OnApplicationShutdown {
     return session.run(cypher, params);
   }
 
-  clear() {
-    return this.write(`MATCH (n) DETACH DELETE n`);
-  }
-
   onApplicationShutdown() {
     return this.driver.close();
   }
