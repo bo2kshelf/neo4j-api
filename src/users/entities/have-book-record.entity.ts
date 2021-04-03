@@ -1,4 +1,4 @@
-import {Field, ObjectType} from '@nestjs/graphql';
+import {Field, GraphQLISODateTime, ObjectType} from '@nestjs/graphql';
 
 @ObjectType('HaveBookRecord')
 export class HaveBookRecordEntity {
@@ -7,4 +7,7 @@ export class HaveBookRecordEntity {
 
   @Field(() => Boolean)
   have!: boolean;
+
+  @Field(() => GraphQLISODateTime)
+  updatedAt!: Date;
 }

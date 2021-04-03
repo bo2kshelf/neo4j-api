@@ -1,4 +1,4 @@
-import {Field, ObjectType} from '@nestjs/graphql';
+import {Field, GraphQLISODateTime, ObjectType} from '@nestjs/graphql';
 
 @ObjectType('WishReadBookRecord')
 export class WishReadBookRecordEntity {
@@ -7,4 +7,7 @@ export class WishReadBookRecordEntity {
 
   @Field(() => Boolean)
   wish!: boolean;
+
+  @Field(() => GraphQLISODateTime)
+  updatedAt!: Date;
 }
