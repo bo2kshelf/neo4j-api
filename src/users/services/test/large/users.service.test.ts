@@ -1154,7 +1154,7 @@ describe(UsersService.name, () => {
         `
         CREATE (u:User) SET u=$user
         CREATE (b:Book) SET b=$book
-        CREATE (u)-[:READ_BOOK {readAt: ["1999-01-01"]}]->(b)
+        CREATE (u)-[:READ_BOOK {readAt: [date("1999-01-01")]}]->(b)
         RETURN *
       `,
         {user: expectedUser, book: expectedBook},
@@ -1166,6 +1166,26 @@ describe(UsersService.name, () => {
       expect(actual.userId).toBe(expectedUser.id);
       expect(actual.bookId).toBe(expectedBook.id);
       expect(actual.readAt).toStrictEqual(['2000-01-01', '1999-01-01']);
+      expect(actual.latestReadAt).toBe('2000-01-01');
+    });
+
+    it('同じ日付を登録すると重複は消去される', async () => {
+      await neo4jService.write(
+        `
+        CREATE (u:User) SET u=$user
+        CREATE (b:Book) SET b=$book
+        CREATE (u)-[:READ_BOOK {readAt: [date("2000-01-01")]}]->(b)
+        RETURN *
+      `,
+        {user: expectedUser, book: expectedBook},
+      );
+      const actual = await usersService.readBook(
+        {userId: expectedUser.id, bookId: expectedBook.id},
+        {readAt: '2000-01-01'},
+      );
+      expect(actual.userId).toBe(expectedUser.id);
+      expect(actual.bookId).toBe(expectedBook.id);
+      expect(actual.readAt).toStrictEqual(['2000-01-01']);
       expect(actual.latestReadAt).toBe('2000-01-01');
     });
 
@@ -1218,7 +1238,7 @@ describe(UsersService.name, () => {
         `
         CREATE (u:User) SET u=$user
         CREATE (b:Book) SET b=$book
-        CREATE (u)-[:READ_BOOK {readAt: ["1999-01-01"]}]->(b)
+        CREATE (u)-[:READ_BOOK {readAt: [date("1999-01-01")]}]->(b)
         RETURN *
       `,
         {user: expectedUser, book: expectedBook},
@@ -1229,8 +1249,8 @@ describe(UsersService.name, () => {
       );
       expect(actual.userId).toBe(expectedUser.id);
       expect(actual.bookId).toBe(expectedBook.id);
-      expect(actual.latestReadAt).toBe('1999-01-01');
       expect(actual.readAt).toStrictEqual(['1999-01-01']);
+      expect(actual.latestReadAt).toBe('1999-01-01');
     });
   });
 

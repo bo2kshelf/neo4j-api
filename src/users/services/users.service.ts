@@ -313,9 +313,9 @@ export class UsersService {
         `
         MATCH (b:Book {id: $bookId})
         MERGE (u:User {id: $userId})-[r:READ_BOOK]->(b)
-        SET r.readAt = coalesce(r.readAt, []) + coalesce($props.readAt, [])
-        WITH u.id AS u, b.id AS b, reverse(apoc.coll.sort(r.readAt)) AS readAt
-        RETURN u,b,readAt,toString(head(readAt)) AS latest
+        SET r.readAt = apoc.coll.toSet(coalesce(r.readAt,[]) + coalesce(date($props.readAt),[]))
+        WITH u.id AS u, b.id AS b, apoc.convert.toStringList(reverse(apoc.coll.sort(r.readAt))) AS readAt
+        RETURN u,b,readAt,head(readAt) AS latest
       `,
         {userId, bookId, props},
       )
