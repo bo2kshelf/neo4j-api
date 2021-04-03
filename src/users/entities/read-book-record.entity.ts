@@ -6,6 +6,9 @@ export class ReadBookRecordEntity {
   userId!: string;
   bookId!: string;
 
+  @Field(() => [LocalDateResolver])
+  readAt!: string[];
+
   @Field(() => LocalDateResolver, {nullable: true})
-  recentReadAt!: string;
+  latestReadAt!: string;
 }

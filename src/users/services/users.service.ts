@@ -41,16 +41,17 @@ export class UsersService {
         MATCH (u:User {id: $userId})
         CALL {
             MATCH (u)-[r:READ_BOOK]->(b:Book)
-            WHERE r.recentReadAt IS NOT NULL
+            WHERE r.readAt IS NOT NULL
+            WITH r,b,reverse(apoc.coll.sort(r.readAt))[0] AS latest
             RETURN r,b
-            ORDER BY r.recentReadAt ${orderBy.date}, b.title ${orderBy.title}
+            ORDER BY latest ${orderBy.date}, b.title ${orderBy.title}
             UNION
             MATCH (u)-[r:READ_BOOK]->(b:Book)
-            WHERE r.recentReadAt IS NULL
+            WHERE r.readAt IS NULL
             RETURN r,b
             ORDER BY b.title ${orderBy.title}
         }
-        RETURN u.id AS u, b.id AS b, toString(r.recentReadAt) AS recentReadAt
+        RETURN u.id AS u, b.id AS b, toString(reverse(apoc.coll.sort(r.readAt))[0]) AS latest
         SKIP $skip LIMIT $limit
       `,
         {userId, skip: int(skip), limit: int(limit)},
@@ -59,7 +60,7 @@ export class UsersService {
         result.records.map((record) => ({
           userId: record.get('u'),
           bookId: record.get('b'),
-          recentReadAt: record.get('recentReadAt'),
+          latestReadAt: record.get('latest'),
         })),
       );
     const meta: {
@@ -301,22 +302,24 @@ export class UsersService {
 
   async readBook(
     {bookId, userId}: {bookId: string; userId: string},
-    {date}: {date?: string},
+    props: {readAt?: string},
   ): Promise<ReadBookRecordEntity> {
     return this.neo4jService
       .read(
         `
         MATCH (b:Book {id: $bookId})
-        MERGE (u:User {id: $userId})
-        MERGE (u)-[r:READ_BOOK]->(b)
-        RETURN *
+        MERGE (u:User {id: $userId})-[r:READ_BOOK]->(b)
+        SET r.readAt = coalesce(r.readAt, []) + coalesce($props.readAt, [])
+        WITH u.id AS u, b.id AS b, reverse(apoc.coll.sort(r.readAt)) AS readAt
+        RETURN u,b,readAt,toString(head(readAt)) AS latest
       `,
-        {userId, bookId},
+        {userId, bookId, props},
       )
       .then((result) => ({
-        userId: result.records[0].get('u').properties.id,
-        bookId: result.records[0].get('b').properties.id,
-        ...result.records[0].get('r').properties,
+        userId: result.records[0].get('u'),
+        bookId: result.records[0].get('b'),
+        readAt: result.records[0].get('readAt'),
+        latestReadAt: result.records[0].get('latest'),
       }));
   }
 

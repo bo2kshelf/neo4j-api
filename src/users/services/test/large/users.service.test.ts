@@ -74,17 +74,17 @@ describe(UsersService.name, () => {
         {
           book: expectedBooks[0],
           user: expectedUser,
-          recentReadAt: '2000-01-01',
+          readAt: ['2000-01-01'],
         },
         {
           book: expectedBooks[1],
           user: expectedUser,
-          recentReadAt: '2000-01-02',
+          readAt: ['2000-01-02'],
         },
         {
           book: expectedBooks[2],
           user: expectedUser,
-          recentReadAt: '2000-01-03',
+          readAt: ['2000-01-03'],
         },
       ];
 
@@ -130,17 +130,17 @@ describe(UsersService.name, () => {
               {
                 userId: expectedUser.id,
                 bookId: expectedReads[0].book.id,
-                recentReadAt: expectedReads[0].recentReadAt,
+                latestReadAt: expectedReads[0].readAt[0],
               },
               {
                 userId: expectedUser.id,
                 bookId: expectedReads[1].book.id,
-                recentReadAt: expectedReads[1].recentReadAt,
+                latestReadAt: expectedReads[1].readAt[0],
               },
               {
                 userId: expectedUser.id,
                 bookId: expectedReads[2].book.id,
-                recentReadAt: expectedReads[2].recentReadAt,
+                latestReadAt: expectedReads[2].readAt[0],
               },
             ],
             hasPrevious: false,
@@ -155,17 +155,17 @@ describe(UsersService.name, () => {
               {
                 userId: expectedUser.id,
                 bookId: expectedReads[0].book.id,
-                recentReadAt: expectedReads[0].recentReadAt,
+                latestReadAt: expectedReads[0].readAt[0],
               },
               {
                 userId: expectedUser.id,
                 bookId: expectedReads[1].book.id,
-                recentReadAt: expectedReads[1].recentReadAt,
+                latestReadAt: expectedReads[1].readAt[0],
               },
               {
                 userId: expectedUser.id,
                 bookId: expectedReads[2].book.id,
-                recentReadAt: expectedReads[2].recentReadAt,
+                latestReadAt: expectedReads[2].readAt[0],
               },
             ],
             hasPrevious: false,
@@ -184,17 +184,17 @@ describe(UsersService.name, () => {
               {
                 userId: expectedUser.id,
                 bookId: expectedReads[2].book.id,
-                recentReadAt: expectedReads[2].recentReadAt,
+                latestReadAt: expectedReads[2].readAt[0],
               },
               {
                 userId: expectedUser.id,
                 bookId: expectedReads[1].book.id,
-                recentReadAt: expectedReads[1].recentReadAt,
+                latestReadAt: expectedReads[1].readAt[0],
               },
               {
                 userId: expectedUser.id,
                 bookId: expectedReads[0].book.id,
-                recentReadAt: expectedReads[0].recentReadAt,
+                latestReadAt: expectedReads[0].readAt[0],
               },
             ],
             hasPrevious: false,
@@ -209,7 +209,7 @@ describe(UsersService.name, () => {
               {
                 userId: expectedUser.id,
                 bookId: expectedReads[1].book.id,
-                recentReadAt: expectedReads[1].recentReadAt,
+                latestReadAt: expectedReads[1].readAt[0],
               },
             ],
             hasPrevious: true,
@@ -241,9 +241,37 @@ describe(UsersService.name, () => {
         for (const [i, record] of actual.records.entries()) {
           expect(record.userId).toBe(expected.records[i].userId);
           expect(record.bookId).toBe(expected.records[i].bookId);
-          expect(record.recentReadAt).toBe(expected.records[i].recentReadAt);
+          expect(record.latestReadAt).toBe(expected.records[i].latestReadAt);
         }
       });
+    });
+
+    it('複数のreadAtが存在するときに正常に動作する', async () => {
+      await neo4jService.write(
+        `
+        CREATE (u:User {id: "user1"})
+        CREATE (b1:Book {id: "book1", title: "A"})
+        CREATE (b2:Book {id: "book2", title: "A"})
+        CREATE (u)-[:READ_BOOK {readAt: ["2000-01-01", "2002-01-02"]}]->(b1)
+        CREATE (u)-[:READ_BOOK {readAt: ["2001-01-01", "2001-01-02"]}]->(b2)
+        RETURN *
+        `,
+      );
+      const actual = await usersService.getReadBooks('user1', {
+        skip: 0,
+        limit: 2,
+        orderBy: {date: OrderBy.DESC, title: OrderBy.ASC},
+      });
+      expect(actual.hasPrevious).toBe(false);
+      expect(actual.hasNext).toBe(false);
+      expect(actual.count).toBe(2);
+
+      expect(actual.records).toHaveLength(2);
+      expect(actual.records[0].bookId).toBe('book1');
+      expect(actual.records[0].latestReadAt).toBe('2002-01-02');
+
+      expect(actual.records[1].bookId).toBe('book2');
+      expect(actual.records[1].latestReadAt).toBe('2001-01-02');
     });
 
     it('同じ日付の記録があったときの並び替え', async () => {
@@ -253,9 +281,9 @@ describe(UsersService.name, () => {
         CREATE (b1:Book {id: "book1", title: "A"})
         CREATE (b2:Book {id: "book2", title: "B"})
         CREATE (b3:Book {id: "book3", title: "C"})
-        CREATE (u)-[:READ_BOOK {recentReadAt: "2000-01-01"}]->(b1)
-        CREATE (u)-[:READ_BOOK {recentReadAt: "2000-01-01"}]->(b2)
-        CREATE (u)-[:READ_BOOK {recentReadAt: "2000-01-01"}]->(b3)
+        CREATE (u)-[:READ_BOOK {readAt: ["2000-01-01"]}]->(b1)
+        CREATE (u)-[:READ_BOOK {readAt: ["2000-01-01"]}]->(b2)
+        CREATE (u)-[:READ_BOOK {readAt: ["2000-01-01"]}]->(b3)
         RETURN *
         `,
       );
@@ -311,9 +339,9 @@ describe(UsersService.name, () => {
         CREATE (b3:Book {id: "book3", title: "C"})
         CREATE (b4:Book {id: "book4", title: "D"})
         CREATE (b5:Book {id: "book5", title: "E"})
-        CREATE (u)-[:READ_BOOK {recentReadAt: "2000-01-01"}]->(b1)
-        CREATE (u)-[:READ_BOOK {recentReadAt: "2000-01-01"}]->(b2)
-        CREATE (u)-[:READ_BOOK {recentReadAt: "2000-01-02"}]->(b3)
+        CREATE (u)-[:READ_BOOK {readAt: ["2000-01-01"]}]->(b1)
+        CREATE (u)-[:READ_BOOK {readAt: ["2000-01-01"]}]->(b2)
+        CREATE (u)-[:READ_BOOK {readAt: ["2000-01-02"]}]->(b3)
         CREATE (u)-[:READ_BOOK]->(b4)
         CREATE (u)-[:READ_BOOK]->(b5)
         RETURN *
@@ -334,6 +362,95 @@ describe(UsersService.name, () => {
       expect(actual.records[2].bookId).toBe('book2');
       expect(actual.records[3].bookId).toBe('book4');
       expect(actual.records[4].bookId).toBe('book5');
+    });
+  });
+
+  describe('readBook()', () => {
+    const expectedUser = {id: 'user1'};
+    const expectedBook = {id: 'book1'};
+
+    it('READ_BOOKとUserが既に存在する場合', async () => {
+      await neo4jService.write(
+        `
+        CREATE (u:User) SET u=$user
+        CREATE (b:Book) SET b=$book
+        CREATE (u)-[:READ_BOOK {readAt: ["1999-01-01"]}]->(b)
+        RETURN *
+      `,
+        {user: expectedUser, book: expectedBook},
+      );
+      const actual = await usersService.readBook(
+        {userId: expectedUser.id, bookId: expectedBook.id},
+        {readAt: '2000-01-01'},
+      );
+      expect(actual.userId).toBe(expectedUser.id);
+      expect(actual.bookId).toBe(expectedBook.id);
+      expect(actual.readAt).toStrictEqual(['2000-01-01', '1999-01-01']);
+      expect(actual.latestReadAt).toBe('2000-01-01');
+    });
+
+    it('Userが存在しない場合MERGEで生成', async () => {
+      await neo4jService.write(`CREATE (b:Book) SET b=$book RETURN *`, {
+        book: expectedBook,
+      });
+      const actual = await usersService.readBook(
+        {userId: expectedUser.id, bookId: expectedBook.id},
+        {readAt: '2000-01-01'},
+      );
+      expect(actual.userId).toBe(expectedUser.id);
+      expect(actual.bookId).toBe(expectedBook.id);
+      expect(actual.readAt).toStrictEqual(['2000-01-01']);
+      expect(actual.latestReadAt).toBe('2000-01-01');
+    });
+
+    it('READ_BOOKが存在しない場合MERGEで生成', async () => {
+      await neo4jService.write(
+        `CREATE (u:User),(b:Book) SET u=$user,b=$book RETURN *`,
+        {user: expectedUser, book: expectedBook},
+      );
+      const actual = await usersService.readBook(
+        {userId: expectedUser.id, bookId: expectedBook.id},
+        {readAt: '2000-01-01'},
+      );
+      expect(actual.userId).toBe(expectedUser.id);
+      expect(actual.bookId).toBe(expectedBook.id);
+      expect(actual.readAt).toStrictEqual(['2000-01-01']);
+      expect(actual.latestReadAt).toStrictEqual('2000-01-01');
+    });
+
+    it('READ_BOOKが存在せず日付が不明の場合', async () => {
+      await neo4jService.write(
+        `CREATE (u:User),(b:Book) SET u=$user,b=$book RETURN *`,
+        {user: expectedUser, book: expectedBook},
+      );
+      const actual = await usersService.readBook(
+        {userId: expectedUser.id, bookId: expectedBook.id},
+        {},
+      );
+      expect(actual.userId).toBe(expectedUser.id);
+      expect(actual.bookId).toBe(expectedBook.id);
+      expect(actual.readAt).toStrictEqual([]);
+      expect(actual.latestReadAt).toBeNull();
+    });
+
+    it('READ_BOOKが既に存在して日付が不明の場合', async () => {
+      await neo4jService.write(
+        `
+        CREATE (u:User) SET u=$user
+        CREATE (b:Book) SET b=$book
+        CREATE (u)-[:READ_BOOK {readAt: ["1999-01-01"]}]->(b)
+        RETURN *
+      `,
+        {user: expectedUser, book: expectedBook},
+      );
+      const actual = await usersService.readBook(
+        {userId: expectedUser.id, bookId: expectedBook.id},
+        {},
+      );
+      expect(actual.userId).toBe(expectedUser.id);
+      expect(actual.bookId).toBe(expectedBook.id);
+      expect(actual.latestReadAt).toBe('1999-01-01');
+      expect(actual.readAt).toStrictEqual(['1999-01-01']);
     });
   });
 
