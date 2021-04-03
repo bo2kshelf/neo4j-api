@@ -72,19 +72,19 @@ describe(UsersService.name, () => {
       ];
       const expectedReads = [
         {
-          book: expectedBooks[0],
-          user: expectedUser,
-          readAt: ['2000-01-01'],
+          bookId: expectedBooks[0].id,
+          userId: expectedUser.id,
+          readAt: '2000-01-01',
         },
         {
-          book: expectedBooks[1],
-          user: expectedUser,
-          readAt: ['2000-01-02'],
+          bookId: expectedBooks[1].id,
+          userId: expectedUser.id,
+          readAt: '2000-01-02',
         },
         {
-          book: expectedBooks[2],
-          user: expectedUser,
-          readAt: ['2000-01-03'],
+          bookId: expectedBooks[2].id,
+          userId: expectedUser.id,
+          readAt: '2000-01-03',
         },
       ];
 
@@ -100,14 +100,14 @@ describe(UsersService.name, () => {
           ),
         );
         await Promise.all(
-          expectedReads.map(({book, user, ...props}) =>
+          expectedReads.map(({bookId, userId, readAt}) =>
             neo4jService.write(
               `
-            MATCH (u:User {id: $user.id}) MATCH (b:Book {id: $book.id})
-            CREATE (u)-[r:READ_BOOK]->(b) SET r=$props
-            RETURN *
-            `,
-              {user, book, props},
+              MATCH (b:Book {id: $bookId}),(u:User {id: $userId})
+              CREATE (u)-[r:READ_BOOK {readAt: [date($readAt)]}]->(b)
+              RETURN *
+              `,
+              {bookId, userId, readAt},
             ),
           ),
         );
@@ -128,19 +128,22 @@ describe(UsersService.name, () => {
           {
             records: [
               {
-                userId: expectedUser.id,
-                bookId: expectedReads[0].book.id,
-                latestReadAt: expectedReads[0].readAt[0],
+                userId: expectedReads[0].userId,
+                bookId: expectedReads[0].bookId,
+                readAt: [expectedReads[0].readAt],
+                latestReadAt: expectedReads[0].readAt,
               },
               {
-                userId: expectedUser.id,
-                bookId: expectedReads[1].book.id,
-                latestReadAt: expectedReads[1].readAt[0],
+                userId: expectedReads[1].userId,
+                bookId: expectedReads[1].bookId,
+                readAt: [expectedReads[1].readAt],
+                latestReadAt: expectedReads[1].readAt,
               },
               {
-                userId: expectedUser.id,
-                bookId: expectedReads[2].book.id,
-                latestReadAt: expectedReads[2].readAt[0],
+                userId: expectedReads[2].userId,
+                bookId: expectedReads[2].bookId,
+                readAt: [expectedReads[2].readAt],
+                latestReadAt: expectedReads[2].readAt,
               },
             ],
             hasPrevious: false,
@@ -153,19 +156,22 @@ describe(UsersService.name, () => {
           {
             records: [
               {
-                userId: expectedUser.id,
-                bookId: expectedReads[0].book.id,
-                latestReadAt: expectedReads[0].readAt[0],
+                userId: expectedReads[0].userId,
+                bookId: expectedReads[0].bookId,
+                readAt: [expectedReads[0].readAt],
+                latestReadAt: expectedReads[0].readAt,
               },
               {
-                userId: expectedUser.id,
-                bookId: expectedReads[1].book.id,
-                latestReadAt: expectedReads[1].readAt[0],
+                userId: expectedReads[1].userId,
+                bookId: expectedReads[1].bookId,
+                readAt: [expectedReads[1].readAt],
+                latestReadAt: expectedReads[1].readAt,
               },
               {
-                userId: expectedUser.id,
-                bookId: expectedReads[2].book.id,
-                latestReadAt: expectedReads[2].readAt[0],
+                userId: expectedReads[2].userId,
+                bookId: expectedReads[2].bookId,
+                readAt: [expectedReads[2].readAt],
+                latestReadAt: expectedReads[2].readAt,
               },
             ],
             hasPrevious: false,
@@ -182,19 +188,22 @@ describe(UsersService.name, () => {
           {
             records: [
               {
-                userId: expectedUser.id,
-                bookId: expectedReads[2].book.id,
-                latestReadAt: expectedReads[2].readAt[0],
+                userId: expectedReads[2].userId,
+                bookId: expectedReads[2].bookId,
+                readAt: [expectedReads[2].readAt],
+                latestReadAt: expectedReads[2].readAt,
               },
               {
-                userId: expectedUser.id,
-                bookId: expectedReads[1].book.id,
-                latestReadAt: expectedReads[1].readAt[0],
+                userId: expectedReads[1].userId,
+                bookId: expectedReads[1].bookId,
+                readAt: [expectedReads[1].readAt],
+                latestReadAt: expectedReads[1].readAt,
               },
               {
-                userId: expectedUser.id,
-                bookId: expectedReads[0].book.id,
-                latestReadAt: expectedReads[0].readAt[0],
+                userId: expectedReads[0].userId,
+                bookId: expectedReads[0].bookId,
+                readAt: [expectedReads[0].readAt],
+                latestReadAt: expectedReads[0].readAt,
               },
             ],
             hasPrevious: false,
@@ -207,9 +216,10 @@ describe(UsersService.name, () => {
           {
             records: [
               {
-                userId: expectedUser.id,
-                bookId: expectedReads[1].book.id,
-                latestReadAt: expectedReads[1].readAt[0],
+                userId: expectedReads[1].userId,
+                bookId: expectedReads[1].bookId,
+                readAt: [expectedReads[1].readAt],
+                latestReadAt: expectedReads[1].readAt,
               },
             ],
             hasPrevious: true,
@@ -241,6 +251,7 @@ describe(UsersService.name, () => {
         for (const [i, record] of actual.records.entries()) {
           expect(record.userId).toBe(expected.records[i].userId);
           expect(record.bookId).toBe(expected.records[i].bookId);
+          expect(record.readAt).toStrictEqual(expected.records[i].readAt);
           expect(record.latestReadAt).toBe(expected.records[i].latestReadAt);
         }
       });
@@ -252,8 +263,8 @@ describe(UsersService.name, () => {
         CREATE (u:User {id: "user1"})
         CREATE (b1:Book {id: "book1", title: "A"})
         CREATE (b2:Book {id: "book2", title: "A"})
-        CREATE (u)-[:READ_BOOK {readAt: ["2000-01-01", "2002-01-02"]}]->(b1)
-        CREATE (u)-[:READ_BOOK {readAt: ["2001-01-01", "2001-01-02"]}]->(b2)
+        CREATE (u)-[:READ_BOOK {readAt: [date("2000-01-01"), date("2002-01-02")]}]->(b1)
+        CREATE (u)-[:READ_BOOK {readAt: [date("2001-01-01"), date("2001-01-02")]}]->(b2)
         RETURN *
         `,
       );
@@ -267,10 +278,19 @@ describe(UsersService.name, () => {
       expect(actual.count).toBe(2);
 
       expect(actual.records).toHaveLength(2);
+
       expect(actual.records[0].bookId).toBe('book1');
+      expect(actual.records[0].readAt).toStrictEqual([
+        '2002-01-02',
+        '2000-01-01',
+      ]);
       expect(actual.records[0].latestReadAt).toBe('2002-01-02');
 
       expect(actual.records[1].bookId).toBe('book2');
+      expect(actual.records[1].readAt).toStrictEqual([
+        '2001-01-02',
+        '2001-01-01',
+      ]);
       expect(actual.records[1].latestReadAt).toBe('2001-01-02');
     });
 
@@ -281,9 +301,9 @@ describe(UsersService.name, () => {
         CREATE (b1:Book {id: "book1", title: "A"})
         CREATE (b2:Book {id: "book2", title: "B"})
         CREATE (b3:Book {id: "book3", title: "C"})
-        CREATE (u)-[:READ_BOOK {readAt: ["2000-01-01"]}]->(b1)
-        CREATE (u)-[:READ_BOOK {readAt: ["2000-01-01"]}]->(b2)
-        CREATE (u)-[:READ_BOOK {readAt: ["2000-01-01"]}]->(b3)
+        CREATE (u)-[:READ_BOOK {readAt: [date("2000-01-01")]}]->(b1)
+        CREATE (u)-[:READ_BOOK {readAt: [date("2000-01-01")]}]->(b2)
+        CREATE (u)-[:READ_BOOK {readAt: [date("2000-01-01")]}]->(b3)
         RETURN *
         `,
       );
@@ -339,9 +359,9 @@ describe(UsersService.name, () => {
         CREATE (b3:Book {id: "book3", title: "C"})
         CREATE (b4:Book {id: "book4", title: "D"})
         CREATE (b5:Book {id: "book5", title: "E"})
-        CREATE (u)-[:READ_BOOK {readAt: ["2000-01-01"]}]->(b1)
-        CREATE (u)-[:READ_BOOK {readAt: ["2000-01-01"]}]->(b2)
-        CREATE (u)-[:READ_BOOK {readAt: ["2000-01-02"]}]->(b3)
+        CREATE (u)-[:READ_BOOK {readAt: [date("2000-01-01")]}]->(b1)
+        CREATE (u)-[:READ_BOOK {readAt: [date("2000-01-01")]}]->(b2)
+        CREATE (u)-[:READ_BOOK {readAt: [date("2000-01-02")]}]->(b3)
         CREATE (u)-[:READ_BOOK]->(b4)
         CREATE (u)-[:READ_BOOK]->(b5)
         RETURN *
