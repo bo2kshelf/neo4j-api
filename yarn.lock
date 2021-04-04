@@ -602,7 +602,7 @@ __metadata:
     graphql-scalars: 1.7.0
     jest: 26.6.3
     jest-junit: 12.0.0
-    nanoid: 3.1.20
+    nanoid: 3.1.22
     neo4j-driver: 4.2.3
     npm-run-all: 4.1.5
     prettier: 2.2.1
@@ -8676,12 +8676,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nanoid@npm:3.1.20":
-  version: 3.1.20
-  resolution: "nanoid@npm:3.1.20"
+"nanoid@npm:3.1.22":
+  version: 3.1.22
+  resolution: "nanoid@npm:3.1.22"
   bin:
     nanoid: bin/nanoid.cjs
-  checksum: 4788d36edcfec7bb32ddf33ed8f1f46df2867f70e9b1993bb131f7677e04ead2b621e5d614d2736308be18db1d54208d8ab207b4586bd5b052f71fb9d4c0ebea
+  checksum: 6a38c799816de388cd67233a9fad6216e0ad2abda3ce5b34eb126afbef6905924507223dc65797e2bcbc513f9cd7e078ea7e69448d59f434a6206b491278ae24
   languageName: node
   linkType: hard
 
