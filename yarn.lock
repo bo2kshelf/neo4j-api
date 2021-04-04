@@ -589,7 +589,7 @@ __metadata:
     "@nestjs/schematics": 7.2.9
     "@nestjs/testing": 7.6.15
     "@types/express": 4.17.11
-    "@types/faker": ^5.1.7
+    "@types/faker": 5.1.7
     "@types/jest": 26.0.22
     "@types/node": 14.14.37
     "@types/supertest": 2.0.10
@@ -597,7 +597,7 @@ __metadata:
     class-transformer: 0.3.1
     class-validator: 0.12.2
     eslint: 7.16.0
-    faker: ^5.5.1
+    faker: 5.5.1
     graphql: 15.4.0
     graphql-scalars: 1.7.0
     jest: 26.6.3
@@ -1958,7 +1958,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/faker@npm:^5.1.7":
+"@types/faker@npm:5.1.7":
   version: 5.1.7
   resolution: "@types/faker@npm:5.1.7"
   checksum: 75379a5c4cb1e6d87b3aa33ce0397150cf973567f283fb40513841148e2cc83abef17872a1f537f05acc39df7817bbe47033959084cf6647500f05b8e6c6adc8
@@ -5636,7 +5636,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"faker@npm:^5.5.1":
+"faker@npm:5.5.1":
   version: 5.5.1
   resolution: "faker@npm:5.5.1"
   checksum: 6bd19c37a0d086091869d086b509249b596fd83eff0eb0c48d9fac9b20d6e917baf6e6433fe38e0e9585f7c12deb925b0c1c6b8f31488e2f28b146aceb0cf34c
