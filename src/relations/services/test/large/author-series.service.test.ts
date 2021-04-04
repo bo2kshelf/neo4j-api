@@ -107,7 +107,7 @@ describe(AuthorSeriesRelationsService.name, () => {
       expect(actual.hasNext).toBe(expected.hasNext);
       expect(actual.hasPrevious).toBe(expected.hasPrevious);
 
-      for (const [i, actualRelation] of actual.relations.entries()) {
+      for (const [i, actualRelation] of actual.nodes.entries()) {
         expect(actualRelation.seriesId).toBe(expected.relations[i].seriesId);
         expect(actualRelation.authorId).toBe(expected.relations[i].authorId);
       }
@@ -182,7 +182,7 @@ describe(AuthorSeriesRelationsService.name, () => {
       expect(actual.hasNext).toBe(expected.hasNext);
       expect(actual.hasPrevious).toBe(expected.hasPrevious);
 
-      for (const [i, actualRelation] of actual.relations.entries()) {
+      for (const [i, actualRelation] of actual.nodes.entries()) {
         expect(actualRelation.seriesId).toBe(expected.relations[i].seriesId);
         expect(actualRelation.authorId).toBe(expected.relations[i].authorId);
       }

@@ -29,7 +29,7 @@ export class ResolveAuthorWritesArgs {
 @ObjectType('AuthorWritesReturn')
 export class ResolveAuthorWritesReturnEntity {
   @Field(() => [WritingEntity])
-  writings!: WritingEntity[];
+  nodes!: WritingEntity[];
 
   @Field(() => Int)
   count!: number;

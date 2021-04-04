@@ -26,7 +26,7 @@ export class ResolveUsersStackedBooksArgs {
 @ObjectType('UsersStackedBooksReturn')
 export class ResolveUsersStackedBooksReturnEntity {
   @Field(() => [StackedBookRecordEntity])
-  records!: StackedBookRecordEntity[];
+  nodes!: StackedBookRecordEntity[];
 
   @Field(() => Int)
   count!: number;

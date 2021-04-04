@@ -26,7 +26,7 @@ export class ResolveUsersHasBooksArgs {
 @ObjectType('UsersHasBooksReturn')
 export class ResolveUsersHasBooksReturnEntity {
   @Field(() => [HaveBookRecordEntity])
-  records!: HaveBookRecordEntity[];
+  nodes!: HaveBookRecordEntity[];
 
   @Field(() => Int)
   count!: number;

@@ -236,7 +236,7 @@ describe(PublishersService.name, () => {
       [
         {skip: 0, limit: 0, except: [], orderBy: {title: OrderBy.ASC}},
         {
-          publications: [],
+          nodes: [],
           hasPrevious: false,
           hasNext: true,
         },
@@ -244,7 +244,7 @@ describe(PublishersService.name, () => {
       [
         {skip: 0, limit: 3, except: [], orderBy: {title: OrderBy.ASC}},
         {
-          publications: [
+          nodes: [
             {bookId: expectedBooks[0].id, publisherId: expectedPublisher.id},
             {bookId: expectedBooks[1].id, publisherId: expectedPublisher.id},
             {bookId: expectedBooks[2].id, publisherId: expectedPublisher.id},
@@ -256,7 +256,7 @@ describe(PublishersService.name, () => {
       [
         {skip: 0, limit: 3, except: [], orderBy: {title: OrderBy.DESC}},
         {
-          publications: [
+          nodes: [
             {bookId: expectedBooks[2].id, publisherId: expectedPublisher.id},
             {bookId: expectedBooks[1].id, publisherId: expectedPublisher.id},
             {bookId: expectedBooks[0].id, publisherId: expectedPublisher.id},
@@ -273,7 +273,7 @@ describe(PublishersService.name, () => {
           orderBy: {title: OrderBy.ASC},
         },
         {
-          publications: [
+          nodes: [
             {bookId: expectedBooks[0].id, publisherId: expectedPublisher.id},
             {bookId: expectedBooks[2].id, publisherId: expectedPublisher.id},
           ],
@@ -284,7 +284,7 @@ describe(PublishersService.name, () => {
       [
         {skip: 0, limit: 1, except: [], orderBy: {title: OrderBy.ASC}},
         {
-          publications: [
+          nodes: [
             {bookId: expectedBooks[0].id, publisherId: expectedPublisher.id},
           ],
           hasPrevious: false,
@@ -294,7 +294,7 @@ describe(PublishersService.name, () => {
       [
         {skip: 1, limit: 1, except: [], orderBy: {title: OrderBy.ASC}},
         {
-          publications: [
+          nodes: [
             {bookId: expectedBooks[1].id, publisherId: expectedPublisher.id},
           ],
           hasPrevious: true,
@@ -304,7 +304,7 @@ describe(PublishersService.name, () => {
       [
         {skip: 3, limit: 3, except: [], orderBy: {title: OrderBy.ASC}},
         {
-          publications: [],
+          nodes: [],
           hasPrevious: true,
           hasNext: false,
         },
@@ -319,12 +319,10 @@ describe(PublishersService.name, () => {
       expect(actual.hasNext).toBe(expected.hasNext);
       expect(actual.count).toBe(expectedBooks.length);
 
-      expect(actual.publications).toHaveLength(expected.publications.length);
-      for (const [i, actualPub] of actual.publications.entries()) {
-        expect(actualPub.bookId).toBe(expected.publications[i].bookId);
-        expect(actualPub.publisherId).toBe(
-          expected.publications[i].publisherId,
-        );
+      expect(actual.nodes).toHaveLength(expected.nodes.length);
+      for (const [i, actualPub] of actual.nodes.entries()) {
+        expect(actualPub.bookId).toBe(expected.nodes[i].bookId);
+        expect(actualPub.publisherId).toBe(expected.nodes[i].publisherId);
       }
     });
   });

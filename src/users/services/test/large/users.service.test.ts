@@ -117,7 +117,7 @@ describe(UsersService.name, () => {
         [
           {skip: 0, limit: 0, orderBy: {date: OrderBy.ASC, title: OrderBy.ASC}},
           {
-            records: [],
+            nodes: [],
             hasPrevious: false,
             hasNext: true,
             count: expectedReads.length,
@@ -126,7 +126,7 @@ describe(UsersService.name, () => {
         [
           {skip: 0, limit: 3, orderBy: {date: OrderBy.ASC, title: OrderBy.ASC}},
           {
-            records: [
+            nodes: [
               {
                 userId: expectedReads[0].userId,
                 bookId: expectedReads[0].bookId,
@@ -154,7 +154,7 @@ describe(UsersService.name, () => {
         [
           {skip: 0, limit: 6, orderBy: {date: OrderBy.ASC, title: OrderBy.ASC}},
           {
-            records: [
+            nodes: [
               {
                 userId: expectedReads[0].userId,
                 bookId: expectedReads[0].bookId,
@@ -186,7 +186,7 @@ describe(UsersService.name, () => {
             orderBy: {date: OrderBy.DESC, title: OrderBy.ASC},
           },
           {
-            records: [
+            nodes: [
               {
                 userId: expectedReads[2].userId,
                 bookId: expectedReads[2].bookId,
@@ -214,7 +214,7 @@ describe(UsersService.name, () => {
         [
           {skip: 1, limit: 1, orderBy: {date: OrderBy.ASC, title: OrderBy.ASC}},
           {
-            records: [
+            nodes: [
               {
                 userId: expectedReads[1].userId,
                 bookId: expectedReads[1].bookId,
@@ -234,7 +234,7 @@ describe(UsersService.name, () => {
             orderBy: {date: OrderBy.ASC, title: OrderBy.ASC},
           },
           {
-            records: [],
+            nodes: [],
             hasPrevious: true,
             hasNext: false,
             count: expectedReads.length,
@@ -247,12 +247,12 @@ describe(UsersService.name, () => {
         expect(actual.hasNext).toBe(expected.hasNext);
         expect(actual.count).toBe(expected.count);
 
-        expect(actual.records).toHaveLength(expected.records.length);
-        for (const [i, record] of actual.records.entries()) {
-          expect(record.userId).toBe(expected.records[i].userId);
-          expect(record.bookId).toBe(expected.records[i].bookId);
-          expect(record.readAt).toStrictEqual(expected.records[i].readAt);
-          expect(record.latestReadAt).toBe(expected.records[i].latestReadAt);
+        expect(actual.nodes).toHaveLength(expected.nodes.length);
+        for (const [i, record] of actual.nodes.entries()) {
+          expect(record.userId).toBe(expected.nodes[i].userId);
+          expect(record.bookId).toBe(expected.nodes[i].bookId);
+          expect(record.readAt).toStrictEqual(expected.nodes[i].readAt);
+          expect(record.latestReadAt).toBe(expected.nodes[i].latestReadAt);
         }
       });
     });
@@ -277,21 +277,21 @@ describe(UsersService.name, () => {
       expect(actual.hasNext).toBe(false);
       expect(actual.count).toBe(2);
 
-      expect(actual.records).toHaveLength(2);
+      expect(actual.nodes).toHaveLength(2);
 
-      expect(actual.records[0].bookId).toBe('book1');
-      expect(actual.records[0].readAt).toStrictEqual([
+      expect(actual.nodes[0].bookId).toBe('book1');
+      expect(actual.nodes[0].readAt).toStrictEqual([
         '2002-01-02',
         '2000-01-01',
       ]);
-      expect(actual.records[0].latestReadAt).toBe('2002-01-02');
+      expect(actual.nodes[0].latestReadAt).toBe('2002-01-02');
 
-      expect(actual.records[1].bookId).toBe('book2');
-      expect(actual.records[1].readAt).toStrictEqual([
+      expect(actual.nodes[1].bookId).toBe('book2');
+      expect(actual.nodes[1].readAt).toStrictEqual([
         '2001-01-02',
         '2001-01-01',
       ]);
-      expect(actual.records[1].latestReadAt).toBe('2001-01-02');
+      expect(actual.nodes[1].latestReadAt).toBe('2001-01-02');
     });
 
     it('同じ日付の記録があったときの並び替え', async () => {
@@ -316,10 +316,10 @@ describe(UsersService.name, () => {
       expect(actual.hasNext).toBe(false);
       expect(actual.count).toBe(3);
 
-      expect(actual.records).toHaveLength(3);
-      expect(actual.records[0].bookId).toBe('book3');
-      expect(actual.records[1].bookId).toBe('book2');
-      expect(actual.records[2].bookId).toBe('book1');
+      expect(actual.nodes).toHaveLength(3);
+      expect(actual.nodes[0].bookId).toBe('book3');
+      expect(actual.nodes[1].bookId).toBe('book2');
+      expect(actual.nodes[2].bookId).toBe('book1');
     });
 
     it('日付がない場合の並び替え', async () => {
@@ -344,10 +344,10 @@ describe(UsersService.name, () => {
       expect(actual.hasNext).toBe(false);
       expect(actual.count).toBe(3);
 
-      expect(actual.records).toHaveLength(3);
-      expect(actual.records[0].bookId).toBe('book3');
-      expect(actual.records[1].bookId).toBe('book2');
-      expect(actual.records[2].bookId).toBe('book1');
+      expect(actual.nodes).toHaveLength(3);
+      expect(actual.nodes[0].bookId).toBe('book3');
+      expect(actual.nodes[1].bookId).toBe('book2');
+      expect(actual.nodes[2].bookId).toBe('book1');
     });
 
     it('ミックスされた並び替え', async () => {
@@ -376,12 +376,12 @@ describe(UsersService.name, () => {
       expect(actual.hasNext).toBe(false);
       expect(actual.count).toBe(5);
 
-      expect(actual.records).toHaveLength(5);
-      expect(actual.records[0].bookId).toBe('book3');
-      expect(actual.records[1].bookId).toBe('book1');
-      expect(actual.records[2].bookId).toBe('book2');
-      expect(actual.records[3].bookId).toBe('book4');
-      expect(actual.records[4].bookId).toBe('book5');
+      expect(actual.nodes).toHaveLength(5);
+      expect(actual.nodes[0].bookId).toBe('book3');
+      expect(actual.nodes[1].bookId).toBe('book1');
+      expect(actual.nodes[2].bookId).toBe('book2');
+      expect(actual.nodes[3].bookId).toBe('book4');
+      expect(actual.nodes[4].bookId).toBe('book5');
     });
   });
 
@@ -432,7 +432,7 @@ describe(UsersService.name, () => {
             count: 3,
             hasPrevious: false,
             hasNext: true,
-            records: [],
+            nodes: [],
           },
         ],
         [
@@ -441,7 +441,7 @@ describe(UsersService.name, () => {
             count: 3,
             hasPrevious: false,
             hasNext: false,
-            records: [
+            nodes: [
               {
                 have: true,
                 userId: expectedUser.id,
@@ -466,7 +466,7 @@ describe(UsersService.name, () => {
             count: 3,
             hasPrevious: false,
             hasNext: false,
-            records: [
+            nodes: [
               {
                 have: true,
                 userId: expectedUser.id,
@@ -491,7 +491,7 @@ describe(UsersService.name, () => {
             count: 3,
             hasPrevious: true,
             hasNext: true,
-            records: [
+            nodes: [
               {
                 have: true,
                 userId: expectedUser.id,
@@ -506,7 +506,7 @@ describe(UsersService.name, () => {
             count: 3,
             hasPrevious: true,
             hasNext: false,
-            records: [],
+            nodes: [],
           },
         ],
         [
@@ -515,7 +515,7 @@ describe(UsersService.name, () => {
             count: 3,
             hasPrevious: false,
             hasNext: false,
-            records: [
+            nodes: [
               {
                 have: true,
                 userId: expectedUser.id,
@@ -540,7 +540,7 @@ describe(UsersService.name, () => {
         expect(actual.count).toBe(expected.count);
         expect(actual.hasPrevious).toBe(expected.hasPrevious);
         expect(actual.hasNext).toBe(expected.hasNext);
-        expect(actual.records).toHaveLength(expected.records.length);
+        expect(actual.nodes).toHaveLength(expected.nodes.length);
       });
     });
 
@@ -566,9 +566,9 @@ describe(UsersService.name, () => {
       expect(actual.hasNext).toBe(false);
       expect(actual.count).toBe(2);
 
-      expect(actual.records).toHaveLength(2);
-      expect(actual.records[0].bookId).toBe('book2');
-      expect(actual.records[1].bookId).toBe('book1');
+      expect(actual.nodes).toHaveLength(2);
+      expect(actual.nodes[0].bookId).toBe('book2');
+      expect(actual.nodes[1].bookId).toBe('book1');
     });
   });
 
@@ -619,7 +619,7 @@ describe(UsersService.name, () => {
             count: 3,
             hasPrevious: false,
             hasNext: true,
-            records: [],
+            nodes: [],
           },
         ],
         [
@@ -628,7 +628,7 @@ describe(UsersService.name, () => {
             count: 3,
             hasPrevious: false,
             hasNext: false,
-            records: [
+            nodes: [
               {
                 reading: true,
                 userId: expectedUser.id,
@@ -653,7 +653,7 @@ describe(UsersService.name, () => {
             count: 3,
             hasPrevious: false,
             hasNext: false,
-            records: [
+            nodes: [
               {
                 reading: true,
                 userId: expectedUser.id,
@@ -678,7 +678,7 @@ describe(UsersService.name, () => {
             count: 3,
             hasPrevious: true,
             hasNext: true,
-            records: [
+            nodes: [
               {
                 reading: true,
                 userId: expectedUser.id,
@@ -693,7 +693,7 @@ describe(UsersService.name, () => {
             count: 3,
             hasPrevious: true,
             hasNext: false,
-            records: [],
+            nodes: [],
           },
         ],
         [
@@ -702,7 +702,7 @@ describe(UsersService.name, () => {
             count: 3,
             hasPrevious: false,
             hasNext: false,
-            records: [
+            nodes: [
               {
                 reading: true,
                 userId: expectedUser.id,
@@ -730,7 +730,7 @@ describe(UsersService.name, () => {
         expect(actual.count).toBe(expected.count);
         expect(actual.hasPrevious).toBe(expected.hasPrevious);
         expect(actual.hasNext).toBe(expected.hasNext);
-        expect(actual.records).toHaveLength(expected.records.length);
+        expect(actual.nodes).toHaveLength(expected.nodes.length);
       });
     });
 
@@ -756,9 +756,9 @@ describe(UsersService.name, () => {
       expect(actual.hasNext).toBe(false);
       expect(actual.count).toBe(2);
 
-      expect(actual.records).toHaveLength(2);
-      expect(actual.records[0].bookId).toBe('book2');
-      expect(actual.records[1].bookId).toBe('book1');
+      expect(actual.nodes).toHaveLength(2);
+      expect(actual.nodes[0].bookId).toBe('book2');
+      expect(actual.nodes[1].bookId).toBe('book1');
     });
   });
 
@@ -809,7 +809,7 @@ describe(UsersService.name, () => {
             count: 3,
             hasPrevious: false,
             hasNext: true,
-            records: [],
+            nodes: [],
           },
         ],
         [
@@ -818,7 +818,7 @@ describe(UsersService.name, () => {
             count: 3,
             hasPrevious: false,
             hasNext: false,
-            records: [
+            nodes: [
               {
                 wish: true,
                 userId: expectedUser.id,
@@ -843,7 +843,7 @@ describe(UsersService.name, () => {
             count: 3,
             hasPrevious: false,
             hasNext: false,
-            records: [
+            nodes: [
               {
                 wish: true,
                 userId: expectedUser.id,
@@ -868,7 +868,7 @@ describe(UsersService.name, () => {
             count: 3,
             hasPrevious: true,
             hasNext: true,
-            records: [
+            nodes: [
               {
                 wish: true,
                 userId: expectedUser.id,
@@ -883,7 +883,7 @@ describe(UsersService.name, () => {
             count: 3,
             hasPrevious: true,
             hasNext: false,
-            records: [],
+            nodes: [],
           },
         ],
         [
@@ -892,7 +892,7 @@ describe(UsersService.name, () => {
             count: 3,
             hasPrevious: false,
             hasNext: false,
-            records: [
+            nodes: [
               {
                 wish: true,
                 userId: expectedUser.id,
@@ -920,7 +920,7 @@ describe(UsersService.name, () => {
         expect(actual.count).toBe(expected.count);
         expect(actual.hasPrevious).toBe(expected.hasPrevious);
         expect(actual.hasNext).toBe(expected.hasNext);
-        expect(actual.records).toHaveLength(expected.records.length);
+        expect(actual.nodes).toHaveLength(expected.nodes.length);
       });
     });
 
@@ -946,11 +946,11 @@ describe(UsersService.name, () => {
       expect(actual.hasNext).toBe(false);
       expect(actual.count).toBe(2);
 
-      expect(actual.records).toHaveLength(2);
-      expect(actual.records[0].bookId).toBe('book2');
-      expect(actual.records[0].wish).toBe(true);
-      expect(actual.records[1].bookId).toBe('book1');
-      expect(actual.records[1].wish).toBe(true);
+      expect(actual.nodes).toHaveLength(2);
+      expect(actual.nodes[0].bookId).toBe('book2');
+      expect(actual.nodes[0].wish).toBe(true);
+      expect(actual.nodes[1].bookId).toBe('book1');
+      expect(actual.nodes[1].wish).toBe(true);
     });
   });
 
@@ -1001,7 +1001,7 @@ describe(UsersService.name, () => {
             count: 3,
             hasPrevious: false,
             hasNext: true,
-            records: [],
+            nodes: [],
           },
         ],
         [
@@ -1010,7 +1010,7 @@ describe(UsersService.name, () => {
             count: 3,
             hasPrevious: false,
             hasNext: false,
-            records: [
+            nodes: [
               {
                 have: true,
                 userId: expectedUser.id,
@@ -1035,7 +1035,7 @@ describe(UsersService.name, () => {
             count: 3,
             hasPrevious: false,
             hasNext: false,
-            records: [
+            nodes: [
               {
                 have: true,
                 userId: expectedUser.id,
@@ -1060,7 +1060,7 @@ describe(UsersService.name, () => {
             count: 3,
             hasPrevious: true,
             hasNext: true,
-            records: [
+            nodes: [
               {
                 have: true,
                 userId: expectedUser.id,
@@ -1075,7 +1075,7 @@ describe(UsersService.name, () => {
             count: 3,
             hasPrevious: true,
             hasNext: false,
-            records: [],
+            nodes: [],
           },
         ],
         [
@@ -1084,7 +1084,7 @@ describe(UsersService.name, () => {
             count: 3,
             hasPrevious: false,
             hasNext: false,
-            records: [
+            nodes: [
               {
                 have: true,
                 userId: expectedUser.id,
@@ -1112,7 +1112,7 @@ describe(UsersService.name, () => {
         expect(actual.count).toBe(expected.count);
         expect(actual.hasPrevious).toBe(expected.hasPrevious);
         expect(actual.hasNext).toBe(expected.hasNext);
-        expect(actual.records).toHaveLength(expected.records.length);
+        expect(actual.nodes).toHaveLength(expected.nodes.length);
       });
     });
 
@@ -1139,9 +1139,9 @@ describe(UsersService.name, () => {
       expect(actual.hasNext).toBe(false);
       expect(actual.count).toBe(2);
 
-      expect(actual.records).toHaveLength(2);
-      expect(actual.records[0].bookId).toBe('book3');
-      expect(actual.records[1].bookId).toBe('book2');
+      expect(actual.nodes).toHaveLength(2);
+      expect(actual.nodes[0].bookId).toBe('book3');
+      expect(actual.nodes[1].bookId).toBe('book2');
     });
   });
 

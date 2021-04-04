@@ -106,7 +106,7 @@ export class PublishersService {
       orderBy: {title: OrderBy};
     },
   ): Promise<{
-    publications: PublicationEntity[];
+    nodes: PublicationEntity[];
     count: number;
     hasPrevious: boolean;
     hasNext: boolean;
@@ -157,6 +157,6 @@ export class PublishersService {
         hasNext: result.records[0].get('next'),
         hasPrevious: result.records[0].get('previous'),
       }));
-    return {publications, ...meta};
+    return {nodes: publications, ...meta};
   }
 }

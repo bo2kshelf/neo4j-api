@@ -23,7 +23,7 @@ export class RelationResolver {
   ) {}
 
   @ResolveField(() => AuthorEntity)
-  async authors(
+  async author(
     @Parent() {authorId}: AuthorSeriesRelationEntity,
   ): Promise<AuthorEntity> {
     return this.authorsService.findById(authorId);

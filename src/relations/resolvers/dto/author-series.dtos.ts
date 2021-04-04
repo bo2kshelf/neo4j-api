@@ -50,7 +50,7 @@ export class ResolveSeriesRelatedAuthorsArgs {
 @ObjectType('SeriesRelatedAuthorsReturn')
 export class ResolveSeriesRelatedAuthorsReturn {
   @Field(() => [AuthorSeriesRelationEntity])
-  relations!: AuthorSeriesRelationEntity[];
+  nodes!: AuthorSeriesRelationEntity[];
 
   @Field(() => Int)
   count!: number;
@@ -86,7 +86,7 @@ export class ResolveAuthorsRelatedSeriesArgs {
 @ObjectType('AuthorsRelatedSeriesReturn')
 export class ResolveAuthorsRelatedSeriesReturn {
   @Field(() => [AuthorSeriesRelationEntity])
-  relations!: AuthorSeriesRelationEntity[];
+  nodes!: AuthorSeriesRelationEntity[];
 
   @Field(() => Int)
   count!: number;
