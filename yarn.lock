@@ -584,7 +584,7 @@ __metadata:
     "@nestjs/common": 7.6.15
     "@nestjs/config": 0.6.1
     "@nestjs/core": 7.6.15
-    "@nestjs/graphql": 7.9.8
+    "@nestjs/graphql": 7.9.11
     "@nestjs/platform-express": 7.6.15
     "@nestjs/schematics": 7.2.9
     "@nestjs/testing": 7.6.15
@@ -1396,9 +1396,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nestjs/graphql@npm:7.9.8":
-  version: 7.9.8
-  resolution: "@nestjs/graphql@npm:7.9.8"
+"@nestjs/graphql@npm:7.9.11":
+  version: 7.9.11
+  resolution: "@nestjs/graphql@npm:7.9.11"
   dependencies:
     "@apollo/gateway": ^0.17.0
     "@graphql-tools/merge": 6.2.7
@@ -1428,7 +1428,7 @@ __metadata:
       optional: true
     ts-morph:
       optional: true
-  checksum: 659e56d5ddba0b56af9dbb0b6ae343fffb8af5bc3c0ed3a36e1ccbe93f64200def49dd948bd6bef2cc56c292f35ee7108d7d891a97e9842f9a1ebc0b1b4c5da5
+  checksum: a78d27ab488570f7b996de3c65c642a6440b3f63c67accbe9ea182a47658cc5281804b83a71b0b7899a313ea01313a4d9b1e2d03f4a7f807675ed83506ad80be
   languageName: node
   linkType: hard
 
