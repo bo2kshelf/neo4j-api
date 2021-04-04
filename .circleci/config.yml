@@ -184,5 +184,6 @@ workflows:
             branches:
               only: develop
           image: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
+          cache_from: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME:develop
           registry: ghcr.io
           tag: develop
