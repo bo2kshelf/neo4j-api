@@ -78,7 +78,7 @@ export class AuthorsService {
       orderBy: {title: OrderBy};
     },
   ): Promise<{
-    writings: WritingEntity[];
+    nodes: WritingEntity[];
     count: number;
     hasPrevious: boolean;
     hasNext: boolean;
@@ -130,7 +130,7 @@ export class AuthorsService {
         hasNext: result.records[0].get('next'),
         hasPrevious: result.records[0].get('previous'),
       }));
-    return {writings, ...meta};
+    return {nodes: writings, ...meta};
   }
 
   async getWritingFromBook(

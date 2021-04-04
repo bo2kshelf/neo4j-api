@@ -31,16 +31,10 @@ export class ResolveSeriesConsistsOfArgs {
 @ObjectType('SeriesConsistsOfReturn')
 export class ResolveSeriesConsistsOfReturnEntity {
   @Field(() => [SeriesPartEntity])
-  parts!: SeriesPartEntity[];
+  nodes!: SeriesPartEntity[];
 
   @Field(() => Int)
   count!: number;
-
-  @Field(() => Int)
-  skip!: number;
-
-  @Field(() => Int)
-  limit!: number;
 
   @Field(() => Boolean)
   hasPrevious!: boolean;

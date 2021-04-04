@@ -329,8 +329,8 @@ describe(SeriesService.name, () => {
         expect(actual.hasNext).toBe(expected.hasNext);
         expect(actual.count).toBe(expectedBooks.length);
 
-        expect(actual.parts).toHaveLength(expected.books.length);
-        actual.parts.map(({bookId}, i) => {
+        expect(actual.nodes).toHaveLength(expected.books.length);
+        actual.nodes.map(({bookId}, i) => {
           expect(bookId).toBe(expected.books[i].id);
         });
       });
@@ -370,7 +370,7 @@ describe(SeriesService.name, () => {
 
       expect(actual.count).toBe(expectedSeries.length);
 
-      actual.parts.map(({bookId}) => {
+      actual.nodes.map(({bookId}) => {
         expect(expectedBook.id).toBe(bookId);
       });
     });

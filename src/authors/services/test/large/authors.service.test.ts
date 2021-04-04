@@ -271,11 +271,11 @@ describe(AuthorsService.name, () => {
         props,
       );
 
-      expect(actual.writings).toHaveLength(expected.books.length);
+      expect(actual.nodes).toHaveLength(expected.books.length);
       expect(actual.hasPrevious).toBe(expected.hasPrevious);
       expect(actual.hasNext).toBe(expected.hasNext);
       expect(actual.count).toBe(expectedBooks.length);
-      actual.writings.map(({bookId}, i) => {
+      actual.nodes.map(({bookId}, i) => {
         expect(bookId).toBe(expected.books[i].id);
       });
     });

@@ -82,12 +82,10 @@ export class SeriesService {
       orderBy: {order: OrderBy; title: OrderBy};
     },
   ): Promise<{
-    parts: SeriesPartEntity[];
+    nodes: SeriesPartEntity[];
     count: number;
     hasNext: boolean;
     hasPrevious: boolean;
-    skip: number;
-    limit: number;
   }> {
     const parts: SeriesPartEntity[] = await this.neo4jService
       .read(
@@ -131,17 +129,12 @@ export class SeriesService {
         hasNext: result.records[0].get('next'),
         hasPrevious: result.records[0].get('previous'),
       }));
-    return {
-      parts,
-      skip,
-      limit,
-      ...meta,
-    };
+    return {nodes: parts, ...meta};
   }
 
   async getPartsFromBook(
     bookId: string,
-  ): Promise<{parts: SeriesPartEntity[]; count: number}> {
+  ): Promise<{nodes: SeriesPartEntity[]; count: number}> {
     const parts: SeriesPartEntity[] = await this.neo4jService
       .read(
         `
@@ -174,6 +167,6 @@ export class SeriesService {
       .then((result) => ({
         count: result.records[0].get('count').toNumber(),
       }));
-    return {parts, ...meta};
+    return {nodes: parts, ...meta};
   }
 }

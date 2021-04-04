@@ -13,7 +13,7 @@ export class ResolveBooksIsPartOfSeriesArgs {
 @ObjectType('BooksPartOfSeriesReturn')
 export class BooksPartOfSeriesReturn {
   @Field(() => [SeriesPartEntity])
-  parts!: SeriesPartEntity[];
+  nodes!: SeriesPartEntity[];
 
   @Field(() => Int)
   count!: number;

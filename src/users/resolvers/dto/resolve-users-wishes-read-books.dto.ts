@@ -26,7 +26,7 @@ export class ResolveUsersWishesReadBooksArgs {
 @ObjectType('UsersWishReadBooksReturn')
 export class ResolveUsersWishesReadBooksReturnEntity {
   @Field(() => [WishReadBookRecordEntity])
-  records!: WishReadBookRecordEntity[];
+  nodes!: WishReadBookRecordEntity[];
 
   @Field(() => Int)
   count!: number;

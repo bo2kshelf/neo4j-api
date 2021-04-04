@@ -29,7 +29,7 @@ export class ResolvePublishersPublicationsArgs {
 @ObjectType('PublishersPublicationsReturn')
 export class PublishersPublicationsReturnEntity {
   @Field(() => [PublicationEntity])
-  publications!: PublicationEntity[];
+  nodes!: PublicationEntity[];
 
   @Field(() => Int)
   count!: number;

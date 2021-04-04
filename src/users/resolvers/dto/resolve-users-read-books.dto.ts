@@ -29,7 +29,7 @@ export class ResolveUsersReadBooksArgs {
 @ObjectType('UsersReadBooksReturn')
 export class ResolveUsersReadBooksReturnEntity {
   @Field(() => [ReadBookRecordEntity])
-  records!: ReadBookRecordEntity[];
+  nodes!: ReadBookRecordEntity[];
 
   @Field(() => Int)
   count!: number;

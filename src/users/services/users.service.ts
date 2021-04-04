@@ -33,7 +33,7 @@ export class UsersService {
     count: number;
     hasNext: boolean;
     hasPrevious: boolean;
-    records: ReadBookRecordEntity[];
+    nodes: ReadBookRecordEntity[];
   }> {
     const records: ReadBookRecordEntity[] = await this.neo4jService
       .read(
@@ -82,7 +82,7 @@ export class UsersService {
         hasNext: result.records[0].get('next'),
         hasPrevious: result.records[0].get('previous'),
       }));
-    return {records, ...meta};
+    return {nodes: records, ...meta};
   }
 
   async getHaveBooks(
@@ -96,7 +96,7 @@ export class UsersService {
     count: number;
     hasNext: boolean;
     hasPrevious: boolean;
-    records: HaveBookRecordEntity[];
+    nodes: HaveBookRecordEntity[];
   }> {
     const records: HaveBookRecordEntity[] = await this.neo4jService
       .read(
@@ -137,7 +137,7 @@ export class UsersService {
         hasNext: result.records[0].get('next'),
         hasPrevious: result.records[0].get('previous'),
       }));
-    return {records, ...meta};
+    return {nodes: records, ...meta};
   }
 
   async getReadingBooks(
@@ -148,7 +148,7 @@ export class UsersService {
       orderBy,
     }: {skip: number; limit: number; orderBy: {updatedAt: OrderBy}},
   ): Promise<{
-    records: ReadingBookRecordEntity[];
+    nodes: ReadingBookRecordEntity[];
     count: number;
     hasNext: boolean;
     hasPrevious: boolean;
@@ -192,7 +192,7 @@ export class UsersService {
         hasNext: result.records[0].get('next'),
         hasPrevious: result.records[0].get('previous'),
       }));
-    return {records, ...meta};
+    return {nodes: records, ...meta};
   }
 
   async getWishesToReadBook(
@@ -206,7 +206,7 @@ export class UsersService {
     count: number;
     hasNext: boolean;
     hasPrevious: boolean;
-    records: WishReadBookRecordEntity[];
+    nodes: WishReadBookRecordEntity[];
   }> {
     const records: WishReadBookRecordEntity[] = await this.neo4jService
       .read(
@@ -247,7 +247,7 @@ export class UsersService {
         hasNext: result.records[0].get('next'),
         hasPrevious: result.records[0].get('previous'),
       }));
-    return {records, ...meta};
+    return {nodes: records, ...meta};
   }
 
   async getStackedBooks(
@@ -261,7 +261,7 @@ export class UsersService {
     count: number;
     hasNext: boolean;
     hasPrevious: boolean;
-    records: StackedBookRecordEntity[];
+    nodes: StackedBookRecordEntity[];
   }> {
     const records: StackedBookRecordEntity[] = await this.neo4jService
       .read(
@@ -301,7 +301,7 @@ export class UsersService {
         hasNext: result.records[0].get('next'),
         hasPrevious: result.records[0].get('previous'),
       }));
-    return {records, ...meta};
+    return {nodes: records, ...meta};
   }
 
   async readBook(

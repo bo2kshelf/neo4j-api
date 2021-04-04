@@ -17,7 +17,7 @@ export class AuthorSeriesRelationsService {
       orderBy,
     }: {skip: number; limit: number; orderBy: {title: OrderBy}},
   ): Promise<{
-    relations: AuthorSeriesRelationEntity[];
+    nodes: AuthorSeriesRelationEntity[];
     count: number;
     hasNext: boolean;
     hasPrevious: boolean;
@@ -67,7 +67,7 @@ export class AuthorSeriesRelationsService {
         hasNext: result.records[0].get('next'),
         hasPrevious: result.records[0].get('previous'),
       }));
-    return {relations, ...meta};
+    return {nodes: relations, ...meta};
   }
 
   async getFromSeries(
@@ -78,7 +78,7 @@ export class AuthorSeriesRelationsService {
       orderBy,
     }: {skip: number; limit: number; orderBy: {name: OrderBy}},
   ): Promise<{
-    relations: AuthorSeriesRelationEntity[];
+    nodes: AuthorSeriesRelationEntity[];
     count: number;
     hasNext: boolean;
     hasPrevious: boolean;
@@ -129,7 +129,7 @@ export class AuthorSeriesRelationsService {
         hasNext: result.records[0].get('next'),
         hasPrevious: result.records[0].get('previous'),
       }));
-    return {relations, ...meta};
+    return {nodes: relations, ...meta};
   }
 
   async getRelatedBooks(
