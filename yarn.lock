@@ -630,7 +630,7 @@ __metadata:
     class-transformer: 0.3.1
     class-validator: 0.12.2
     eslint: 7.16.0
-    faker: 5.5.1
+    faker: 5.5.2
     graphql: 15.4.0
     graphql-scalars: 1.9.0
     jest: 26.6.3
@@ -5501,10 +5501,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"faker@npm:5.5.1":
-  version: 5.5.1
-  resolution: "faker@npm:5.5.1"
-  checksum: 6bd19c37a0d086091869d086b509249b596fd83eff0eb0c48d9fac9b20d6e917baf6e6433fe38e0e9585f7c12deb925b0c1c6b8f31488e2f28b146aceb0cf34c
+"faker@npm:5.5.2":
+  version: 5.5.2
+  resolution: "faker@npm:5.5.2"
+  checksum: de923c65eee33656c59fc5865c2486d04d6bae5a7e6cd70153bf81bf64b6461e00c34e7322e3559094455a41aa050c85c56a1da5ce445e0d805df7e215c69374
   languageName: node
   linkType: hard
 
