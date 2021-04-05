@@ -622,7 +622,7 @@ __metadata:
     "@nestjs/schematics": 7.2.9
     "@nestjs/testing": 7.6.15
     "@types/express": 4.17.11
-    "@types/faker": 5.1.7
+    "@types/faker": 5.5.0
     "@types/jest": 26.0.22
     "@types/node": 14.14.37
     "@types/supertest": 2.0.11
@@ -1963,10 +1963,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/faker@npm:5.1.7":
-  version: 5.1.7
-  resolution: "@types/faker@npm:5.1.7"
-  checksum: 75379a5c4cb1e6d87b3aa33ce0397150cf973567f283fb40513841148e2cc83abef17872a1f537f05acc39df7817bbe47033959084cf6647500f05b8e6c6adc8
+"@types/faker@npm:5.5.0":
+  version: 5.5.0
+  resolution: "@types/faker@npm:5.5.0"
+  checksum: 13cbb2f64e07811519b3f95ef2016fa45e7f0a8f9ad46943dafb672a1a8f04aa70b36b3a2b5bcc1b62439529242acda7e194deba036fc713d09631a2399d1faf
   languageName: node
   linkType: hard
 
