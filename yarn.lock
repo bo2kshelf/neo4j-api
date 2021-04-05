@@ -5,19 +5,6 @@ __metadata:
   version: 4
   cacheKey: 7
 
-"@angular-devkit/core@npm:11.2.3":
-  version: 11.2.3
-  resolution: "@angular-devkit/core@npm:11.2.3"
-  dependencies:
-    ajv: 6.12.6
-    fast-json-stable-stringify: 2.1.0
-    magic-string: 0.25.7
-    rxjs: 6.6.3
-    source-map: 0.7.3
-  checksum: 4e421c0ad31f1fe48cf2f6a85ccccb4a9be5f8ff6f68127cd3f01c3552645f0257279120b0b4a6a47073cfa4bb388894dc5888d3173adbb75e7eb54d483ce6a5
-  languageName: node
-  linkType: hard
-
 "@angular-devkit/core@npm:11.2.4":
   version: 11.2.4
   resolution: "@angular-devkit/core@npm:11.2.4"
@@ -58,17 +45,6 @@ __metadata:
   bin:
     schematics: bin/schematics.js
   checksum: b1004a559823e24ce96497d424a2533c725c001992fdda78d0b3f658a3337c18b712c8833d6889d9650da3225f8391d72a571cc9139b08f23fc824f6aef4a5fb
-  languageName: node
-  linkType: hard
-
-"@angular-devkit/schematics@npm:11.2.3":
-  version: 11.2.3
-  resolution: "@angular-devkit/schematics@npm:11.2.3"
-  dependencies:
-    "@angular-devkit/core": 11.2.3
-    ora: 5.3.0
-    rxjs: 6.6.3
-  checksum: be20e28f23b3b19be8f99a16a78dc2fc4757f345e5f74f710ccf85ef67793feec4cdd6dbbfba52adb598e705b1b97e9c1033c97562fe37c3fa4fd165ce860ae2
   languageName: node
   linkType: hard
 
@@ -619,7 +595,6 @@ __metadata:
     "@nestjs/core": 7.6.15
     "@nestjs/graphql": 7.10.3
     "@nestjs/platform-express": 7.6.15
-    "@nestjs/schematics": 7.2.9
     "@nestjs/testing": 7.6.15
     "@types/express": 4.17.11
     "@types/faker": 5.5.0
@@ -1489,20 +1464,6 @@ __metadata:
     "@nestjs/common": ^7.0.0
     "@nestjs/core": ^7.0.0
   checksum: 256814948dfb4ecce972500205976b74812e2bc1b53af33f3fd14c07a7840ed287f824281b57863fb0711eff1bfcd991ad543372e145b68d5cdbdb07db1378e8
-  languageName: node
-  linkType: hard
-
-"@nestjs/schematics@npm:7.2.9":
-  version: 7.2.9
-  resolution: "@nestjs/schematics@npm:7.2.9"
-  dependencies:
-    "@angular-devkit/core": 11.2.3
-    "@angular-devkit/schematics": 11.2.3
-    fs-extra: 9.1.0
-    pluralize: 8.0.0
-  peerDependencies:
-    typescript: ^3.4.5 || ^4.0.0
-  checksum: 734f6ac9c2fdeea8c30b650dc1f955f5a89bcf9e4785bd563a808fa0fdff441387af6815ab765d05bda66649a6dfc1c959da0b15cbcd11f86a278f468ed7c89b
   languageName: node
   linkType: hard
 
