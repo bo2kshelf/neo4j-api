@@ -126,4 +126,57 @@ describe(LabelsService.name, () => {
       });
     });
   });
+
+  describe('publishedBook()', () => {
+    const expectedLabel = {id: 'label1', name: faker.lorem.words(2)};
+    const expectedBook = {id: 'book1', title: faker.lorem.words(2)};
+
+    beforeEach(async () => {
+      await neo4jService.write(`CREATE (n:Label) SET n=$expected RETURN *`, {
+        expected: expectedLabel,
+      });
+      await neo4jService.write(`CREATE (n:Book) SET n=$expected RETURN *`, {
+        expected: expectedBook,
+      });
+    });
+
+    it('正常な動作', async () => {
+      const actual = await labelsService.labeledBook({
+        labelId: expectedLabel.id,
+        bookId: expectedBook.id,
+      });
+
+      expect(actual.labelId).toBe(expectedLabel.id);
+      expect(actual.bookId).toBe(expectedBook.id);
+
+      const neo4jResult = await neo4jService.read(
+        `MATCH (:Label {id: $publisherId})-[r: LABELED_BOOK]->(:Book {id: $bookId}) RETURN r`,
+        {bookId: expectedBook.id, publisherId: expectedLabel.id},
+      );
+      expect(neo4jResult.records).toHaveLength(1);
+    });
+
+    it('2回同じ操作をすると上書き', async () => {
+      const once = await labelsService.labeledBook({
+        labelId: expectedLabel.id,
+        bookId: expectedBook.id,
+      });
+      const two = await labelsService.labeledBook({
+        labelId: expectedLabel.id,
+        bookId: expectedBook.id,
+      });
+
+      expect(once.labelId).toBe(expectedLabel.id);
+      expect(once.bookId).toBe(expectedBook.id);
+
+      expect(two.labelId).toBe(expectedLabel.id);
+      expect(two.bookId).toBe(expectedBook.id);
+
+      const neo4jResult = await neo4jService.read(
+        `MATCH (:Label {id: $publisherId})-[r: LABELED_BOOK]->(:Book {id: $bookId}) RETURN r`,
+        {bookId: expectedBook.id, publisherId: expectedLabel.id},
+      );
+      expect(neo4jResult.records).toHaveLength(1);
+    });
+  });
 });

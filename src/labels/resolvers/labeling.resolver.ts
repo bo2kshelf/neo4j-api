@@ -18,7 +18,7 @@ export class LabelingsResolver {
   }
 
   @ResolveField(() => LabelEntity)
-  async publisher(@Parent() {labelId}: LabelingEntity): Promise<LabelEntity> {
+  async label(@Parent() {labelId}: LabelingEntity): Promise<LabelEntity> {
     return this.labelsService.findById(labelId);
   }
 }

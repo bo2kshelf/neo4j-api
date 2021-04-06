@@ -6,9 +6,11 @@ import {
   ResolveReference,
 } from '@nestjs/graphql';
 import {LabelEntity} from '../entities/label.entity';
+import {LabelingEntity} from '../entities/labeling.entity';
 import {LabelsService} from '../services/labels.service';
 import {CreateLabelArgs} from './dto/create-label.dto';
 import {GetLabelArgs} from './dto/get-label.dto';
+import {LabeledBookArgs} from './dto/labeled-book.dto';
 
 @Resolver(() => LabelEntity)
 export class LabelsResolver {
@@ -38,5 +40,13 @@ export class LabelsResolver {
     args: CreateLabelArgs,
   ): Promise<LabelEntity> {
     return this.labelsService.create(args);
+  }
+
+  @Mutation(() => LabelingEntity)
+  async labeledBook(
+    @Args({type: () => LabeledBookArgs})
+    args: LabeledBookArgs,
+  ): Promise<LabelingEntity> {
+    return this.labelsService.labeledBook(args);
   }
 }
