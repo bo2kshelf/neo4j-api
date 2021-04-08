@@ -11,6 +11,7 @@ import {Neo4jModule} from './neo4j/neo4j.module';
 import {PublicationsModule} from './publishers/publications.module';
 import {PublishersModule} from './publishers/publishers.module';
 import {AuthorSeriesRelationsModule} from './relations/author-series.module';
+import {PublisherLabelRelationsModule} from './relations/publisher-label.module';
 import {SeriesPartModule} from './series/series-part.module';
 import {SeriesModule} from './series/series.module';
 import {UserRecordsModule} from './users/user-records.module';
@@ -42,6 +43,7 @@ import {UsersModule} from './users/users.module';
     UsersModule,
     UserRecordsModule,
     AuthorSeriesRelationsModule,
+    PublisherLabelRelationsModule,
   ],
 })
 export class AppModule {}
