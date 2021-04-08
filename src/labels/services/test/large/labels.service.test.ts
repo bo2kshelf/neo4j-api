@@ -299,4 +299,44 @@ describe(LabelsService.name, () => {
       });
     });
   });
+
+  describe('getLabelIdFromBook()', () => {
+    const expectedLabel = {id: 'label1', name: 'A'};
+    const expectedBook = {id: 'book1', title: 'A'};
+    it('関係が存在するならIDを返す', async () => {
+      await neo4jService.write(
+        `
+        CREATE (l:Label) SET l=$label
+        CREATE (b:Book) SET b=$book
+        CREATE (l)-[:LABELED_BOOK]->(b)
+        RETURN *`,
+        {label: expectedLabel, book: expectedBook},
+      );
+      const actual = await labelsService.getLabelIdFromBook(expectedBook.id);
+      expect(actual).toBe(expectedLabel.id);
+    });
+
+    it('関係が存在しない場合はnullを返す', async () => {
+      await neo4jService.write(
+        `
+        CREATE (l:Label) SET l=$label
+        CREATE (b:Book) SET b=$book
+        RETURN *`,
+        {label: expectedLabel, book: expectedBook},
+      );
+      const actual = await labelsService.getLabelIdFromBook(expectedBook.id);
+      expect(actual).toBeNull();
+    });
+
+    it('bookIdに対応するBookが存在しない場合はnullを返す', async () => {
+      await neo4jService.write(
+        `
+        CREATE (l:Label) SET l=$label
+        RETURN *`,
+        {label: expectedLabel, book: expectedBook},
+      );
+      const actual = await labelsService.getLabelIdFromBook(expectedBook.id);
+      expect(actual).toBeNull();
+    });
+  });
 });

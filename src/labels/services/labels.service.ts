@@ -137,4 +137,13 @@ export class LabelsService {
       }));
     return {nodes, ...meta};
   }
+
+  async getLabelIdFromBook(bookId: string): Promise<string | null> {
+    return this.neo4jService
+      .read(
+        `OPTIONAL MATCH (l)-[:LABELED_BOOK]->(b:Book {id: $bookId}) RETURN l.id AS l`,
+        {bookId},
+      )
+      .then((result) => result.records[0].get('l'));
+  }
 }
