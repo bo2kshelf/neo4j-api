@@ -1,5 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {int} from 'neo4j-driver';
+import {BookEntity} from '../../books/entities/book.entity';
 import {IDService} from '../../common/id/id.service';
 import {OrderBy} from '../../common/order-by.enum';
 import {Neo4jService} from '../../neo4j/neo4j.service';
@@ -168,5 +169,93 @@ export class SeriesService {
         count: result.records[0].get('count').toNumber(),
       }));
     return {nodes: parts, ...meta};
+  }
+
+  async previousBooks(
+    bookId: string,
+    {skip, limit}: {skip: number; limit: number},
+  ): Promise<{
+    count: number;
+    hasNext: boolean;
+    hasPrevious: boolean;
+    nodes: BookEntity[];
+  }> {
+    const nodes: BookEntity[] = await this.neo4jService
+      .read(
+        `
+        MATCH (b:Book {id: $bookId})
+        MATCH p=(pre:Book)-[:NEXT_BOOK*]->(b)
+        WHERE $skip < length(p) AND length(p) <= $limit
+        RETURN p, pre
+        ORDER BY length(p) ASC
+        `,
+        {bookId, skip: int(skip), limit: int(limit)},
+      )
+      .then((result) =>
+        result.records.map((record) => record.get('pre').properties),
+      );
+    const meta: {
+      count: number;
+      hasNext: boolean;
+      hasPrevious: boolean;
+    } = await this.neo4jService
+      .read(
+        `
+        MATCH p=(:Book)-[:NEXT_BOOK*]->(:Book {id: $bookId})
+        WITH count(p) AS count
+        RETURN count, 0 < count AND 0 < $skip AS previous, $skip + $limit < count AS next
+        `,
+        {bookId, skip: int(skip), limit: int(limit)},
+      )
+      .then((result) => ({
+        count: result.records[0].get('count').toNumber(),
+        hasNext: result.records[0].get('next'),
+        hasPrevious: result.records[0].get('previous'),
+      }));
+    return {nodes, ...meta};
+  }
+
+  async nextBooks(
+    bookId: string,
+    {skip, limit}: {skip: number; limit: number},
+  ): Promise<{
+    count: number;
+    hasNext: boolean;
+    hasPrevious: boolean;
+    nodes: BookEntity[];
+  }> {
+    const nodes: BookEntity[] = await this.neo4jService
+      .read(
+        `
+        MATCH (b:Book {id: $bookId})
+        MATCH p=(b)-[:NEXT_BOOK*]->(next:Book)
+        WHERE $skip < length(p) AND length(p) <= $limit
+        RETURN p, next
+        ORDER BY length(p) ASC
+        `,
+        {bookId, skip: int(skip), limit: int(limit)},
+      )
+      .then((result) =>
+        result.records.map((record) => record.get('next').properties),
+      );
+    const meta: {
+      count: number;
+      hasNext: boolean;
+      hasPrevious: boolean;
+    } = await this.neo4jService
+      .read(
+        `
+        MATCH p=(:Book {id: $bookId})-[:NEXT_BOOK*]->(:Book)
+        WITH count(p) AS count
+        RETURN count, 0 < count AND 0 < $skip AS previous, $skip + $limit < count AS next
+        `,
+        {bookId, skip: int(skip), limit: int(limit)},
+      )
+      .then((result) => ({
+        count: result.records[0].get('count').toNumber(),
+        hasNext: result.records[0].get('next'),
+        hasPrevious: result.records[0].get('previous'),
+      }));
+    return {nodes, ...meta};
   }
 }
