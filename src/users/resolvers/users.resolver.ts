@@ -1,19 +1,13 @@
 import {Args, Mutation, Parent, ResolveField, Resolver} from '@nestjs/graphql';
 import {HaveBookRecordEntity} from '../entities/have-book-record.entity';
-import {ReadBookRecordEntity} from '../entities/read-book-record.entity';
 import {ReadingBookRecordEntity} from '../entities/reading-book-record.entity';
 import {UserEntity} from '../entities/users.entity';
 import {WishReadBookRecordEntity} from '../entities/wish-read-book-record.entity';
 import {UsersService} from '../services/users.service';
-import {ReadBookArgs} from './dto/read-book.dto';
 import {
   ResolveUsersHasBooksArgs,
   ResolveUsersHasBooksReturnEntity,
 } from './dto/resolve-users-has-books.dto';
-import {
-  ResolveUsersReadBooksArgs,
-  ResolveUsersReadBooksReturnEntity,
-} from './dto/resolve-users-read-books.dto';
 import {
   ResolveUsersReadingBooksArgs,
   ResolveUsersReadingBooksReturnEntity,
@@ -33,14 +27,6 @@ import {SetWishReadBookArgs} from './dto/set-wish-read-book';
 @Resolver(() => UserEntity)
 export class UsersResolver {
   constructor(private readonly usersService: UsersService) {}
-  @ResolveField(() => ResolveUsersReadBooksReturnEntity)
-  async readBooks(
-    @Parent() {id: userId}: UserEntity,
-    @Args({type: () => ResolveUsersReadBooksArgs})
-    args: ResolveUsersReadBooksArgs,
-  ): Promise<ResolveUsersReadBooksReturnEntity> {
-    return this.usersService.getReadBooks(userId, args);
-  }
 
   @ResolveField(() => ResolveUsersReadingBooksReturnEntity)
   async readingBooks(
@@ -76,14 +62,6 @@ export class UsersResolver {
     args: ResolveUsersStackedBooksArgs,
   ): Promise<ResolveUsersStackedBooksReturnEntity> {
     return this.usersService.getStackedBooks(userId, args);
-  }
-
-  @Mutation(() => ReadBookRecordEntity)
-  async readBook(
-    @Args({type: () => ReadBookArgs})
-    {bookId, userId, ...props}: ReadBookArgs,
-  ) {
-    return this.usersService.readBook({bookId, userId}, props);
   }
 
   @Mutation(() => ReadingBookRecordEntity)

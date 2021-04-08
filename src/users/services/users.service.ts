@@ -3,7 +3,6 @@ import {int} from 'neo4j-driver';
 import {OrderBy} from '../../common/order-by.enum';
 import {Neo4jService} from '../../neo4j/neo4j.service';
 import {HaveBookRecordEntity} from '../entities/have-book-record.entity';
-import {ReadBookRecordEntity} from '../entities/read-book-record.entity';
 import {ReadingBookRecordEntity} from '../entities/reading-book-record.entity';
 import {StackedBookRecordEntity} from '../entities/stacked-book-record.entity';
 import {UserEntity} from '../entities/users.entity';
@@ -20,69 +19,6 @@ export class UsersService {
     );
     if (result.records.length === 0) throw new Error('Not Found');
     return result.records[0].get(0).properties;
-  }
-
-  async getReadBooks(
-    userId: string,
-    {
-      skip,
-      limit,
-      orderBy,
-    }: {skip: number; limit: number; orderBy: {date: OrderBy; title: OrderBy}},
-  ): Promise<{
-    count: number;
-    hasNext: boolean;
-    hasPrevious: boolean;
-    nodes: ReadBookRecordEntity[];
-  }> {
-    const records: ReadBookRecordEntity[] = await this.neo4jService
-      .read(
-        `
-        MATCH (u:User {id: $userId})
-        CALL {
-            MATCH (u)-[r:READ_BOOK]->(b:Book)
-            WHERE r.readAt IS NOT NULL
-            WITH b,apoc.convert.toStringList(reverse(apoc.coll.sort(r.readAt))) AS readAt
-            RETURN b,readAt,head(readAt) AS latest
-            ORDER BY latest ${orderBy.date}, b.title ${orderBy.title}
-            UNION
-            MATCH (u)-[r:READ_BOOK]->(b:Book)
-            WHERE r.readAt IS NULL
-            RETURN b,NULL AS readAt,NULL AS latest
-            ORDER BY b.title ${orderBy.title}
-        }
-        RETURN u.id AS u, b.id AS b, readAt, latest
-        SKIP $skip LIMIT $limit
-      `,
-        {userId, skip: int(skip), limit: int(limit)},
-      )
-      .then((result) =>
-        result.records.map((record) => ({
-          userId: record.get('u'),
-          bookId: record.get('b'),
-          readAt: record.get('readAt'),
-          latestReadAt: record.get('latest'),
-        })),
-      );
-    const meta: {
-      count: number;
-      hasNext: boolean;
-      hasPrevious: boolean;
-    } = await this.neo4jService
-      .read(
-        `
-        MATCH p=(:User {id: $userId})-[:READ_BOOK]->(:Book)
-        WITH count(p) AS count
-        RETURN count, 0 < count AND 0 < $skip AS previous, $skip + $limit < count AS next
-      `,
-        {userId, skip: int(skip), limit: int(limit)},
-      )
-      .then((result) => ({
-        count: result.records[0].get('count').toNumber(),
-        hasNext: result.records[0].get('next'),
-        hasPrevious: result.records[0].get('previous'),
-      }));
-    return {nodes: records, ...meta};
   }
 
   async getHaveBooks(
@@ -302,29 +238,6 @@ export class UsersService {
         hasPrevious: result.records[0].get('previous'),
       }));
     return {nodes: records, ...meta};
-  }
-
-  async readBook(
-    {bookId, userId}: {bookId: string; userId: string},
-    props: {readAt?: string},
-  ): Promise<ReadBookRecordEntity> {
-    return this.neo4jService
-      .read(
-        `
-        MATCH (b:Book {id: $bookId})
-        MERGE (u:User {id: $userId})-[r:READ_BOOK]->(b)
-        SET r.readAt = apoc.coll.toSet(coalesce(r.readAt,[]) + coalesce(date($props.readAt),[]))
-        WITH u.id AS u, b.id AS b, apoc.convert.toStringList(reverse(apoc.coll.sort(r.readAt))) AS readAt
-        RETURN u,b,readAt,head(readAt) AS latest
-      `,
-        {userId, bookId, props},
-      )
-      .then((result) => ({
-        userId: result.records[0].get('u'),
-        bookId: result.records[0].get('b'),
-        readAt: result.records[0].get('readAt'),
-        latestReadAt: result.records[0].get('latest'),
-      }));
   }
 
   async setHaveBook(
