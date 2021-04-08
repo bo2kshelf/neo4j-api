@@ -1,13 +1,17 @@
 import {Injectable} from '@nestjs/common';
 import {int} from 'neo4j-driver';
 import {BookEntity} from '../../books/entities/book.entity';
+import {IDService} from '../../common/id/id.service';
 import {OrderBy} from '../../common/order-by.enum';
 import {Neo4jService} from '../../neo4j/neo4j.service';
 import {RecordEntity} from '../entities/record.entity';
 
 @Injectable()
 export class RecordsService {
-  constructor(private readonly neo4jService: Neo4jService) {}
+  constructor(
+    private readonly neo4jService: Neo4jService,
+    private readonly idService: IDService,
+  ) {}
 
   async findById(id: string): Promise<RecordEntity> {
     const result = await this.neo4jService.read(
@@ -16,6 +20,54 @@ export class RecordsService {
     );
     if (result.records.length === 0) throw new Error('Not Found');
     return result.records[0].get(0).properties;
+  }
+
+  async findAll(): Promise<RecordEntity[]> {
+    return this.neo4jService
+      .read(`MATCH (n:Record) RETURN n`)
+      .then((res) => res.records.map((record) => record.get(0).properties));
+  }
+
+  async createRecord(
+    {userId, bookId}: {userId: string; bookId: string},
+    {readAt, ...props}: {readAt?: string},
+  ): Promise<RecordEntity> {
+    return readAt
+      ? this.neo4jService
+          .write(
+            `
+          MATCH (u:User {id: $userId}), (b:Book {id: $bookId})
+          MERGE (u)-[:RECORDED]->(rec:Record {readAt: $readAt})-[:RECORD_OF]->(b)
+          ON CREATE SET rec.id = $id
+          SET rec += $props
+          RETURN rec.id AS id, rec.readAt AS readAt
+          `,
+            {
+              userId,
+              bookId,
+              id: this.idService.generate(),
+              readAt,
+              props,
+            },
+          )
+          .then(({records}) => ({
+            id: records[0].get('id'),
+            readAt: records[0].get('readAt'),
+          }))
+      : this.neo4jService
+          .write(
+            `
+            MATCH (u:User {id: $userId}), (b:Book {id: $bookId})
+            CREATE (u)-[:RECORDED]->(rec:Record {id: $id})-[:RECORD_OF]->(b)
+            SET rec += $props
+            RETURN rec.id AS id
+            `,
+            {userId, bookId, id: this.idService.generate(), props},
+          )
+          .then(({records}) => ({
+            id: records[0].get('id'),
+            readAt: null,
+          }));
   }
 
   async getUserIdByRecord(recordId: string): Promise<string> {

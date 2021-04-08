@@ -7,5 +7,5 @@ export class RecordEntity {
   id!: string;
 
   @Field(() => LocalDateResolver, {nullable: true})
-  readAt!: string;
+  readAt?: string;
 }
