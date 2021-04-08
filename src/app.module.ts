@@ -14,6 +14,7 @@ import {AuthorSeriesRelationsModule} from './relations/author-series.module';
 import {PublisherLabelRelationsModule} from './relations/publisher-label.module';
 import {SeriesPartModule} from './series/series-part.module';
 import {SeriesModule} from './series/series.module';
+import {RecordsModule} from './users/records.module';
 import {UserRecordsModule} from './users/user-records.module';
 import {UsersModule} from './users/users.module';
 
@@ -42,6 +43,7 @@ import {UsersModule} from './users/users.module';
     LabelingsModule,
     UsersModule,
     UserRecordsModule,
+    RecordsModule,
     AuthorSeriesRelationsModule,
     PublisherLabelRelationsModule,
   ],
