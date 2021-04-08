@@ -240,34 +240,6 @@ export class UsersService {
     return {nodes: records, ...meta};
   }
 
-  /*
-  async readBook(
-    {bookId, userId}: {bookId: string; userId: string},
-    props: {readAt?: string},
-  ): Promise<RecordEntity> {
-    return this.neo4jService
-      .read(
-        `
-        MATCH (b:Book {id: $bookId})
-        MERGE (u:User {id: $userId})-[r:READ_BOOK]->(b)
-        SET r.readAt = apoc.coll.toSet(coalesce(r.readAt,[]) + coalesce(date($props.readAt),[]))
-        WITH u.id AS u, b.id AS b, apoc.convert.toStringList(reverse(apoc.coll.sort(r.readAt))) AS readAt
-        RETURN u,b,readAt,head(readAt) AS latest
-      `,
-        {userId, bookId, props},
-      )
-      .then(
-        (result) =>
-          ({
-            userId: result.records[0].get('u'),
-            bookId: result.records[0].get('b'),
-            readAt: result.records[0].get('readAt'),
-            latestReadAt: result.records[0].get('latest'),
-          } as RecordEntity),
-      );
-  }
-  */
-
   async setHaveBook(
     {bookId, userId}: {bookId: string; userId: string},
     {have}: {have: boolean},
