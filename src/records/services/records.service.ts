@@ -94,7 +94,7 @@ export class RecordsService {
       skip,
       limit,
       orderBy,
-    }: {skip: number; limit: number; orderBy: {date: OrderBy}},
+    }: {skip: number; limit: number; orderBy: {readAt: OrderBy}},
   ): Promise<{
     count: number;
     hasNext: boolean;
@@ -109,7 +109,7 @@ export class RecordsService {
           MATCH (u)-[:RECORDED]->(r:Record)
           WHERE r.readAt IS NOT NULL
           RETURN r
-          ORDER BY r.readAt ${orderBy.date}
+          ORDER BY r.readAt ${orderBy.readAt}
           UNION
           MATCH (u)-[:RECORDED]->(r:Record)
           WHERE r.readAt IS NULL
@@ -163,16 +163,17 @@ export class RecordsService {
     const nodes: BookEntity[] = await this.neo4jService
       .read(
         `
-        MATCH (:User {id: $userId})-[:RECORDED]->(r:Record)-[:RECORD_OF]->(b)
+        MATCH (u:User {id: $userId})
+        MATCH (u)-[:RECORDED]->(:Record)-[:RECORD_OF]->(b:Book)
         RETURN DISTINCT b
         ORDER BY b.title ${orderBy.title}
         SKIP $skip LIMIT $limit
         `,
         {userId, skip: int(skip), limit: int(limit)},
       )
-      .then((result) =>
-        result.records.map((record) => record.get('b').properties),
-      );
+      .then((result) => {
+        return result.records.map((record) => record.get('b').properties);
+      });
     const meta: {
       count: number;
       hasNext: boolean;
@@ -180,7 +181,7 @@ export class RecordsService {
     } = await this.neo4jService
       .read(
         `
-        MATCH (:User {id: $userId})-[:RECORDED]->(r:Record)-[:RECORD_OF]->(b)
+        MATCH (:User {id: $userId})-[:RECORDED]->(:Record)-[:RECORD_OF]->(b)
         WITH DISTINCT b
         WITH count(b) AS count
         RETURN count, 0 < count AND 0 < $skip AS previous, $skip + $limit < count AS next

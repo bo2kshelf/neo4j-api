@@ -4,9 +4,6 @@ import {OrderBy} from '../../../common/order-by.enum';
 
 @InputType('UsersReadBooksArgsOrderBy')
 export class ResolveUsersReadBooksArgsOrderBy {
-  @Field(() => OrderBy, {nullable: true, defaultValue: OrderBy.DESC})
-  date!: OrderBy;
-
   @Field(() => OrderBy, {nullable: true, defaultValue: OrderBy.ASC})
   title!: OrderBy;
 }

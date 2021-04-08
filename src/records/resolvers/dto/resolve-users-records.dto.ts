@@ -5,10 +5,7 @@ import {RecordEntity} from '../../entities/record.entity';
 @InputType('UsersRecordsArgsOrderBy')
 export class ResolveUsersRecordsArgsOrderBy {
   @Field(() => OrderBy, {nullable: true, defaultValue: OrderBy.DESC})
-  date!: OrderBy;
-
-  @Field(() => OrderBy, {nullable: true, defaultValue: OrderBy.ASC})
-  title!: OrderBy;
+  readAt!: OrderBy;
 }
 
 @ArgsType()
