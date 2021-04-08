@@ -1,11 +1,12 @@
 import {Module} from '@nestjs/common';
 import {BooksModule} from '../books/books.module';
-import {ReadBookRecordResolver} from './resolvers/read-book-records.resolver';
+import {UsersModule} from '../users/users.module';
+import {RecordResolver} from './resolvers/records.resolver';
+import {UsersResolver} from './resolvers/users.resolver';
 import {RecordsService} from './services/records.service';
-import {UsersModule} from './users.module';
 
 @Module({
   imports: [BooksModule, UsersModule],
-  providers: [RecordsService, ReadBookRecordResolver],
+  providers: [RecordsService, RecordResolver, UsersResolver],
 })
 export class RecordsModule {}

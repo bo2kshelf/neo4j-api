@@ -1,9 +1,9 @@
 import {ArgsType, Field, InputType, Int, ObjectType} from '@nestjs/graphql';
 import {OrderBy} from '../../../common/order-by.enum';
-import {ReadBookRecordEntity} from '../../entities/read-book-record.entity';
+import {RecordEntity} from '../../entities/record.entity';
 
-@InputType('UsersReadBooksArgsOrderBy')
-export class ResolveUsersReadBooksArgsOrderBy {
+@InputType('UsersRecordsArgsOrderBy')
+export class ResolveUsersRecordsArgsOrderBy {
   @Field(() => OrderBy, {nullable: true, defaultValue: OrderBy.DESC})
   date!: OrderBy;
 
@@ -12,24 +12,24 @@ export class ResolveUsersReadBooksArgsOrderBy {
 }
 
 @ArgsType()
-export class ResolveUsersReadBooksArgs {
+export class ResolveUsersRecordsArgs {
   @Field(() => Int, {nullable: true, defaultValue: 0})
   skip!: number;
 
   @Field(() => Int, {nullable: true, defaultValue: 0})
   limit!: number;
 
-  @Field(() => ResolveUsersReadBooksArgsOrderBy, {
+  @Field(() => ResolveUsersRecordsArgsOrderBy, {
     nullable: true,
-    defaultValue: new ResolveUsersReadBooksArgsOrderBy(),
+    defaultValue: new ResolveUsersRecordsArgsOrderBy(),
   })
-  orderBy!: ResolveUsersReadBooksArgsOrderBy;
+  orderBy!: ResolveUsersRecordsArgsOrderBy;
 }
 
-@ObjectType('UsersReadBooksReturn')
-export class ResolveUsersReadBooksReturnEntity {
-  @Field(() => [ReadBookRecordEntity])
-  nodes!: ReadBookRecordEntity[];
+@ObjectType('UsersRecordsReturn')
+export class ResolveUsersRecordsReturnEntity {
+  @Field(() => [RecordEntity])
+  nodes!: RecordEntity[];
 
   @Field(() => Int)
   count!: number;
