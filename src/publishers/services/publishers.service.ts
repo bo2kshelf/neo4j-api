@@ -69,27 +69,13 @@ export class PublishersService {
       .then((entities) => entities[0]);
   }
 
-  async getPublicationsFromBook(
-    bookId: string,
-    {orderBy}: {orderBy: {name: OrderBy}},
-  ): Promise<PublicationEntity[]> {
+  async getPublisherIdFromBook(bookId: string): Promise<string> {
     return this.neo4jService
       .read(
-        `
-        MATCH (b:Book {id: $bookId})
-        MATCH (p)-[r:PUBLISHED_BOOK]->(b)
-        RETURN p,r,b
-        ORDER BY p.name ${orderBy.name}
-    `,
+        `OPTIONAL MATCH (p:Publisher)-[r:PUBLISHED_BOOK]->(b:Book {id: $bookId}) RETURN p.id AS p`,
         {bookId},
       )
-      .then((result) =>
-        result.records.map((record) => ({
-          ...record.get('r').properties,
-          publisherId: record.get('p').properties.id,
-          bookId: record.get('b').properties.id,
-        })),
-      );
+      .then((result) => result.records[0].get('p'));
   }
 
   async getPublicationsFromPublisher(

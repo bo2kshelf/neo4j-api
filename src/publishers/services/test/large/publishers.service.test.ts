@@ -147,61 +147,49 @@ describe(PublishersService.name, () => {
     });
   });
 
-  describe('getPublicationsFromBook()', () => {
-    const expectedPublishers = [
-      {id: 'publisher1', name: 'A'},
-      {id: 'publisher2', name: 'B'},
-    ];
-    const expectedBook = {id: 'book1', title: faker.lorem.words(2)};
-
-    beforeEach(async () => {
-      await neo4jService.write(`CREATE (n:Book) SET n=$expected RETURN *`, {
-        expected: expectedBook,
-      });
-      await Promise.all(
-        expectedPublishers.map((expectedPublisher) =>
-          neo4jService.write(
-            `
-            CREATE (p:Publisher) SET p=$publisher
-            CREATE (p)-[r:PUBLISHED_BOOK]->(:Book {id: $book.id})
-            RETURN *
-            `,
-            {publisher: expectedPublisher, book: expectedBook},
-          ),
-        ),
+  describe('getPublisherIdFromBook()', () => {
+    const expectedPublisher = {id: 'publisher1', name: 'A'};
+    const expectedBook = {id: 'book1', title: 'A'};
+    it('関係が存在するならIDを返す', async () => {
+      await neo4jService.write(
+        `
+        CREATE (p:Publisher) SET p=$publisher
+        CREATE (b:Book) SET b=$book
+        CREATE (p)-[:PUBLISHED_BOOK]->(b)
+        RETURN *`,
+        {publisher: expectedPublisher, book: expectedBook},
       );
+      const actual = await publishersService.getPublisherIdFromBook(
+        expectedBook.id,
+      );
+      expect(actual).toBe(expectedPublisher.id);
     });
 
-    it.each([
-      [
-        {orderBy: {name: OrderBy.ASC}},
-        {
-          result: [
-            {publisherId: expectedPublishers[0].id, bookId: expectedBook.id},
-            {publisherId: expectedPublishers[1].id, bookId: expectedBook.id},
-          ],
-        },
-      ],
-      [
-        {orderBy: {name: OrderBy.DESC}},
-        {
-          result: [
-            {publisherId: expectedPublishers[1].id, bookId: expectedBook.id},
-            {publisherId: expectedPublishers[0].id, bookId: expectedBook.id},
-          ],
-        },
-      ],
-    ])('正常な動作 %j', async (props, expected) => {
-      const actual = await publishersService.getPublicationsFromBook(
-        expectedBook.id,
-        props,
+    it('関係が存在しない場合はnullを返す', async () => {
+      await neo4jService.write(
+        `
+        CREATE (p:Publisher) SET p=$publisher
+        CREATE (b:Book) SET b=$book
+        RETURN *`,
+        {publisher: expectedPublisher, book: expectedBook},
       );
+      const actual = await publishersService.getPublisherIdFromBook(
+        expectedBook.id,
+      );
+      expect(actual).toBeNull();
+    });
 
-      expect(actual).toHaveLength(expectedPublishers.length);
-      for (const [i, {publisherId, bookId}] of actual.entries()) {
-        expect(bookId).toBe(expected.result[i].bookId);
-        expect(publisherId).toBe(expected.result[i].publisherId);
-      }
+    it('bookIdに対応するBookが存在しない場合はnullを返す', async () => {
+      await neo4jService.write(
+        `
+        CREATE (p:Publisher) SET p=$publisher
+        RETURN *`,
+        {publisher: expectedPublisher, book: expectedBook},
+      );
+      const actual = await publishersService.getPublisherIdFromBook(
+        expectedBook.id,
+      );
+      expect(actual).toBeNull();
     });
   });
 
