@@ -2,6 +2,7 @@
   "root": true,
   "extends": ["@bo2kshelf/eslint-config/nest", "plugin:@bo2kshelf/jest"],
   "rules": {
-    "graphql/required-fields": [0]
+    "graphql/required-fields": [0],
+    "unicorn/no-null": [0]
   }
 }
