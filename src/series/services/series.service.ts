@@ -258,4 +258,26 @@ export class SeriesService {
       }));
     return {nodes, ...meta};
   }
+
+  async getSeriesFromBook(
+    bookId: string,
+  ): Promise<{seriesId: string; numberingAs?: string}[]> {
+    const node: {seriesId: string}[] = await this.neo4jService
+      .read(
+        `
+        MATCH (b:Book {id: $bookId})
+        MATCH (s:Series)-[:HEAD_OF_SERIES]->()-[:NEXT_BOOK*0..]->(b)
+        OPTIONAL MATCH (s)-[r:PART_OF_SERIES]->(b)
+        RETURN s.id AS s, r.numberingAs AS numberingAs
+        `,
+        {bookId},
+      )
+      .then((result) =>
+        result.records.map((record) => ({
+          seriesId: record.get('s'),
+          numberingAs: record.get('numberingAs'),
+        })),
+      );
+    return node;
+  }
 }

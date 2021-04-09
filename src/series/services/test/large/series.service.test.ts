@@ -375,4 +375,99 @@ describe(SeriesService.name, () => {
       });
     });
   });
+
+  describe('getSeriesFromBook()', () => {
+    describe('seriesが1つの場合', () => {
+      beforeEach(async () => {
+        await neo4jService.write(
+          `
+          CREATE (s:Series {id: "series1", title: "Series 1"})
+          CREATE (b1:Book {id: "book1"})
+          CREATE (b2:Book {id: "book2"}), (b1)-[:NEXT_BOOK]->(b2)
+          CREATE (b3:Book {id: "book3"}), (b2)-[:NEXT_BOOK]->(b3)
+          CREATE (s)-[:HEAD_OF_SERIES]->(b1)
+          RETURN *
+          `,
+        );
+      });
+
+      it('book1からSeriesを取得する', async () => {
+        const actual = await seriesService.getSeriesFromBook('book1');
+
+        expect(actual).toHaveLength(1);
+        expect(actual[0].seriesId).toBe('series1');
+      });
+
+      it('book3からSeriesを取得する', async () => {
+        const actual = await seriesService.getSeriesFromBook('book3');
+
+        expect(actual).toHaveLength(1);
+        expect(actual[0].seriesId).toBe('series1');
+      });
+    });
+
+    describe('seriesが複数の場合', () => {
+      beforeEach(async () => {
+        await neo4jService.write(
+          `
+          CREATE (s1:Series {id: "series1", title: "Series 1"})
+          CREATE (s2:Series {id: "series2", title: "Series 2"})
+          CREATE (s1b1:Book {id: "s1-book1"})
+          CREATE (s1b2:Book {id: "s1-book2"}), (s1b1)-[:NEXT_BOOK]->(s1b2)
+          CREATE (s2b1:Book {id: "s2-book1"})
+          CREATE (s2b2:Book {id: "s2-book2"}), (s2b1)-[:NEXT_BOOK]->(s2b2)
+          CREATE (b3:Book {id: "book3"}), (s1b2)-[:NEXT_BOOK]->(b3), (s2b2)-[:NEXT_BOOK]->(b3)
+          CREATE (s1)-[:HEAD_OF_SERIES]->(s1b1), (s2)-[:HEAD_OF_SERIES]->(s2b1)
+          RETURN *
+          `,
+        );
+      });
+
+      it('book3からSeriesを取得する', async () => {
+        const actual = await seriesService.getSeriesFromBook('book3');
+        expect(actual).toHaveLength(2);
+      });
+    });
+
+    describe('PART_OF_SERIESが存在する場合', () => {
+      beforeEach(async () => {
+        await neo4jService.write(
+          `
+          CREATE (s:Series {id: "series1", title: "Series 1"})
+          CREATE (b1:Book {id: "book1"})
+          CREATE (b2:Book {id: "book2"}), (b1)-[:NEXT_BOOK]->(b2)
+          CREATE (b3:Book {id: "book3"}), (b2)-[:NEXT_BOOK]->(b3)
+          CREATE (s)-[h:HEAD_OF_SERIES]->(b1)
+          CREATE (s)-[r1:PART_OF_SERIES {numberingAs: "上巻"}]->(b1)
+          CREATE (s)-[r3:PART_OF_SERIES {numberingAs: "下巻"}]->(b3)
+          RETURN *
+          `,
+        );
+      });
+
+      it('book1からSeriesを取得する', async () => {
+        const actual = await seriesService.getSeriesFromBook('book1');
+
+        expect(actual).toHaveLength(1);
+        expect(actual[0].seriesId).toBe('series1');
+        expect(actual[0].numberingAs).toBe('上巻');
+      });
+
+      it('book2からSeriesを取得する', async () => {
+        const actual = await seriesService.getSeriesFromBook('book2');
+
+        expect(actual).toHaveLength(1);
+        expect(actual[0].seriesId).toBe('series1');
+        expect(actual[0].numberingAs).toBeNull();
+      });
+
+      it('book3からSeriesを取得する', async () => {
+        const actual = await seriesService.getSeriesFromBook('book3');
+
+        expect(actual).toHaveLength(1);
+        expect(actual[0].seriesId).toBe('series1');
+        expect(actual[0].numberingAs).toBe('下巻');
+      });
+    });
+  });
 });
