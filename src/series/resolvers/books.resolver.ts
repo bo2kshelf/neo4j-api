@@ -1,7 +1,12 @@
-import {Args, Parent, ResolveField, Resolver} from '@nestjs/graphql';
+import {Args, Mutation, Parent, ResolveField, Resolver} from '@nestjs/graphql';
 import {BookEntity} from '../../books/entities/book.entity';
+import {BooksService} from '../../books/services/books.service';
 import {SeriesMainPartEntity} from '../entities/series-main-part.entity';
 import {SeriesService} from '../services/series.service';
+import {
+  ConnectNextBookArgs,
+  ConnectNextBookReturn,
+} from './dto/connect-next-book.dto';
 import {
   ResolveBooksNextArgs,
   ResolveBooksNextReturn,
@@ -38,5 +43,30 @@ export class BooksResolver {
     args: ResolveBooksNextArgs,
   ): Promise<ResolveBooksNextReturn> {
     return this.seriesService.nextBooks(bookId, args);
+  }
+
+  @Mutation(() => ConnectNextBookReturn)
+  async connectNextBook(
+    @Args({type: () => ConnectNextBookArgs})
+    {previousId, nextId}: ConnectNextBookArgs,
+  ): Promise<ConnectNextBookReturn> {
+    return this.seriesService.connectBooksAsNextBook({previousId, nextId});
+  }
+}
+
+@Resolver(() => ConnectNextBookReturn)
+export class ConnectNextBookResolver {
+  constructor(private readonly booksService: BooksService) {}
+
+  @ResolveField(() => BookEntity)
+  async previous(
+    @Parent() {previousId}: ConnectNextBookReturn,
+  ): Promise<BookEntity> {
+    return this.booksService.findById(previousId);
+  }
+
+  @ResolveField(() => BookEntity)
+  async next(@Parent() {nextId}: ConnectNextBookReturn): Promise<BookEntity> {
+    return this.booksService.findById(nextId);
   }
 }

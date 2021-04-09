@@ -418,4 +418,29 @@ export class SeriesService {
         bookId: records[0].get('b'),
       }));
   }
+
+  async connectBooksAsNextBook({
+    previousId,
+    nextId,
+  }: {
+    previousId: string;
+    nextId: string;
+  }): Promise<{
+    previousId: string;
+    nextId: string;
+  }> {
+    return this.neo4jService
+      .write(
+        `
+          MATCH (p:Book {id: $previousId}), (n:Book {id: $nextId})
+          MERGE (p)-[:NEXT_BOOK]->(n)
+          RETURN p.id AS p, n.id AS n
+          `,
+        {previousId, nextId},
+      )
+      .then(({records}) => ({
+        previousId: records[0].get('p'),
+        nextId: records[0].get('n'),
+      }));
+  }
 }
