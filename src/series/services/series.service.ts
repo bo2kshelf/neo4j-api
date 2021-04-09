@@ -395,4 +395,27 @@ export class SeriesService {
       }));
     return {nodes, ...meta};
   }
+
+  async createSeries(
+    bookId: string,
+    data: {title: string},
+  ): Promise<{
+    seriesId: string;
+    bookId: string;
+  }> {
+    return this.neo4jService
+      .write(
+        `
+        MATCH (b:Book {id: $bookId})
+        CREATE (s:Series) SET s += $data
+        CREATE (s)-[:HEAD_OF_SERIES]->(b)
+        RETURN b.id AS b, s.id AS s
+        `,
+        {bookId, data: {id: this.idService.generate(), ...data}},
+      )
+      .then(({records}) => ({
+        seriesId: records[0].get('s'),
+        bookId: records[0].get('b'),
+      }));
+  }
 }
