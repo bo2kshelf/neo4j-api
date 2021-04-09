@@ -1,5 +1,6 @@
 import {Args, Parent, ResolveField, Resolver} from '@nestjs/graphql';
 import {BookEntity} from '../../books/entities/book.entity';
+import {SeriesMainPartEntity} from '../entities/series-main-part.entity';
 import {SeriesService} from '../services/series.service';
 import {
   ResolveBooksNextArgs,
@@ -9,17 +10,16 @@ import {
   ResolveBooksPreviousArgs,
   ResolveBooksPreviousReturn,
 } from './dto/resolve-books-previous.dto';
-import {BooksPartOfSeriesReturn} from './dto/resolve-books-series-of.dto';
 
 @Resolver(() => BookEntity)
 export class BooksResolver {
   constructor(private readonly seriesService: SeriesService) {}
 
-  @ResolveField(() => BooksPartOfSeriesReturn)
+  @ResolveField(() => [SeriesMainPartEntity])
   async seriesOf(
     @Parent() {id: bookId}: BookEntity,
-  ): Promise<BooksPartOfSeriesReturn> {
-    return this.seriesService.getPartsFromBook(bookId);
+  ): Promise<SeriesMainPartEntity[]> {
+    return this.seriesService.getSeriesFromBook(bookId);
   }
 
   @ResolveField(() => ResolveBooksPreviousReturn)

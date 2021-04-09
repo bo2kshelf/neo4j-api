@@ -1,22 +1,19 @@
 import {
   Args,
-  Mutation,
   Parent,
   Query,
   ResolveField,
   Resolver,
   ResolveReference,
 } from '@nestjs/graphql';
-import {SeriesPartEntity} from '../entities/series-part.entity';
+import {SeriesMainPartEntity} from '../entities/series-main-part.entity';
 import {SeriesEntity} from '../entities/series.entity';
 import {SeriesService} from '../services/series.service';
-import {AddBookToSeriesArgs} from './dto/add-book-to-series.dto';
-import {CreateSeriesArgs} from './dto/create-series.dto';
 import {GetSeriesArgs} from './dto/get-series.dto';
 import {
-  ResolveSeriesConsistsOfArgs,
-  ResolveSeriesConsistsOfReturnEntity,
-} from './dto/resolve-series-consists-of.dto';
+  ResolveSeriesPartsArgs,
+  ResolveSeriesPartsReturnEntity,
+} from './dto/resolve-series-parts.dto';
 
 @Resolver(() => SeriesEntity)
 export class SeriesResolver {
@@ -27,13 +24,18 @@ export class SeriesResolver {
     return this.seriesService.findById(reference.id);
   }
 
-  @ResolveField(() => ResolveSeriesConsistsOfReturnEntity)
-  async consistsOf(
+  @ResolveField(() => SeriesMainPartEntity)
+  head(@Parent() {id: seriesId}: SeriesEntity): Promise<SeriesMainPartEntity> {
+    return this.seriesService.getHeadOfSeries(seriesId);
+  }
+
+  @ResolveField(() => ResolveSeriesPartsReturnEntity)
+  parts(
     @Parent() {id: seriesId}: SeriesEntity,
-    @Args({type: () => ResolveSeriesConsistsOfArgs})
-    args: ResolveSeriesConsistsOfArgs,
-  ): Promise<ResolveSeriesConsistsOfReturnEntity> {
-    return this.seriesService.getPartsFromSeries(seriesId, args);
+    @Args({type: () => ResolveSeriesPartsArgs})
+    args: ResolveSeriesPartsArgs,
+  ): Promise<ResolveSeriesPartsReturnEntity> {
+    return this.seriesService.getPartsOfSeries(seriesId, args);
   }
 
   @Query(() => SeriesEntity)
@@ -48,6 +50,7 @@ export class SeriesResolver {
     return this.seriesService.findAll();
   }
 
+  /*
   @Mutation(() => SeriesEntity)
   async createSeries(
     @Args({type: () => CreateSeriesArgs}) args: CreateSeriesArgs,
@@ -62,4 +65,5 @@ export class SeriesResolver {
   ): Promise<SeriesPartEntity> {
     return this.seriesService.addBookToSeries({bookId, seriesId}, rest);
   }
+  */
 }
