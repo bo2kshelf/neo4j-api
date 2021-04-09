@@ -14,6 +14,7 @@ import {
   ResolveSeriesPartsArgs,
   ResolveSeriesPartsReturnEntity,
 } from './dto/resolve-series-parts.dto';
+import {ResolveSeriesSubPartsArgs} from './dto/resolve-series-sub-parts.dto';
 
 @Resolver(() => SeriesEntity)
 export class SeriesResolver {
@@ -25,17 +26,28 @@ export class SeriesResolver {
   }
 
   @ResolveField(() => SeriesMainPartEntity)
-  head(@Parent() {id: seriesId}: SeriesEntity): Promise<SeriesMainPartEntity> {
+  async head(
+    @Parent() {id: seriesId}: SeriesEntity,
+  ): Promise<SeriesMainPartEntity> {
     return this.seriesService.getHeadOfSeries(seriesId);
   }
 
   @ResolveField(() => ResolveSeriesPartsReturnEntity)
-  parts(
+  async parts(
     @Parent() {id: seriesId}: SeriesEntity,
     @Args({type: () => ResolveSeriesPartsArgs})
     args: ResolveSeriesPartsArgs,
   ): Promise<ResolveSeriesPartsReturnEntity> {
     return this.seriesService.getPartsOfSeries(seriesId, args);
+  }
+
+  @ResolveField(() => ResolveSeriesPartsReturnEntity)
+  async subParts(
+    @Parent() {id: seriesId}: SeriesEntity,
+    @Args({type: () => ResolveSeriesSubPartsArgs})
+    args: ResolveSeriesSubPartsArgs,
+  ): Promise<ResolveSeriesPartsReturnEntity> {
+    return this.seriesService.getSubPartsOfSeries(seriesId, args);
   }
 
   @Query(() => SeriesEntity)

@@ -6,6 +6,7 @@ import {OrderBy} from '../../common/order-by.enum';
 import {Neo4jService} from '../../neo4j/neo4j.service';
 import {SeriesMainPartEntity} from '../entities/series-main-part.entity';
 import {SeriesPartEntity} from '../entities/series-part.entity';
+import {SeriesSubPartEntity} from '../entities/series-sub-part.entity';
 import {SeriesEntity} from '../entities/series.entity';
 
 @Injectable()
@@ -336,6 +337,52 @@ export class SeriesService {
       .read(
         `
           MATCH p=(s:Series {id: $seriesId})-[:HEAD_OF_SERIES]->()-[:NEXT_BOOK*0..]->()
+          WITH count(p) AS count
+          RETURN count, 0 < count AND 0 < $skip AS previous, $skip + $limit < count AS next
+          `,
+        {seriesId, skip: int(skip), limit: int(limit)},
+      )
+      .then((result) => ({
+        count: result.records[0].get('count').toNumber(),
+        hasNext: result.records[0].get('next'),
+        hasPrevious: result.records[0].get('previous'),
+      }));
+    return {nodes, ...meta};
+  }
+
+  async getSubPartsOfSeries(
+    seriesId: string,
+    {skip, limit}: {skip: number; limit: number},
+  ): Promise<{
+    nodes: SeriesSubPartEntity[];
+    count: number;
+    hasNext: boolean;
+    hasPrevious: boolean;
+  }> {
+    const nodes: SeriesSubPartEntity[] = await this.neo4jService
+      .read(
+        `
+        MATCH (s:Series {id: $seriesId})-[:SUBPART_OF_SERIES]->(b:Book)
+        WITH s,b ORDER BY b.title
+        RETURN s.id AS s, b.id AS b
+        SKIP $skip LIMIT $limit
+        `,
+        {seriesId, skip: int(skip), limit: int(limit)},
+      )
+      .then((result) =>
+        result.records.map((record) => ({
+          seriesId: record.get('s'),
+          bookId: record.get('b'),
+        })),
+      );
+    const meta: {
+      count: number;
+      hasNext: boolean;
+      hasPrevious: boolean;
+    } = await this.neo4jService
+      .read(
+        `
+          MATCH p=(s:Series {id: $seriesId})-[:SUBPART_OF_SERIES]->()
           WITH count(p) AS count
           RETURN count, 0 < count AND 0 < $skip AS previous, $skip + $limit < count AS next
           `,
