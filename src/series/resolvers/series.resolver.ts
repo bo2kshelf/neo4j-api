@@ -7,7 +7,7 @@ import {
   Resolver,
   ResolveReference,
 } from '@nestjs/graphql';
-import {SeriesMainPartEntity} from '../entities/series-main-part.entity';
+import {SeriesPartEntity} from '../entities/series-part.entity';
 import {SeriesEntity} from '../entities/series.entity';
 import {SeriesService} from '../services/series.service';
 import {CreateSeriesArgs} from './dto/create-series.dto';
@@ -27,10 +27,10 @@ export class SeriesResolver {
     return this.seriesService.findById(reference.id);
   }
 
-  @ResolveField(() => SeriesMainPartEntity)
+  @ResolveField(() => SeriesPartEntity)
   async head(
     @Parent() {id: seriesId}: SeriesEntity,
-  ): Promise<SeriesMainPartEntity> {
+  ): Promise<SeriesPartEntity> {
     return this.seriesService.getHeadOfSeries(seriesId);
   }
 
@@ -64,20 +64,10 @@ export class SeriesResolver {
     return this.seriesService.findAll();
   }
 
-  @Mutation(() => SeriesMainPartEntity)
+  @Mutation(() => SeriesPartEntity)
   async createSeries(
     @Args({type: () => CreateSeriesArgs}) {bookId, ...data}: CreateSeriesArgs,
-  ): Promise<SeriesMainPartEntity> {
+  ): Promise<SeriesPartEntity> {
     return this.seriesService.createSeries(bookId, data);
   }
-
-  /*
-  @Mutation(() => SeriesPartEntity)
-  async addBookToSeries(
-    @Args({type: () => AddBookToSeriesArgs})
-    {bookId, seriesId, ...rest}: AddBookToSeriesArgs,
-  ): Promise<SeriesPartEntity> {
-    return this.seriesService.addBookToSeries({bookId, seriesId}, rest);
-  }
-  */
 }

@@ -2,9 +2,7 @@ import {Injectable} from '@nestjs/common';
 import {int} from 'neo4j-driver';
 import {BookEntity} from '../../books/entities/book.entity';
 import {IDService} from '../../common/id/id.service';
-import {OrderBy} from '../../common/order-by.enum';
 import {Neo4jService} from '../../neo4j/neo4j.service';
-import {SeriesMainPartEntity} from '../entities/series-main-part.entity';
 import {SeriesPartEntity} from '../entities/series-part.entity';
 import {SeriesSubPartEntity} from '../entities/series-sub-part.entity';
 import {SeriesEntity} from '../entities/series.entity';
@@ -31,146 +29,27 @@ export class SeriesService {
       .then((res) => res.records.map((record) => record.get(0).properties));
   }
 
-  async create(data: {title: string}): Promise<SeriesEntity> {
-    const result = await this.neo4jService.write(
-      `
-      CREATE (n:Series {id: $id})
-      SET n += $data
-      RETURN n`,
-      {
-        id: this.idService.generate(),
-        data,
-      },
-    );
-    return result.records[0].get(0).properties;
-  }
-
-  async addBookToSeries(
-    {bookId, seriesId}: {bookId: string; seriesId: string},
-    props: {order?: number; displayAs?: string} = {},
-  ): Promise<SeriesPartEntity> {
-    const result = await this.neo4jService
+  async createSeries(
+    bookId: string,
+    data: {title: string},
+  ): Promise<{
+    seriesId: string;
+    bookId: string;
+  }> {
+    return this.neo4jService
       .write(
         `
         MATCH (b:Book {id: $bookId})
-        MATCH (s:Series {id: $seriesId})
-        MERGE (b)-[r:IS_PART_OF_SERIES]->(s)
-        SET r = $props
-        RETURN s,r,b
-      `,
-        {bookId, seriesId, props},
-      )
-      .then(
-        (result) =>
-          result.records.map((record) => ({
-            ...record.get('r').properties,
-            seriesId: record.get('s').properties.id,
-            bookId: record.get('b').properties.id,
-          }))[0],
-      );
-    return result;
-  }
-
-  async getPartsFromSeries(
-    seriesId: string,
-    {
-      skip,
-      limit,
-      except,
-      orderBy,
-    }: {
-      skip: number;
-      limit: number;
-      except: string[];
-      orderBy: {order: OrderBy; title: OrderBy};
-    },
-  ): Promise<{
-    nodes: SeriesPartEntity[];
-    count: number;
-    hasNext: boolean;
-    hasPrevious: boolean;
-  }> {
-    const parts: SeriesPartEntity[] = await this.neo4jService
-      .read(
-        `
-        MATCH (s:Series {id: $seriesId})
-        MATCH (b:Book)-[r:IS_PART_OF_SERIES]->(s)
-        WHERE NOT b.id IN $except
-        RETURN s,r,b
-        ORDER BY r.order ${orderBy.order}, b.title ${orderBy.title}
-        SKIP $skip LIMIT $limit
+        CREATE (s:Series) SET s += $data
+        CREATE (s)-[:HEAD_OF_SERIES]->(b)
+        RETURN b.id AS b, s.id AS s
         `,
-        {
-          seriesId,
-          skip: int(skip),
-          limit: int(limit),
-          except,
-        },
+        {bookId, data: {id: this.idService.generate(), ...data}},
       )
-      .then((result) =>
-        result.records.map((record) => ({
-          ...record.get('r').properties,
-          seriesId: record.get('s').properties.id,
-          bookId: record.get('b').properties.id,
-        })),
-      );
-    const meta: {
-      count: number;
-      hasNext: boolean;
-      hasPrevious: boolean;
-    } = await this.neo4jService
-      .read(
-        `
-      MATCH p=(:Book)-[:IS_PART_OF_SERIES]->(:Series {id: $seriesId})
-      WITH count(p) AS count
-      RETURN count, 0 < count AND 0 < $skip AS previous, $skip + $limit < count AS next
-      `,
-        {seriesId, skip, limit, except},
-      )
-      .then((result) => ({
-        count: result.records[0].get('count').toNumber(),
-        hasNext: result.records[0].get('next'),
-        hasPrevious: result.records[0].get('previous'),
+      .then(({records}) => ({
+        seriesId: records[0].get('s'),
+        bookId: records[0].get('b'),
       }));
-    return {nodes: parts, ...meta};
-  }
-
-  async getPartsFromBook(
-    bookId: string,
-  ): Promise<{nodes: SeriesPartEntity[]; count: number}> {
-    const parts: SeriesPartEntity[] = await this.neo4jService
-      .read(
-        `
-        MATCH (b:Book {id: $bookId})
-        MATCH (b)-[r:IS_PART_OF_SERIES]->(s:Series)
-        RETURN s,r,b
-        `,
-        {
-          bookId,
-        },
-      )
-      .then((result) =>
-        result.records.map((record) => ({
-          ...record.get('r').properties,
-          seriesId: record.get('s').properties.id,
-          bookId: record.get('b').properties.id,
-        })),
-      );
-    const meta: {
-      count: number;
-    } = await this.neo4jService
-      .read(
-        `
-        MATCH p=(:Book {id: $bookId})-[:IS_PART_OF_SERIES]->(:Series)
-        WITH count(p) AS count
-        RETURN count
-        `,
-        {bookId},
-      )
-      .then((result) => ({
-        count: result.records[0].get('count').toNumber(),
-      }));
-    return {nodes: parts, ...meta};
   }
 
   async previousBooks(
@@ -261,30 +140,7 @@ export class SeriesService {
     return {nodes, ...meta};
   }
 
-  async getSeriesFromBook(
-    bookId: string,
-  ): Promise<{seriesId: string; bookId: string; numberingAs?: string}[]> {
-    const nodes = await this.neo4jService
-      .read(
-        `
-        MATCH (b:Book {id: $bookId})
-        MATCH (s:Series)-[:HEAD_OF_SERIES]->()-[:NEXT_BOOK*0..]->(b)
-        OPTIONAL MATCH (s)-[r:PART_OF_SERIES]->(b)
-        RETURN s.id AS s, b.id AS b, r.numberingAs AS numberingAs
-        `,
-        {bookId},
-      )
-      .then((result) =>
-        result.records.map((record) => ({
-          seriesId: record.get('s'),
-          bookId: record.get('b'),
-          numberingAs: record.get('numberingAs'),
-        })),
-      );
-    return nodes;
-  }
-
-  async getHeadOfSeries(seriesId: string): Promise<SeriesMainPartEntity> {
+  async getHeadOfSeries(seriesId: string): Promise<SeriesPartEntity> {
     return this.neo4jService
       .read(
         `
@@ -305,12 +161,12 @@ export class SeriesService {
     seriesId: string,
     {skip, limit}: {skip: number; limit: number},
   ): Promise<{
-    nodes: SeriesMainPartEntity[];
+    nodes: SeriesPartEntity[];
     count: number;
     hasNext: boolean;
     hasPrevious: boolean;
   }> {
-    const nodes: SeriesMainPartEntity[] = await this.neo4jService
+    const nodes: SeriesPartEntity[] = await this.neo4jService
       .read(
         `
         MATCH (s:Series {id: $seriesId})-[:HEAD_OF_SERIES]->(h:Book)
@@ -396,27 +252,27 @@ export class SeriesService {
     return {nodes, ...meta};
   }
 
-  async createSeries(
+  async getSeriesFromBook(
     bookId: string,
-    data: {title: string},
-  ): Promise<{
-    seriesId: string;
-    bookId: string;
-  }> {
-    return this.neo4jService
-      .write(
+  ): Promise<{seriesId: string; bookId: string; numberingAs?: string}[]> {
+    const nodes = await this.neo4jService
+      .read(
         `
         MATCH (b:Book {id: $bookId})
-        CREATE (s:Series) SET s += $data
-        CREATE (s)-[:HEAD_OF_SERIES]->(b)
-        RETURN b.id AS b, s.id AS s
+        MATCH (s:Series)-[:HEAD_OF_SERIES]->()-[:NEXT_BOOK*0..]->(b)
+        OPTIONAL MATCH (s)-[r:PART_OF_SERIES]->(b)
+        RETURN s.id AS s, b.id AS b, r.numberingAs AS numberingAs
         `,
-        {bookId, data: {id: this.idService.generate(), ...data}},
+        {bookId},
       )
-      .then(({records}) => ({
-        seriesId: records[0].get('s'),
-        bookId: records[0].get('b'),
-      }));
+      .then((result) =>
+        result.records.map((record) => ({
+          seriesId: record.get('s'),
+          bookId: record.get('b'),
+          numberingAs: record.get('numberingAs'),
+        })),
+      );
+    return nodes;
   }
 
   async connectBooksAsNextBook({

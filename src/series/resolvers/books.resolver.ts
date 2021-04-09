@@ -1,7 +1,7 @@
 import {Args, Mutation, Parent, ResolveField, Resolver} from '@nestjs/graphql';
 import {BookEntity} from '../../books/entities/book.entity';
 import {BooksService} from '../../books/services/books.service';
-import {SeriesMainPartEntity} from '../entities/series-main-part.entity';
+import {SeriesPartEntity} from '../entities/series-part.entity';
 import {SeriesService} from '../services/series.service';
 import {
   ConnectNextBookArgs,
@@ -20,10 +20,10 @@ import {
 export class BooksResolver {
   constructor(private readonly seriesService: SeriesService) {}
 
-  @ResolveField(() => [SeriesMainPartEntity])
+  @ResolveField(() => [SeriesPartEntity])
   async seriesOf(
     @Parent() {id: bookId}: BookEntity,
-  ): Promise<SeriesMainPartEntity[]> {
+  ): Promise<SeriesPartEntity[]> {
     return this.seriesService.getSeriesFromBook(bookId);
   }
 

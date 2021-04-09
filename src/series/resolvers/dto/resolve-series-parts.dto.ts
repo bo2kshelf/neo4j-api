@@ -1,6 +1,6 @@
 import {ArgsType, Field, InputType, Int, ObjectType} from '@nestjs/graphql';
 import {OrderBy} from '../../../common/order-by.enum';
-import {SeriesMainPartEntity} from '../../entities/series-main-part.entity';
+import {SeriesPartEntity} from '../../entities/series-part.entity';
 
 @InputType('SeriesPartsArgsOrderBy')
 export class ResolveSeriesPartsArgsOrderBy {
@@ -25,8 +25,8 @@ export class ResolveSeriesPartsArgs {
 
 @ObjectType('SeriesPartsReturn')
 export class ResolveSeriesPartsReturnEntity {
-  @Field(() => [SeriesMainPartEntity])
-  nodes!: SeriesMainPartEntity[];
+  @Field(() => [SeriesPartEntity])
+  nodes!: SeriesPartEntity[];
 
   @Field(() => Int)
   count!: number;
