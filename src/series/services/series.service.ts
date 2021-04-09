@@ -36,20 +36,20 @@ export class SeriesService {
     seriesId: string;
     bookId: string;
   }> {
-    return this.neo4jService
-      .write(
-        `
+    const result = await this.neo4jService.write(
+      `
         MATCH (b:Book {id: $bookId})
         CREATE (s:Series) SET s += $data
         CREATE (s)-[:HEAD_OF_SERIES]->(b)
         RETURN b.id AS b, s.id AS s
         `,
-        {bookId, data: {id: this.idService.generate(), ...data}},
-      )
-      .then(({records}) => ({
-        seriesId: records[0].get('s'),
-        bookId: records[0].get('b'),
-      }));
+      {bookId, data: {id: this.idService.generate(), ...data}},
+    );
+    if (result.records.length === 0) throw new Error('Not Found');
+    return {
+      seriesId: result.records[0].get('s'),
+      bookId: result.records[0].get('b'),
+    };
   }
 
   async previousBooks(
@@ -285,18 +285,18 @@ export class SeriesService {
     previousId: string;
     nextId: string;
   }> {
-    return this.neo4jService
-      .write(
-        `
-          MATCH (p:Book {id: $previousId}), (n:Book {id: $nextId})
-          MERGE (p)-[:NEXT_BOOK]->(n)
-          RETURN p.id AS p, n.id AS n
-          `,
-        {previousId, nextId},
-      )
-      .then(({records}) => ({
-        previousId: records[0].get('p'),
-        nextId: records[0].get('n'),
-      }));
+    const result = await this.neo4jService.write(
+      `
+        MATCH (p:Book {id: $previousId}), (n:Book {id: $nextId})
+        MERGE (p)-[:NEXT_BOOK]->(n)
+        RETURN p.id AS p, n.id AS n
+        `,
+      {previousId, nextId},
+    );
+    if (result.records.length === 0) throw new Error('Not Found');
+    return {
+      previousId: result.records[0].get('p'),
+      nextId: result.records[0].get('n'),
+    };
   }
 }
