@@ -1,8 +1,8 @@
 import {Injectable} from '@nestjs/common';
 import {int} from 'neo4j-driver';
-import {BookEntity} from '../../books/entities/book.entity';
 import {IDService} from '../../common/id/id.service';
 import {Neo4jService} from '../../neo4j/neo4j.service';
+import {NextBookConnection} from '../entities/next-book-connection.entity';
 import {SeriesPartEntity} from '../entities/series-part.entity';
 import {SeriesSubPartEntity} from '../entities/series-sub-part.entity';
 import {SeriesEntity} from '../entities/series.entity';
@@ -59,21 +59,25 @@ export class SeriesService {
     count: number;
     hasNext: boolean;
     hasPrevious: boolean;
-    nodes: BookEntity[];
+    nodes: NextBookConnection[];
   }> {
-    const nodes: BookEntity[] = await this.neo4jService
+    const nodes: NextBookConnection[] = await this.neo4jService
       .read(
         `
-        MATCH (b:Book {id: $bookId})
-        MATCH p=(pre:Book)-[:NEXT_BOOK*]->(b)
-        WHERE $skip < length(p) AND length(p) <= $limit
-        RETURN p, pre
-        ORDER BY length(p) ASC
+        MATCH (target:Book {id: $bookId})
+        MATCH p=(pre:Book)-[:NEXT_BOOK*]->(target)
+        WITH p, pre ORDER BY length(p) ASC
+        MATCH (pre)-[:NEXT_BOOK]->(next:Book)
+        RETURN pre.id AS pre, next.id AS next
+        SKIP $skip LIMIT $limit
         `,
         {bookId, skip: int(skip), limit: int(limit)},
       )
       .then((result) =>
-        result.records.map((record) => record.get('pre').properties),
+        result.records.map((record) => ({
+          previousId: record.get('pre'),
+          nextId: record.get('next'),
+        })),
       );
     const meta: {
       count: number;
@@ -103,21 +107,25 @@ export class SeriesService {
     count: number;
     hasNext: boolean;
     hasPrevious: boolean;
-    nodes: BookEntity[];
+    nodes: NextBookConnection[];
   }> {
-    const nodes: BookEntity[] = await this.neo4jService
+    const nodes: NextBookConnection[] = await this.neo4jService
       .read(
         `
-        MATCH (b:Book {id: $bookId})
-        MATCH p=(b)-[:NEXT_BOOK*]->(next:Book)
-        WHERE $skip < length(p) AND length(p) <= $limit
-        RETURN p, next
-        ORDER BY length(p) ASC
+        MATCH (target:Book {id: $bookId})
+        MATCH p=(target)-[:NEXT_BOOK*]->(next:Book)
+        WITH p, next ORDER BY length(p) ASC
+        MATCH (pre:Book)-[:NEXT_BOOK]->(next)
+        RETURN pre.id AS pre, next.id AS next
+        SKIP $skip LIMIT $limit
         `,
         {bookId, skip: int(skip), limit: int(limit)},
       )
       .then((result) =>
-        result.records.map((record) => record.get('next').properties),
+        result.records.map((record) => ({
+          previousId: record.get('pre'),
+          nextId: record.get('next'),
+        })),
       );
     const meta: {
       count: number;

@@ -1,5 +1,5 @@
 import {ArgsType, Field, Int, ObjectType} from '@nestjs/graphql';
-import {BookEntity} from '../../../books/entities/book.entity';
+import {NextBookConnection} from '../../entities/next-book-connection.entity';
 
 @ArgsType()
 export class ResolveBooksPreviousArgs {
@@ -12,8 +12,8 @@ export class ResolveBooksPreviousArgs {
 
 @ObjectType('BooksPreviousReturn')
 export class ResolveBooksPreviousReturn {
-  @Field(() => [BookEntity])
-  nodes!: BookEntity[];
+  @Field(() => [NextBookConnection])
+  nodes!: NextBookConnection[];
 
   @Field(() => Int)
   count!: number;

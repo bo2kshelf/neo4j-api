@@ -258,4 +258,148 @@ describe(SeriesService.name, () => {
       });
     });
   });
+
+  describe('previousBooks()', () => {
+    beforeEach(async () => {
+      await neo4jService.write(
+        `
+        CREATE (b1:Book {id: "book1"})
+        CREATE (b2:Book {id: "book2"}), (b1)-[:NEXT_BOOK]->(b2)
+        CREATE (b3:Book {id: "book3"}), (b2)-[:NEXT_BOOK]->(b3)
+        CREATE (b4:Book {id: "book4"}), (b3)-[:NEXT_BOOK]->(b4)
+        RETURN *
+        `,
+      );
+    });
+
+    it.each([
+      [
+        {skip: 0, limit: 0},
+        {count: 3, hasPrevious: false, hasNext: true, nodes: []},
+      ],
+      [
+        {skip: 0, limit: 1},
+        {
+          count: 3,
+          hasPrevious: false,
+          hasNext: true,
+          nodes: [{previousId: 'book3', nextId: 'book4'}],
+        },
+      ],
+      [
+        {skip: 0, limit: 3},
+        {
+          count: 3,
+          hasPrevious: false,
+          hasNext: false,
+          nodes: [
+            {previousId: 'book3', nextId: 'book4'},
+            {previousId: 'book2', nextId: 'book3'},
+            {previousId: 'book1', nextId: 'book2'},
+          ],
+        },
+      ],
+      [
+        {skip: 1, limit: 1},
+        {
+          count: 3,
+          hasPrevious: true,
+          hasNext: true,
+          nodes: [{previousId: 'book2', nextId: 'book3'}],
+        },
+      ],
+      [
+        {skip: 3, limit: 3},
+        {
+          count: 3,
+          hasPrevious: true,
+          hasNext: false,
+          nodes: [],
+        },
+      ],
+    ])('正常な動作 %j', async (props, expected) => {
+      const actual = await seriesService.previousBooks('book4', props);
+      expect(actual.count).toBe(expected.count);
+      expect(actual.hasPrevious).toBe(expected.hasPrevious);
+      expect(actual.hasNext).toBe(expected.hasNext);
+
+      expect(actual.nodes).toHaveLength(expected.nodes.length);
+      for (const [i, {previousId, nextId}] of actual.nodes.entries()) {
+        expect(previousId).toBe(expected.nodes[i].previousId);
+        expect(nextId).toBe(expected.nodes[i].nextId);
+      }
+    });
+  });
+
+  describe('nextBooks()', () => {
+    beforeEach(async () => {
+      await neo4jService.write(
+        `
+        CREATE (b1:Book {id: "book1"})
+        CREATE (b2:Book {id: "book2"}), (b1)-[:NEXT_BOOK]->(b2)
+        CREATE (b3:Book {id: "book3"}), (b2)-[:NEXT_BOOK]->(b3)
+        CREATE (b4:Book {id: "book4"}), (b3)-[:NEXT_BOOK]->(b4)
+        RETURN *
+        `,
+      );
+    });
+
+    it.each([
+      [
+        {skip: 0, limit: 0},
+        {count: 3, hasPrevious: false, hasNext: true, nodes: []},
+      ],
+      [
+        {skip: 0, limit: 1},
+        {
+          count: 3,
+          hasPrevious: false,
+          hasNext: true,
+          nodes: [{previousId: 'book1', nextId: 'book2'}],
+        },
+      ],
+      [
+        {skip: 0, limit: 3},
+        {
+          count: 3,
+          hasPrevious: false,
+          hasNext: false,
+          nodes: [
+            {previousId: 'book1', nextId: 'book2'},
+            {previousId: 'book2', nextId: 'book3'},
+            {previousId: 'book3', nextId: 'book4'},
+          ],
+        },
+      ],
+      [
+        {skip: 1, limit: 1},
+        {
+          count: 3,
+          hasPrevious: true,
+          hasNext: true,
+          nodes: [{previousId: 'book2', nextId: 'book3'}],
+        },
+      ],
+      [
+        {skip: 3, limit: 3},
+        {
+          count: 3,
+          hasPrevious: true,
+          hasNext: false,
+          nodes: [],
+        },
+      ],
+    ])('正常な動作 %j', async (props, expected) => {
+      const actual = await seriesService.nextBooks('book1', props);
+      expect(actual.count).toBe(expected.count);
+      expect(actual.hasPrevious).toBe(expected.hasPrevious);
+      expect(actual.hasNext).toBe(expected.hasNext);
+
+      expect(actual.nodes).toHaveLength(expected.nodes.length);
+      for (const [i, {previousId, nextId}] of actual.nodes.entries()) {
+        expect(previousId).toBe(expected.nodes[i].previousId);
+        expect(nextId).toBe(expected.nodes[i].nextId);
+      }
+    });
+  });
 });

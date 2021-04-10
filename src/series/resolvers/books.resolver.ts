@@ -1,12 +1,9 @@
 import {Args, Mutation, Parent, ResolveField, Resolver} from '@nestjs/graphql';
 import {BookEntity} from '../../books/entities/book.entity';
-import {BooksService} from '../../books/services/books.service';
+import {NextBookConnection} from '../entities/next-book-connection.entity';
 import {SeriesPartEntity} from '../entities/series-part.entity';
 import {SeriesService} from '../services/series.service';
-import {
-  ConnectNextBookArgs,
-  ConnectNextBookReturn,
-} from './dto/connect-next-book.dto';
+import {ConnectNextBookArgs} from './dto/connect-next-book.dto';
 import {
   ResolveBooksNextArgs,
   ResolveBooksNextReturn,
@@ -28,7 +25,7 @@ export class BooksResolver {
   }
 
   @ResolveField(() => ResolveBooksPreviousReturn)
-  async previous(
+  async previousBooks(
     @Parent() {id: bookId}: BookEntity,
     @Args({type: () => ResolveBooksPreviousArgs})
     args: ResolveBooksPreviousArgs,
@@ -37,7 +34,7 @@ export class BooksResolver {
   }
 
   @ResolveField(() => ResolveBooksNextReturn)
-  async next(
+  async nextBooks(
     @Parent() {id: bookId}: BookEntity,
     @Args({type: () => ResolveBooksNextArgs})
     args: ResolveBooksNextArgs,
@@ -45,28 +42,11 @@ export class BooksResolver {
     return this.seriesService.nextBooks(bookId, args);
   }
 
-  @Mutation(() => ConnectNextBookReturn)
+  @Mutation(() => NextBookConnection)
   async connectNextBook(
     @Args({type: () => ConnectNextBookArgs})
     {previousId, nextId}: ConnectNextBookArgs,
-  ): Promise<ConnectNextBookReturn> {
+  ): Promise<NextBookConnection> {
     return this.seriesService.connectBooksAsNextBook({previousId, nextId});
-  }
-}
-
-@Resolver(() => ConnectNextBookReturn)
-export class ConnectNextBookResolver {
-  constructor(private readonly booksService: BooksService) {}
-
-  @ResolveField(() => BookEntity)
-  async previous(
-    @Parent() {previousId}: ConnectNextBookReturn,
-  ): Promise<BookEntity> {
-    return this.booksService.findById(previousId);
-  }
-
-  @ResolveField(() => BookEntity)
-  async next(@Parent() {nextId}: ConnectNextBookReturn): Promise<BookEntity> {
-    return this.booksService.findById(nextId);
   }
 }
