@@ -1,6 +1,7 @@
 import {Injectable} from '@nestjs/common';
 import {int} from 'neo4j-driver';
 import {IDService} from '../../common/id/id.service';
+import {OrderBy} from '../../common/order-by.enum';
 import {Neo4jService} from '../../neo4j/neo4j.service';
 import {NextBookConnection} from '../entities/next-book-connection.entity';
 import {SeriesPartEntity} from '../entities/series-part.entity';
@@ -167,7 +168,7 @@ export class SeriesService {
 
   async getPartsOfSeries(
     seriesId: string,
-    {skip, limit}: {skip: number; limit: number},
+    {skip, limit, orderBy}: {skip: number; limit: number; orderBy: OrderBy},
   ): Promise<{
     nodes: SeriesPartEntity[];
     count: number;
@@ -181,7 +182,7 @@ export class SeriesService {
         MATCH p=(h)-[:NEXT_BOOK*0..]->(b)
         OPTIONAL MATCH (s)-[r:PART_OF_SERIES]->(b)
         RETURN s.id AS s, b.id AS b, r.numberingAs AS numberingAs
-        ORDER BY length(p)
+        ORDER BY length(p) ${orderBy}
         SKIP $skip LIMIT $limit
         `,
         {seriesId, skip: int(skip), limit: int(limit)},
