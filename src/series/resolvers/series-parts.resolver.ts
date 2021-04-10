@@ -6,7 +6,7 @@ import {SeriesEntity} from '../entities/series.entity';
 import {SeriesService} from '../services/series.service';
 
 @Resolver(() => SeriesPartEntity)
-export class SeriesPartResolver {
+export class SeriesPartsResolver {
   constructor(
     private readonly booksService: BooksService,
     private readonly seriesService: SeriesService,

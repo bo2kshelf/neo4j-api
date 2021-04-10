@@ -12,8 +12,6 @@ describe(SeriesService.name, () => {
   let app: INestApplication;
 
   let neo4jService: Neo4jService;
-  let idService: IDService;
-
   let seriesService: SeriesService;
 
   beforeAll(async () => {
@@ -26,8 +24,6 @@ describe(SeriesService.name, () => {
     await app.init();
 
     neo4jService = module.get<Neo4jService>(Neo4jService);
-    idService = module.get<IDService>(IDService);
-
     seriesService = module.get<SeriesService>(SeriesService);
   });
 
@@ -42,22 +38,6 @@ describe(SeriesService.name, () => {
 
   it('to be defined', () => {
     expect(seriesService).toBeDefined();
-  });
-
-  describe('create()', () => {
-    it.each([
-      [
-        {title: faker.lorem.words(2)},
-        {
-          id: expect.any(String),
-          title: expect.any(String),
-        },
-      ],
-    ])('生成に成功する %#', async (data, expected) => {
-      const actual = await seriesService.create(data);
-
-      expect(actual).toStrictEqual(expected);
-    });
   });
 
   describe('findAll()', () => {
@@ -115,100 +95,357 @@ describe(SeriesService.name, () => {
     });
   });
 
-  describe('addBookToSeries()', () => {
-    const expectedSeries = {id: 'series1', title: faker.lorem.words(2)};
-    const expectedBook = {id: 'book1', title: faker.lorem.words(2)};
-
-    beforeEach(async () => {
-      await neo4jService.write(`CREATE (s:Series) SET s = $series RETURN *`, {
-        series: expectedSeries,
+  describe('create()', () => {
+    it('正常に生成する', async () => {
+      await neo4jService.write(
+        `
+        CREATE (b:Book {id: "book1"})
+        RETURN *
+        `,
+      );
+      const actual = await seriesService.createSeries('book1', {
+        title: 'series',
       });
-      await neo4jService.write(`CREATE (b:Book) SET b = $book RETURN *`, {
-        book: expectedBook,
-      });
+      expect(actual.bookId).toBe('book1');
+      expect(actual.seriesId).toStrictEqual(expect.any(String));
     });
 
-    it.each([
-      [{}, {}],
-      [{order: 1}, {order: 1}],
-      [{displayAs: '上巻'}, {displayAs: '上巻'}],
-    ])(
-      '正常な動作 %j',
-      async (data, expected: {order?: number; displayAs?: string}) => {
-        const actual = await seriesService.addBookToSeries(
-          {seriesId: expectedSeries.id, bookId: expectedBook.id},
-          data,
-        );
-
-        expect(actual.seriesId).toBe(expectedSeries.id);
-        expect(actual.bookId).toBe(expectedBook.id);
-        expect(actual.order).toBe(expected.order);
-        expect(actual.displayAs).toBe(expected.displayAs);
-
-        const neo4jResult = await neo4jService.read(
-          `
-        MATCH (:Book {id: $bookId})-[r:IS_PART_OF_SERIES]->(:Series {id: $seriesId})
-        RETURN r
-        `,
-          {bookId: expectedBook.id, seriesId: expectedSeries.id},
-        );
-        expect(neo4jResult.records).toHaveLength(1);
-      },
-    );
-
-    it('2度呼ばれた際に上書きする', async () => {
-      const rightProps = {order: 2, displayAs: '下巻'};
-      await seriesService.addBookToSeries(
-        {seriesId: expectedSeries.id, bookId: expectedBook.id},
-        {order: 1, displayAs: '上巻'},
-      );
-      const actual = await seriesService.addBookToSeries(
-        {seriesId: expectedSeries.id, bookId: expectedBook.id},
-        rightProps,
-      );
-
-      expect(actual.seriesId).toBe(expectedSeries.id);
-      expect(actual.bookId).toBe(expectedBook.id);
-
-      expect(actual.order).toBe(rightProps.order);
-      expect(actual.displayAs).toBe(rightProps.displayAs);
+    it('bookが存在しない場合例外を投げる', async () => {
+      await expect(() =>
+        seriesService.createSeries('book2', {title: 'series'}),
+      ).rejects.toThrow(/Not Found/);
     });
   });
 
-  describe('getPartsFromSeries()', () => {
-    const expectedSeries = {id: 'series1', name: faker.lorem.words(2)};
-    const expectedBooks = [
-      {id: 'book1', title: 'A'},
-      {id: 'book2', title: 'B'},
-      {id: 'book3', title: 'C'},
-    ];
-
-    beforeEach(async () => {
-      await neo4jService.write(`CREATE (s:Series) SET s = $series RETURN *`, {
-        series: expectedSeries,
+  describe('connectBooksAsNextBook()', () => {
+    it('正常に生成する', async () => {
+      await neo4jService.write(
+        `
+        CREATE (p:Book {id: "pre"})
+        CREATE (n:Book {id: "next"})
+        RETURN *
+        `,
+      );
+      const actual = await seriesService.connectBooksAsNextBook({
+        previousId: 'pre',
+        nextId: 'next',
       });
-      await Promise.all(
-        expectedBooks.map((expectedBook) =>
-          neo4jService.write(`CREATE (b:Book) SET b = $book RETURN *`, {
-            book: expectedBook,
-          }),
-        ),
+      expect(actual.previousId).toBe('pre');
+      expect(actual.nextId).toBe('next');
+    });
+
+    it('previousIdに紐づくbookが存在しない場合例外を投げる', async () => {
+      await neo4jService.write(
+        `
+        CREATE (n:Book {id: "next"})
+        RETURN *
+        `,
+      );
+      await expect(() =>
+        seriesService.connectBooksAsNextBook({
+          previousId: 'pre',
+          nextId: 'next',
+        }),
+      ).rejects.toThrow(/Not Found/);
+    });
+
+    it('nextIdに紐づくbookが存在しない場合例外を投げる', async () => {
+      await neo4jService.write(
+        `
+        CREATE (p:Book {id: "pre"})
+        RETURN *
+        `,
+      );
+      await expect(() =>
+        seriesService.connectBooksAsNextBook({
+          previousId: 'pre',
+          nextId: 'next',
+        }),
+      ).rejects.toThrow(/Not Found/);
+    });
+  });
+
+  describe('getSeriesFromBook()', () => {
+    describe('seriesが1つの場合', () => {
+      beforeEach(async () => {
+        await neo4jService.write(
+          `
+          CREATE (s:Series {id: "series1", title: "Series 1"})
+          CREATE (b1:Book {id: "book1"})
+          CREATE (b2:Book {id: "book2"}), (b1)-[:NEXT_BOOK]->(b2)
+          CREATE (b3:Book {id: "book3"}), (b2)-[:NEXT_BOOK]->(b3)
+          CREATE (s)-[:HEAD_OF_SERIES]->(b1)
+          RETURN *
+          `,
+        );
+      });
+
+      it('book1からSeriesを取得する', async () => {
+        const actual = await seriesService.getSeriesFromBook('book1');
+
+        expect(actual).toHaveLength(1);
+        expect(actual[0].seriesId).toBe('series1');
+      });
+
+      it('book3からSeriesを取得する', async () => {
+        const actual = await seriesService.getSeriesFromBook('book3');
+
+        expect(actual).toHaveLength(1);
+        expect(actual[0].seriesId).toBe('series1');
+      });
+    });
+
+    describe('seriesが複数の場合', () => {
+      beforeEach(async () => {
+        await neo4jService.write(
+          `
+          CREATE (s1:Series {id: "series1", title: "Series 1"})
+          CREATE (s2:Series {id: "series2", title: "Series 2"})
+          CREATE (s1b1:Book {id: "s1-book1"})
+          CREATE (s1b2:Book {id: "s1-book2"}), (s1b1)-[:NEXT_BOOK]->(s1b2)
+          CREATE (s2b1:Book {id: "s2-book1"})
+          CREATE (s2b2:Book {id: "s2-book2"}), (s2b1)-[:NEXT_BOOK]->(s2b2)
+          CREATE (b3:Book {id: "book3"}), (s1b2)-[:NEXT_BOOK]->(b3), (s2b2)-[:NEXT_BOOK]->(b3)
+          CREATE (s1)-[:HEAD_OF_SERIES]->(s1b1), (s2)-[:HEAD_OF_SERIES]->(s2b1)
+          RETURN *
+          `,
+        );
+      });
+
+      it('book3からSeriesを取得する', async () => {
+        const actual = await seriesService.getSeriesFromBook('book3');
+        expect(actual).toHaveLength(2);
+      });
+    });
+
+    describe('PART_OF_SERIESが存在する場合', () => {
+      beforeEach(async () => {
+        await neo4jService.write(
+          `
+          CREATE (s:Series {id: "series1", title: "Series 1"})
+          CREATE (b1:Book {id: "book1"})
+          CREATE (b2:Book {id: "book2"}), (b1)-[:NEXT_BOOK]->(b2)
+          CREATE (b3:Book {id: "book3"}), (b2)-[:NEXT_BOOK]->(b3)
+          CREATE (s)-[h:HEAD_OF_SERIES]->(b1)
+          CREATE (s)-[r1:PART_OF_SERIES {numberingAs: "上巻"}]->(b1)
+          CREATE (s)-[r3:PART_OF_SERIES {numberingAs: "下巻"}]->(b3)
+          RETURN *
+          `,
+        );
+      });
+
+      it('book1からSeriesを取得する', async () => {
+        const actual = await seriesService.getSeriesFromBook('book1');
+
+        expect(actual).toHaveLength(1);
+        expect(actual[0].seriesId).toBe('series1');
+        expect(actual[0].numberingAs).toBe('上巻');
+      });
+
+      it('book2からSeriesを取得する', async () => {
+        const actual = await seriesService.getSeriesFromBook('book2');
+
+        expect(actual).toHaveLength(1);
+        expect(actual[0].seriesId).toBe('series1');
+        expect(actual[0].numberingAs).toBeNull();
+      });
+
+      it('book3からSeriesを取得する', async () => {
+        const actual = await seriesService.getSeriesFromBook('book3');
+
+        expect(actual).toHaveLength(1);
+        expect(actual[0].seriesId).toBe('series1');
+        expect(actual[0].numberingAs).toBe('下巻');
+      });
+    });
+  });
+
+  describe('previousBooks()', () => {
+    beforeEach(async () => {
+      await neo4jService.write(
+        `
+        CREATE (b1:Book {id: "book1"})
+        CREATE (b2:Book {id: "book2"}), (b1)-[:NEXT_BOOK]->(b2)
+        CREATE (b3:Book {id: "book3"}), (b2)-[:NEXT_BOOK]->(b3)
+        CREATE (b4:Book {id: "book4"}), (b3)-[:NEXT_BOOK]->(b4)
+        RETURN *
+        `,
       );
     });
 
-    describe('orderあり', () => {
+    it.each([
+      [
+        {skip: 0, limit: 0},
+        {count: 3, hasPrevious: false, hasNext: true, nodes: []},
+      ],
+      [
+        {skip: 0, limit: 1},
+        {
+          count: 3,
+          hasPrevious: false,
+          hasNext: true,
+          nodes: [{previousId: 'book3', nextId: 'book4'}],
+        },
+      ],
+      [
+        {skip: 0, limit: 3},
+        {
+          count: 3,
+          hasPrevious: false,
+          hasNext: false,
+          nodes: [
+            {previousId: 'book3', nextId: 'book4'},
+            {previousId: 'book2', nextId: 'book3'},
+            {previousId: 'book1', nextId: 'book2'},
+          ],
+        },
+      ],
+      [
+        {skip: 1, limit: 1},
+        {
+          count: 3,
+          hasPrevious: true,
+          hasNext: true,
+          nodes: [{previousId: 'book2', nextId: 'book3'}],
+        },
+      ],
+      [
+        {skip: 3, limit: 3},
+        {
+          count: 3,
+          hasPrevious: true,
+          hasNext: false,
+          nodes: [],
+        },
+      ],
+    ])('正常な動作 %j', async (props, expected) => {
+      const actual = await seriesService.previousBooks('book4', props);
+      expect(actual.count).toBe(expected.count);
+      expect(actual.hasPrevious).toBe(expected.hasPrevious);
+      expect(actual.hasNext).toBe(expected.hasNext);
+
+      expect(actual.nodes).toHaveLength(expected.nodes.length);
+      for (const [i, {previousId, nextId}] of actual.nodes.entries()) {
+        expect(previousId).toBe(expected.nodes[i].previousId);
+        expect(nextId).toBe(expected.nodes[i].nextId);
+      }
+    });
+  });
+
+  describe('nextBooks()', () => {
+    beforeEach(async () => {
+      await neo4jService.write(
+        `
+        CREATE (b1:Book {id: "book1"})
+        CREATE (b2:Book {id: "book2"}), (b1)-[:NEXT_BOOK]->(b2)
+        CREATE (b3:Book {id: "book3"}), (b2)-[:NEXT_BOOK]->(b3)
+        CREATE (b4:Book {id: "book4"}), (b3)-[:NEXT_BOOK]->(b4)
+        RETURN *
+        `,
+      );
+    });
+
+    it.each([
+      [
+        {skip: 0, limit: 0},
+        {count: 3, hasPrevious: false, hasNext: true, nodes: []},
+      ],
+      [
+        {skip: 0, limit: 1},
+        {
+          count: 3,
+          hasPrevious: false,
+          hasNext: true,
+          nodes: [{previousId: 'book1', nextId: 'book2'}],
+        },
+      ],
+      [
+        {skip: 0, limit: 3},
+        {
+          count: 3,
+          hasPrevious: false,
+          hasNext: false,
+          nodes: [
+            {previousId: 'book1', nextId: 'book2'},
+            {previousId: 'book2', nextId: 'book3'},
+            {previousId: 'book3', nextId: 'book4'},
+          ],
+        },
+      ],
+      [
+        {skip: 1, limit: 1},
+        {
+          count: 3,
+          hasPrevious: true,
+          hasNext: true,
+          nodes: [{previousId: 'book2', nextId: 'book3'}],
+        },
+      ],
+      [
+        {skip: 3, limit: 3},
+        {
+          count: 3,
+          hasPrevious: true,
+          hasNext: false,
+          nodes: [],
+        },
+      ],
+    ])('正常な動作 %j', async (props, expected) => {
+      const actual = await seriesService.nextBooks('book1', props);
+      expect(actual.count).toBe(expected.count);
+      expect(actual.hasPrevious).toBe(expected.hasPrevious);
+      expect(actual.hasNext).toBe(expected.hasNext);
+
+      expect(actual.nodes).toHaveLength(expected.nodes.length);
+      for (const [i, {previousId, nextId}] of actual.nodes.entries()) {
+        expect(previousId).toBe(expected.nodes[i].previousId);
+        expect(nextId).toBe(expected.nodes[i].nextId);
+      }
+    });
+  });
+
+  describe('getHeadOfSeries', () => {
+    it('正常に動作する', async () => {
+      await neo4jService.write(
+        `
+        CREATE (s:Series {id: "series1"})
+        CREATE (b:Book {id: "book1"}), (s)-[:HEAD_OF_SERIES]->(b)
+        CREATE (s)-[:PART_OF_SERIES {numberingAs: "上巻"}]->(b)
+        RETURN *
+        `,
+      );
+      const actual = await seriesService.getHeadOfSeries('series1');
+      expect(actual.seriesId).toBe('series1');
+      expect(actual.bookId).toBe('book1');
+      expect(actual.numberingAs).toBe('上巻');
+    });
+
+    it('PART_OF_SERIESが無くても正常に動作する', async () => {
+      await neo4jService.write(
+        `
+        CREATE (s:Series {id: "series1"})
+        CREATE (b:Book {id: "book1"}), (s)-[:HEAD_OF_SERIES]->(b)
+        RETURN *
+        `,
+      );
+      const actual = await seriesService.getHeadOfSeries('series1');
+      expect(actual.seriesId).toBe('series1');
+      expect(actual.bookId).toBe('book1');
+      expect(actual.numberingAs).toBeNull();
+    });
+  });
+
+  describe('getPartsOfSeries', () => {
+    describe('PART_OF_SERIESが無い場合', () => {
       beforeEach(async () => {
-        await Promise.all(
-          expectedBooks.map((expectedBook, i) =>
-            neo4jService.write(
-              `
-              CREATE (:Book {id: $book.id})-[r:IS_PART_OF_SERIES]->(:Series {id: $series.id})
-              SET r = $props
-              RETURN *
-              `,
-              {series: expectedSeries, book: expectedBook, props: {order: i}},
-            ),
-          ),
+        await neo4jService.write(
+          `
+          CREATE (s:Series {id: "series1"})
+          CREATE (b1:Book {id: "book1"}), (s)-[:HEAD_OF_SERIES]->(b1)
+          CREATE (b2:Book {id: "book2"}), (b1)-[:NEXT_BOOK]->(b2)
+          CREATE (b3:Book {id: "book3"}), (b2)-[:NEXT_BOOK]->(b3)
+          RETURN *
+          `,
         );
       });
 
@@ -217,162 +454,172 @@ describe(SeriesService.name, () => {
           {
             skip: 0,
             limit: 0,
-            except: [],
-            orderBy: {order: OrderBy.ASC, title: OrderBy.ASC},
+            orderBy: OrderBy.ASC,
           },
           {
-            books: [],
+            count: 3,
             hasPrevious: false,
             hasNext: true,
+            nodes: [],
           },
         ],
         [
           {
             skip: 0,
             limit: 3,
-            except: [],
-            orderBy: {
-              order: OrderBy.ASC,
-              title: OrderBy.ASC,
-            },
+            orderBy: OrderBy.ASC,
           },
           {
-            books: [expectedBooks[0], expectedBooks[1], expectedBooks[2]],
+            count: 3,
             hasPrevious: false,
             hasNext: false,
+            nodes: [
+              {seriesId: 'series1', bookId: 'book1', numberingAs: null},
+              {seriesId: 'series1', bookId: 'book2', numberingAs: null},
+              {seriesId: 'series1', bookId: 'book3', numberingAs: null},
+            ],
           },
         ],
         [
           {
             skip: 0,
             limit: 3,
-            except: [expectedBooks[1].id],
-            orderBy: {
-              order: OrderBy.ASC,
-              title: OrderBy.ASC,
-            },
+            orderBy: OrderBy.DESC,
           },
           {
-            books: [expectedBooks[0], expectedBooks[2]],
+            count: 3,
             hasPrevious: false,
             hasNext: false,
+            nodes: [
+              {seriesId: 'series1', bookId: 'book3', numberingAs: null},
+              {seriesId: 'series1', bookId: 'book2', numberingAs: null},
+              {seriesId: 'series1', bookId: 'book1', numberingAs: null},
+            ],
           },
         ],
         [
           {
-            skip: 0,
+            skip: 1,
             limit: 3,
-            except: [],
-            orderBy: {
-              order: OrderBy.DESC,
-              title: OrderBy.ASC,
-            },
+            orderBy: OrderBy.ASC,
           },
           {
-            books: [expectedBooks[2], expectedBooks[1], expectedBooks[0]],
-            hasPrevious: false,
+            count: 3,
+            hasPrevious: true,
             hasNext: false,
-          },
-        ],
-        [
-          {
-            skip: 0,
-            limit: 1,
-            except: [],
-            orderBy: {
-              order: OrderBy.ASC,
-              title: OrderBy.ASC,
-            },
-          },
-          {
-            books: [expectedBooks[0]],
-            hasPrevious: false,
-            hasNext: true,
+            nodes: [
+              {seriesId: 'series1', bookId: 'book2', numberingAs: null},
+              {seriesId: 'series1', bookId: 'book3', numberingAs: null},
+            ],
           },
         ],
         [
           {
             skip: 1,
             limit: 1,
-            except: [],
-            orderBy: {
-              order: OrderBy.ASC,
-              title: OrderBy.ASC,
-            },
+            orderBy: OrderBy.ASC,
           },
           {
-            books: [expectedBooks[1]],
+            count: 3,
             hasPrevious: true,
             hasNext: true,
+            nodes: [{seriesId: 'series1', bookId: 'book2', numberingAs: null}],
           },
         ],
         [
           {
             skip: 3,
             limit: 3,
-            except: [],
-            orderBy: {order: OrderBy.ASC, title: OrderBy.ASC},
+            orderBy: OrderBy.ASC,
           },
           {
-            books: [],
+            count: 3,
             hasPrevious: true,
             hasNext: false,
+            nodes: [],
           },
         ],
-      ])('正常な動作 %j', async (props, expected) => {
-        const actual = await seriesService.getPartsFromSeries(
-          expectedSeries.id,
-          props,
-        );
-
+      ])('正常に動作する %j', async (props, expected) => {
+        const actual = await seriesService.getPartsOfSeries('series1', props);
+        expect(actual.count).toBe(expected.count);
         expect(actual.hasPrevious).toBe(expected.hasPrevious);
         expect(actual.hasNext).toBe(expected.hasNext);
-        expect(actual.count).toBe(expectedBooks.length);
-
-        expect(actual.nodes).toHaveLength(expected.books.length);
-        actual.nodes.map(({bookId}, i) => {
-          expect(bookId).toBe(expected.books[i].id);
-        });
+        for (const [i, actualNode] of actual.nodes.entries()) {
+          expect(actualNode).toStrictEqual(expected.nodes[i]);
+        }
       });
+    });
+
+    it('PART_OF_SERIESがある場合', async () => {
+      await neo4jService.write(
+        `
+        CREATE (s:Series {id: "series1"})
+        CREATE (b1:Book {id: "book1"}), (s)-[:HEAD_OF_SERIES]->(b1)
+        CREATE (b2:Book {id: "book2"}), (b1)-[:NEXT_BOOK]->(b2)
+        CREATE (b3:Book {id: "book3"}), (b2)-[:NEXT_BOOK]->(b3)
+        CREATE (s)-[:PART_OF_SERIES {numberingAs: "上巻"}]->(b1)
+        CREATE (s)-[:PART_OF_SERIES {numberingAs: "中巻"}]->(b2)
+        CREATE (s)-[:PART_OF_SERIES {numberingAs: "下巻"}]->(b3)
+        RETURN *
+        `,
+      );
+
+      const expected = {
+        count: 3,
+        hasPrevious: false,
+        hasNext: false,
+        nodes: [
+          {seriesId: 'series1', bookId: 'book1', numberingAs: '上巻'},
+          {seriesId: 'series1', bookId: 'book2', numberingAs: '中巻'},
+          {seriesId: 'series1', bookId: 'book3', numberingAs: '下巻'},
+        ],
+      };
+      const actual = await seriesService.getPartsOfSeries('series1', {
+        skip: 0,
+        limit: 3,
+        orderBy: OrderBy.ASC,
+      });
+      expect(actual.count).toBe(expected.count);
+      expect(actual.hasPrevious).toBe(expected.hasPrevious);
+      expect(actual.hasNext).toBe(expected.hasNext);
+      for (const [i, actualNode] of actual.nodes.entries()) {
+        expect(actualNode).toStrictEqual(expected.nodes[i]);
+      }
     });
   });
 
-  describe('getPartsFromBook()', () => {
-    const expectedSeries = [
-      {id: 'series1', name: faker.lorem.words(2)},
-      {id: 'series2', name: faker.lorem.words(2)},
-      {id: 'series3', name: faker.lorem.words(2)},
-    ];
-    const expectedBook = {id: 'book1', title: faker.lorem.words(2)};
-
-    beforeEach(async () => {
-      await neo4jService.write(`CREATE (b:Book) SET b = $book RETURN *`, {
-        book: expectedBook,
-      });
-      await Promise.all(
-        expectedSeries.map((expectedASeries) =>
-          neo4jService.write(
-            `
-          CREATE (s:Series)
-          CREATE (:Book {id: $book.id})-[r:IS_PART_OF_SERIES]->(:Series {id: $series.id})
-          SET s = $series RETURN *`,
-            {
-              book: expectedBook,
-              series: expectedASeries,
-            },
-          ),
-        ),
+  describe('getSubPartsOfSeries', () => {
+    it('正常に動作する', async () => {
+      await neo4jService.write(
+        `
+        CREATE (s:Series {id: "series1"})
+        CREATE (b1:Book {id: "book1", title: "A"}), (s)-[:SUBPART_OF_SERIES]->(b1)
+        CREATE (b2:Book {id: "book2", title: "B"}), (s)-[:SUBPART_OF_SERIES]->(b2)
+        CREATE (b3:Book {id: "book3", title: "C"}), (s)-[:SUBPART_OF_SERIES]->(b3)
+        RETURN *
+        `,
       );
-    });
 
-    it('BookからSeriesを取得する', async () => {
-      const actual = await seriesService.getPartsFromBook(expectedBook.id);
-
-      expect(actual.count).toBe(expectedSeries.length);
-
-      actual.nodes.map(({bookId}) => {
-        expect(expectedBook.id).toBe(bookId);
+      const expected = {
+        count: 3,
+        hasPrevious: false,
+        hasNext: false,
+        nodes: [
+          {seriesId: 'series1', bookId: 'book1'},
+          {seriesId: 'series1', bookId: 'book2'},
+          {seriesId: 'series1', bookId: 'book3'},
+        ],
+      };
+      const actual = await seriesService.getSubPartsOfSeries('series1', {
+        skip: 0,
+        limit: 3,
       });
+      expect(actual.count).toBe(expected.count);
+      expect(actual.hasPrevious).toBe(expected.hasPrevious);
+      expect(actual.hasNext).toBe(expected.hasNext);
+      for (const [i, actualNode] of actual.nodes.entries()) {
+        expect(actualNode).toStrictEqual(expected.nodes[i]);
+      }
     });
   });
 });
