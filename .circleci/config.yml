@@ -108,7 +108,7 @@ jobs:
       NEO4J_TEST_URL: bolt://localhost:7687
     docker:
       - image: cimg/node:14.16.0
-      - image: neo4j:4.2.3
+      - image: neo4j:4.2.5
         environment:
           NEO4J_AUTH: none
           NEO4JLABS_PLUGINS: '["apoc"]'
