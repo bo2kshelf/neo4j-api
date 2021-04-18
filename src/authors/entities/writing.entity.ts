@@ -6,6 +6,6 @@ export class WritingEntity {
   authorId!: string;
   bookId!: string;
 
-  @Field(() => [AuthorRole], {defaultValue: [AuthorRole.AUTHOR]})
-  roles?: AuthorRole[];
+  @Field(() => [AuthorRole])
+  roles!: AuthorRole[];
 }

@@ -46,7 +46,7 @@ export class AuthorsService {
 
   async writedBook(
     {authorId, bookId}: {authorId: string; bookId: string},
-    {roles}: {roles?: AuthorRole[]},
+    {roles = [AuthorRole.AUTHOR]}: {roles?: AuthorRole[]},
   ): Promise<WritingEntity> {
     const result = await this.neo4jService.write(
       `

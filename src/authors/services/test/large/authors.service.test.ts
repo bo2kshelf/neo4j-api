@@ -133,7 +133,7 @@ describe(AuthorsService.name, () => {
     });
 
     it.each([
-      [{}, {roles: []}],
+      [{}, {roles: [AuthorRole.AUTHOR]}],
       [{roles: [AuthorRole.TRANSLATOR]}, {roles: [AuthorRole.TRANSLATOR]}],
     ])('正常な動作 %#', async (data, expected) => {
       const actual = await authorsService.writedBook(
