@@ -1,4 +1,5 @@
 import {ArgsType, Field, ID} from '@nestjs/graphql';
+import {AuthorRole} from '../../entities/roles.enitty';
 
 @ArgsType()
 export class WritedBookArgs {
@@ -8,6 +9,6 @@ export class WritedBookArgs {
   @Field(() => ID)
   authorId!: string;
 
-  @Field(() => [String!], {nullable: true})
-  roles?: string[];
+  @Field(() => [AuthorRole], {nullable: true})
+  roles?: AuthorRole[];
 }

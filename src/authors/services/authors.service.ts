@@ -4,6 +4,7 @@ import {IDService} from '../../common/id/id.service';
 import {OrderBy} from '../../common/order-by.enum';
 import {Neo4jService} from '../../neo4j/neo4j.service';
 import {AuthorEntity} from '../entities/author.entity';
+import {AuthorRole} from '../entities/roles.enitty';
 import {WritingEntity} from '../entities/writing.entity';
 
 @Injectable()
@@ -45,7 +46,7 @@ export class AuthorsService {
 
   async writedBook(
     {authorId, bookId}: {authorId: string; bookId: string},
-    {roles = []}: {roles?: string[]},
+    {roles = [AuthorRole.AUTHOR]}: {roles?: AuthorRole[]},
   ): Promise<WritingEntity> {
     const result = await this.neo4jService.write(
       `
@@ -53,14 +54,14 @@ export class AuthorsService {
         MATCH (b:Book {id: $bookId})
         MERGE (a)-[r:WRITED_BOOK]->(b)
         SET r = $props
-        RETURN a,r,b
+        RETURN a.id AS a, b.id AS b, r.roles AS roles
       `,
       {bookId, authorId, props: {roles}},
     );
     return result.records.map((record) => ({
-      ...record.get('r').properties,
-      authorId: record.get('a').properties.id,
-      bookId: record.get('b').properties.id,
+      authorId: record.get('a'),
+      bookId: record.get('b'),
+      roles: record.get('roles'),
     }))[0];
   }
 

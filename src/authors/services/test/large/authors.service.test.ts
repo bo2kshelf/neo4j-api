@@ -6,6 +6,7 @@ import {IDService} from '../../../../common/id/id.service';
 import {OrderBy} from '../../../../common/order-by.enum';
 import {Neo4jTestModule} from '../../../../neo4j/neo4j-test.module';
 import {Neo4jService} from '../../../../neo4j/neo4j.service';
+import {AuthorRole} from '../../../entities/roles.enitty';
 import {AuthorsService} from '../../authors.service';
 
 describe(AuthorsService.name, () => {
@@ -132,8 +133,8 @@ describe(AuthorsService.name, () => {
     });
 
     it.each([
-      [{}, {roles: []}],
-      [{roles: ['翻訳']}, {roles: ['翻訳']}],
+      [{}, {roles: [AuthorRole.AUTHOR]}],
+      [{roles: [AuthorRole.TRANSLATOR]}, {roles: [AuthorRole.TRANSLATOR]}],
     ])('正常な動作 %#', async (data, expected) => {
       const actual = await authorsService.writedBook(
         {
@@ -159,10 +160,10 @@ describe(AuthorsService.name, () => {
     });
 
     it('2度呼ばれた際に上書きする', async () => {
-      const rightProps = {roles: ['RightRole']};
+      const rightProps = {roles: [AuthorRole.ILLUSTRATOR]};
       await authorsService.writedBook(
         {authorId: 'author1', bookId: 'book1'},
-        {roles: ['FakeRole']},
+        {roles: [AuthorRole.COMIC_ARTIST]},
       );
       const actual = await authorsService.writedBook(
         {authorId: 'author1', bookId: 'book1'},
