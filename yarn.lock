@@ -601,7 +601,7 @@ __metadata:
     "@types/jest": 26.0.22
     "@types/node": 14.14.37
     "@types/supertest": 2.0.11
-    apollo-server-express: 2.22.2
+    apollo-server-express: 2.23.0
     class-transformer: 0.3.1
     class-validator: 0.12.2
     eslint: 7.23.0
@@ -1865,12 +1865,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/cors@npm:2.8.8":
-  version: 2.8.8
-  resolution: "@types/cors@npm:2.8.8"
-  dependencies:
-    "@types/express": "*"
-  checksum: 4a11dd4d1e76056b0c76e69e29347003338346cf3cf72a0aad94742fc99bf4bb540b0cc2b3f61ed4fdfd9cf979d7b40afe0816458d20a9c865e8c286b14373a4
+"@types/cors@npm:2.8.10":
+  version: 2.8.10
+  resolution: "@types/cors@npm:2.8.10"
+  checksum: c3f3d6feee59ff75127fec3030d55c3d5f1adfc07953facdae67c47dcd54c83c46a5e92f08afa53542ec978da38a388697d30731019798cb157c9e96c64ef6c3
   languageName: node
   linkType: hard
 
@@ -2792,9 +2790,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"apollo-server-core@npm:^2.21.0, apollo-server-core@npm:^2.22.2":
-  version: 2.22.2
-  resolution: "apollo-server-core@npm:2.22.2"
+"apollo-server-core@npm:^2.21.0, apollo-server-core@npm:^2.22.2, apollo-server-core@npm:^2.23.0":
+  version: 2.23.0
+  resolution: "apollo-server-core@npm:2.23.0"
   dependencies:
     "@apollographql/apollo-tools": ^0.4.3
     "@apollographql/graphql-playground-html": 1.6.27
@@ -2807,7 +2805,7 @@ __metadata:
     apollo-reporting-protobuf: ^0.6.2
     apollo-server-caching: ^0.6.0
     apollo-server-env: ^3.0.0
-    apollo-server-errors: ^2.4.2
+    apollo-server-errors: ^2.5.0
     apollo-server-plugin-base: ^0.11.0
     apollo-server-types: ^0.7.0
     apollo-tracing: ^0.13.0
@@ -2824,7 +2822,7 @@ __metadata:
     ws: ^6.0.0
   peerDependencies:
     graphql: ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0
-  checksum: a2a3d0189e387ece9a0625cab55f137bb86764218b7ae09ec471570fee566800bd0fc5e449f4e5a06491985381c04a88e141b7c752f3dbc4acf160fbe2b66048
+  checksum: 0fdfe024e76572a46cb0e3dde279fe15f75bda138516f23a50de8a0c92280bc52c042da6178b6d930490a51066f9a65e16bda08a87f665bce31b52c57759dcbc
   languageName: node
   linkType: hard
 
@@ -2838,30 +2836,30 @@ __metadata:
   languageName: node
   linkType: hard
 
-"apollo-server-errors@npm:^2.4.2":
-  version: 2.4.2
-  resolution: "apollo-server-errors@npm:2.4.2"
+"apollo-server-errors@npm:^2.4.2, apollo-server-errors@npm:^2.5.0":
+  version: 2.5.0
+  resolution: "apollo-server-errors@npm:2.5.0"
   peerDependencies:
     graphql: ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0
-  checksum: 638fc54b24dcfd473fb55db4d9998bfad0b91b9c4b27f41e4a983b36055eed038a7d848470357318f28d78ea2c3f6e8418c5def07a88336cff5d33fe35891ba0
+  checksum: 53a46de9808812766a78b79b73dcee69339be511e2c9b964881b881e2c6b18ccf364fb47b3618f4d9af6522321839f1545efd4a3fd03eace13f9cde069a7717f
   languageName: node
   linkType: hard
 
-"apollo-server-express@npm:2.22.2":
-  version: 2.22.2
-  resolution: "apollo-server-express@npm:2.22.2"
+"apollo-server-express@npm:2.23.0":
+  version: 2.23.0
+  resolution: "apollo-server-express@npm:2.23.0"
   dependencies:
     "@apollographql/graphql-playground-html": 1.6.27
     "@types/accepts": ^1.3.5
     "@types/body-parser": 1.19.0
-    "@types/cors": 2.8.8
+    "@types/cors": 2.8.10
     "@types/express": 4.17.11
     "@types/express-serve-static-core": 4.17.19
     accepts: ^1.3.5
-    apollo-server-core: ^2.22.2
+    apollo-server-core: ^2.23.0
     apollo-server-types: ^0.7.0
     body-parser: ^1.18.3
-    cors: ^2.8.4
+    cors: ^2.8.5
     express: ^4.17.1
     graphql-subscriptions: ^1.0.0
     graphql-tools: ^4.0.8
@@ -2870,7 +2868,7 @@ __metadata:
     type-is: ^1.6.16
   peerDependencies:
     graphql: ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0
-  checksum: c54a3e792a1b2a3e67760604f40187a53ab8790c40b3389e3daeff8cde8c70263da7f3a1e696523f8868a042c2ed9cc2d6eff5d9648c71ab312a922a044bd602
+  checksum: b79a561c5724668dcabccb3765eec07ed80be5e8a5860948c557fa845bf04c050a2887d4e5e46b1450ca27c11ac13cf59efe7c13728614550575c6f9065e9e18
   languageName: node
   linkType: hard
 
@@ -4172,7 +4170,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cors@npm:2.8.5, cors@npm:^2.8.4":
+"cors@npm:2.8.5, cors@npm:^2.8.5":
   version: 2.8.5
   resolution: "cors@npm:2.8.5"
   dependencies:
