@@ -39,7 +39,6 @@ export class UsersService {
         `
         MATCH (u:User {id: $userId})
         MATCH (u)-[r:HAS_BOOK]->(b:Book)
-        WHERE r.have = true
         RETURN u.id AS u, b.id AS b, r.updatedAt AS updatedAt
         ORDER BY r.updatedAt ${orderBy.updatedAt}
         SKIP $skip LIMIT $limit
@@ -62,7 +61,6 @@ export class UsersService {
       .read(
         `
         MATCH p=(:User {id: $userId})-[r:HAS_BOOK]->()
-        WHERE r.have = true
         WITH count(p) AS count
         RETURN count, 0 < count AND 0 < $skip AS previous, $skip + $limit < count AS next
         `,
@@ -94,7 +92,6 @@ export class UsersService {
         `
         MATCH (u:User {id: $userId})
         MATCH (u)-[r:IS_READING_BOOK]->(b:Book)
-        WHERE r.reading = true
         RETURN u.id AS u, b.id AS b, r.updatedAt AS updatedAt
         ORDER BY r.updatedAt ${orderBy.updatedAt}
         SKIP $skip LIMIT $limit
@@ -117,7 +114,6 @@ export class UsersService {
       .read(
         `
         MATCH p=(:User {id: $userId})-[r:IS_READING_BOOK]->()
-        WHERE r.reading = true
         WITH count(p) AS count
         RETURN count, 0 < count AND 0 < $skip AS previous, $skip + $limit < count AS next
         `,
@@ -149,7 +145,6 @@ export class UsersService {
         `
         MATCH (u:User {id: $userId})
         MATCH (u)-[r:WISHES_TO_READ_BOOK]->(b:Book)
-        WHERE r.wish = true
         RETURN u.id AS u, b.id AS b, r.updatedAt AS updatedAt
         ORDER BY r.updatedAt ${orderBy.updatedAt}
         SKIP $skip LIMIT $limit
@@ -172,7 +167,6 @@ export class UsersService {
       .read(
         `
         MATCH p=(:User {id: $userId})-[r:WISHES_TO_READ_BOOK]->()
-        WHERE r.wish = true
         WITH count(p) AS count
         RETURN count, 0 < count AND 0 < $skip AS previous, $skip + $limit < count AS next
         `,
@@ -244,68 +238,119 @@ export class UsersService {
     {bookId, userId}: {bookId: string; userId: string},
     {have}: {have: boolean},
   ): Promise<HaveBookRecordEntity> {
-    return this.neo4jService
-      .read(
-        `
-        MATCH (b:Book {id: $bookId})
-        MERGE (u:User {id: $userId})
-        MERGE (u)-[r:HAS_BOOK]->(b)
-        SET r=$props SET r.updatedAt = datetime.realtime()
-        RETURN u.id AS u, b.id AS b, r.have AS have, r.updatedAt AS updatedAt
-        `,
-        {userId, bookId, props: {have}},
-      )
-      .then((result) => ({
-        userId: result.records[0].get('u'),
-        bookId: result.records[0].get('b'),
-        have: result.records[0].get('have'),
-        updatedAt: new Date(result.records[0].get('updatedAt')),
-      }));
+    return have
+      ? this.neo4jService
+          .read(
+            `
+            MATCH (b:Book {id: $bookId})
+            MERGE (u:User {id: $userId})
+            MERGE (u)-[r:HAS_BOOK]->(b)
+            SET r.updatedAt = datetime.realtime()
+            RETURN u.id AS u, b.id AS b, r.updatedAt AS updatedAt
+            `,
+            {userId, bookId},
+          )
+          .then((result) => ({
+            userId: result.records[0].get('u'),
+            bookId: result.records[0].get('b'),
+            have: true,
+            updatedAt: new Date(result.records[0].get('updatedAt')),
+          }))
+      : this.neo4jService
+          .read(
+            `
+            MERGE (u:User {id: $userId}) WITH u
+            MATCH (b:Book {id: $bookId})
+            OPTIONAL MATCH (u)-[r:HAS_BOOK]->(b) DELETE r
+            RETURN u.id AS u, b.id AS b, datetime.realtime() AS updatedAt
+            `,
+            {userId, bookId},
+          )
+          .then((result) => ({
+            userId: result.records[0].get('u'),
+            bookId: result.records[0].get('b'),
+            have: false,
+            updatedAt: new Date(result.records[0].get('updatedAt')),
+          }));
   }
 
   async setReadingBook(
     {bookId, userId}: {bookId: string; userId: string},
     {reading}: {reading: boolean},
   ): Promise<ReadingBookRecordEntity> {
-    return this.neo4jService
-      .read(
-        `
-        MATCH (b:Book {id: $bookId})
-        MERGE (u:User {id: $userId})
-        MERGE (u)-[r:IS_READING_BOOK]->(b)
-        SET r=$props SET r.updatedAt = datetime.realtime()
-        RETURN u.id AS u, b.id AS b, r.reading AS reading, r.updatedAt AS updatedAt
-        `,
-        {userId, bookId, props: {reading}},
-      )
-      .then((result) => ({
-        userId: result.records[0].get('u'),
-        bookId: result.records[0].get('b'),
-        reading: result.records[0].get('reading'),
-        updatedAt: new Date(result.records[0].get('updatedAt')),
-      }));
+    return reading
+      ? this.neo4jService
+          .read(
+            `
+            MATCH (b:Book {id: $bookId})
+            MERGE (u:User {id: $userId})
+            MERGE (u)-[r:IS_READING_BOOK]->(b)
+            SET r.updatedAt = datetime.realtime()
+            RETURN u.id AS u, b.id AS b, r.reading AS reading, r.updatedAt AS updatedAt
+            `,
+            {userId, bookId},
+          )
+          .then((result) => ({
+            userId: result.records[0].get('u'),
+            bookId: result.records[0].get('b'),
+            reading: true,
+            updatedAt: new Date(result.records[0].get('updatedAt')),
+          }))
+      : this.neo4jService
+          .read(
+            `
+            MERGE (u:User {id: $userId}) WITH u
+            MATCH (b:Book {id: $bookId})
+            OPTIONAL MATCH (u)-[r:IS_READING_BOOK]->(b) DELETE r
+            RETURN u.id AS u, b.id AS b, datetime.realtime() AS updatedAt
+            `,
+            {userId, bookId},
+          )
+          .then((result) => ({
+            userId: result.records[0].get('u'),
+            bookId: result.records[0].get('b'),
+            reading: false,
+            updatedAt: new Date(result.records[0].get('updatedAt')),
+          }));
   }
 
   async setWishReadBook(
     {bookId, userId}: {bookId: string; userId: string},
     {wish}: {wish: boolean},
   ): Promise<WishReadBookRecordEntity> {
-    return this.neo4jService
-      .read(
-        `
-        MATCH (b:Book {id: $bookId})
-        MERGE (u:User {id: $userId})
-        MERGE (u)-[r:WISHES_TO_READ_BOOK]->(b)
-        SET r=$props SET r.updatedAt = datetime.realtime()
-        RETURN u.id AS u, b.id AS b, r.wish AS wish, r.updatedAt AS updatedAt
-        `,
-        {userId, bookId, props: {wish}},
-      )
-      .then((result) => ({
-        userId: result.records[0].get('u'),
-        bookId: result.records[0].get('b'),
-        wish: result.records[0].get('wish'),
-        updatedAt: new Date(result.records[0].get('updatedAt')),
-      }));
+    return wish
+      ? this.neo4jService
+          .read(
+            `
+            MATCH (b:Book {id: $bookId})
+            MERGE (u:User {id: $userId})
+            MERGE (u)-[r:WISHES_TO_READ_BOOK]->(b)
+            SET r.updatedAt = datetime.realtime()
+            RETURN u.id AS u, b.id AS b, r.reading AS reading, r.updatedAt AS updatedAt
+            `,
+            {userId, bookId},
+          )
+          .then((result) => ({
+            userId: result.records[0].get('u'),
+            bookId: result.records[0].get('b'),
+            wish: true,
+            updatedAt: new Date(result.records[0].get('updatedAt')),
+          }))
+      : this.neo4jService
+          .read(
+            `
+            MERGE (u:User {id: $userId}) WITH u
+            MATCH (b:Book {id: $bookId})
+            OPTIONAL MATCH (u)-[r:WISHES_TO_READ_BOOK]->(b) DELETE r
+            RETURN u.id AS u, b.id AS b, datetime.realtime() AS updatedAt
+            `,
+            {userId, bookId},
+          )
+          .then((result) => ({
+            userId: result.records[0].get('u'),
+            bookId: result.records[0].get('b'),
+            wish: false,
+            updatedAt: new Date(result.records[0].get('updatedAt')),
+          }));
   }
 }
