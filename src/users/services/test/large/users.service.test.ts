@@ -220,33 +220,6 @@ describe(UsersService.name, () => {
         expect(actual.nodes).toHaveLength(expected.nodes.length);
       });
     });
-
-    it('have:falseが混ざっている場合', async () => {
-      await neo4jService.write(
-        `
-        CREATE (u:User {id: "user1"})
-        CREATE (b1:Book {id: "book1", title: "A"})
-        CREATE (b2:Book {id: "book2", title: "B"})
-        CREATE (b3:Book {id: "book3", title: "C"})
-        CREATE (u)-[:HAS_BOOK {updatedAt: "2020-01-01T00:00:00.000000000Z", have: true}]->(b1)
-        CREATE (u)-[:HAS_BOOK {updatedAt: "2020-01-02T00:00:00.000000000Z", have: true}]->(b2)
-        CREATE (u)-[:HAS_BOOK {updatedAt: "2020-01-03T00:00:00.000000000Z", have: false}]->(b3)
-        RETURN *
-        `,
-      );
-      const actual = await usersService.getHaveBooks('user1', {
-        skip: 0,
-        limit: 3,
-        orderBy: {updatedAt: OrderBy.DESC},
-      });
-      expect(actual.hasPrevious).toBe(false);
-      expect(actual.hasNext).toBe(false);
-      expect(actual.count).toBe(2);
-
-      expect(actual.nodes).toHaveLength(2);
-      expect(actual.nodes[0].bookId).toBe('book2');
-      expect(actual.nodes[1].bookId).toBe('book1');
-    });
   });
 
   describe('getReadingBooks()', () => {
@@ -410,33 +383,6 @@ describe(UsersService.name, () => {
         expect(actual.nodes).toHaveLength(expected.nodes.length);
       });
     });
-
-    it('reading:falseが混ざっている場合', async () => {
-      await neo4jService.write(
-        `
-        CREATE (u:User {id: "user1"})
-        CREATE (b1:Book {id: "book1", title: "A"})
-        CREATE (b2:Book {id: "book2", title: "B"})
-        CREATE (b3:Book {id: "book3", title: "C"})
-        CREATE (u)-[:IS_READING_BOOK {updatedAt: "2020-01-01T00:00:00.000000000Z", reading: true}]->(b1)
-        CREATE (u)-[:IS_READING_BOOK {updatedAt: "2020-01-02T00:00:00.000000000Z", reading: true}]->(b2)
-        CREATE (u)-[:IS_READING_BOOK {updatedAt: "2020-01-03T00:00:00.000000000Z", reading: false}]->(b3)
-        RETURN *
-        `,
-      );
-      const actual = await usersService.getReadingBooks('user1', {
-        skip: 0,
-        limit: 3,
-        orderBy: {updatedAt: OrderBy.DESC},
-      });
-      expect(actual.hasPrevious).toBe(false);
-      expect(actual.hasNext).toBe(false);
-      expect(actual.count).toBe(2);
-
-      expect(actual.nodes).toHaveLength(2);
-      expect(actual.nodes[0].bookId).toBe('book2');
-      expect(actual.nodes[1].bookId).toBe('book1');
-    });
   });
 
   describe('getWishesToReadBook()', () => {
@@ -599,35 +545,6 @@ describe(UsersService.name, () => {
         expect(actual.hasNext).toBe(expected.hasNext);
         expect(actual.nodes).toHaveLength(expected.nodes.length);
       });
-    });
-
-    it('wish:falseが混ざっている場合', async () => {
-      await neo4jService.write(
-        `
-        CREATE (u:User {id: "user1"})
-        CREATE (b1:Book {id: "book1", title: "A"})
-        CREATE (b2:Book {id: "book2", title: "B"})
-        CREATE (b3:Book {id: "book3", title: "C"})
-        CREATE (u)-[:WISHES_TO_READ_BOOK {updatedAt: "2020-01-01T00:00:00.000000000Z", wish: true}]->(b1)
-        CREATE (u)-[:WISHES_TO_READ_BOOK {updatedAt: "2020-01-02T00:00:00.000000000Z", wish: true}]->(b2)
-        CREATE (u)-[:WISHES_TO_READ_BOOK {updatedAt: "2020-01-03T00:00:00.000000000Z", wish: false}]->(b3)
-        RETURN *
-        `,
-      );
-      const actual = await usersService.getWishesToReadBook('user1', {
-        skip: 0,
-        limit: 3,
-        orderBy: {updatedAt: OrderBy.DESC},
-      });
-      expect(actual.hasPrevious).toBe(false);
-      expect(actual.hasNext).toBe(false);
-      expect(actual.count).toBe(2);
-
-      expect(actual.nodes).toHaveLength(2);
-      expect(actual.nodes[0].bookId).toBe('book2');
-      expect(actual.nodes[0].wish).toBe(true);
-      expect(actual.nodes[1].bookId).toBe('book1');
-      expect(actual.nodes[1].wish).toBe(true);
     });
   });
 
@@ -835,6 +752,7 @@ describe(UsersService.name, () => {
           have: true,
           updatedAt: expect.any(Date),
         },
+        true,
       ],
       [
         {have: false},
@@ -844,8 +762,9 @@ describe(UsersService.name, () => {
           have: false,
           updatedAt: expect.any(Date),
         },
+        false,
       ],
-    ])('Userが既に存在する場合 %p', async (props, expected) => {
+    ])('Userが既に存在する場合 %p', async (props, expected, expectedExists) => {
       await neo4jService.write(`CREATE (n:User) SET n=$expected RETURN *`, {
         expected: expectedUser,
       });
@@ -857,6 +776,14 @@ describe(UsersService.name, () => {
         props,
       );
       expect(actual).toStrictEqual(expected);
+
+      const exists: boolean = await neo4jService
+        .read(
+          `OPTIONAL MATCH p=(:User {id: $userId})-[r:HAS_BOOK]->(:Book {id: $bookId}) RETURN p IS NOT NULL AS exists`,
+          {userId: expectedUser.id, bookId: expectedBook.id},
+        )
+        .then(({records}) => records[0].get('exists'));
+      expect(exists).toBe(expectedExists);
     });
 
     it.each([
@@ -868,6 +795,7 @@ describe(UsersService.name, () => {
           have: true,
           updatedAt: expect.any(Date),
         },
+        true,
       ],
       [
         {have: false},
@@ -877,17 +805,29 @@ describe(UsersService.name, () => {
           have: false,
           updatedAt: expect.any(Date),
         },
+        false,
       ],
-    ])('Userが存在しない場合はMERGEで生成する %p', async (props, expected) => {
-      await neo4jService.write(`CREATE (n:Book) SET n=$expected RETURN *`, {
-        expected: expectedBook,
-      });
-      const actual = await usersService.setHaveBook(
-        {userId: expectedUser.id, bookId: expectedBook.id},
-        props,
-      );
-      expect(actual).toStrictEqual(expected);
-    });
+    ])(
+      'Userが存在しない場合はMERGEで生成する %p',
+      async (props, expected, expectedExists) => {
+        await neo4jService.write(`CREATE (n:Book) SET n=$expected RETURN *`, {
+          expected: expectedBook,
+        });
+        const actual = await usersService.setHaveBook(
+          {userId: expectedUser.id, bookId: expectedBook.id},
+          props,
+        );
+        expect(actual).toStrictEqual(expected);
+
+        const exists: boolean = await neo4jService
+          .read(
+            `OPTIONAL MATCH p=(:User {id: $userId})-[r:HAS_BOOK]->(:Book {id: $bookId}) RETURN p IS NOT NULL AS exists`,
+            {userId: expectedUser.id, bookId: expectedBook.id},
+          )
+          .then(({records}) => records[0].get('exists'));
+        expect(exists).toBe(expectedExists);
+      },
+    );
   });
 
   describe('setReadingBook()', () => {
@@ -903,6 +843,7 @@ describe(UsersService.name, () => {
           reading: true,
           updatedAt: expect.any(Date),
         },
+        true,
       ],
       [
         {reading: false},
@@ -912,8 +853,9 @@ describe(UsersService.name, () => {
           reading: false,
           updatedAt: expect.any(Date),
         },
+        false,
       ],
-    ])('Userが既に存在する場合 %p', async (props, expected) => {
+    ])('Userが既に存在する場合 %p', async (props, expected, expectedExists) => {
       await neo4jService.write(`CREATE (n:User) SET n=$expected RETURN *`, {
         expected: expectedUser,
       });
@@ -925,6 +867,14 @@ describe(UsersService.name, () => {
         props,
       );
       expect(actual).toStrictEqual(expected);
+
+      const exists: boolean = await neo4jService
+        .read(
+          `OPTIONAL MATCH p=(:User {id: $userId})-[r:IS_READING_BOOK]->(:Book {id: $bookId}) RETURN p IS NOT NULL AS exists`,
+          {userId: expectedUser.id, bookId: expectedBook.id},
+        )
+        .then(({records}) => records[0].get('exists'));
+      expect(exists).toBe(expectedExists);
     });
 
     it.each([
@@ -936,6 +886,7 @@ describe(UsersService.name, () => {
           reading: true,
           updatedAt: expect.any(Date),
         },
+        true,
       ],
       [
         {reading: false},
@@ -945,17 +896,29 @@ describe(UsersService.name, () => {
           reading: false,
           updatedAt: expect.any(Date),
         },
+        false,
       ],
-    ])('Userが存在しない場合はMERGEで生成する %p', async (props, expected) => {
-      await neo4jService.write(`CREATE (n:Book) SET n=$expected RETURN *`, {
-        expected: expectedBook,
-      });
-      const actual = await usersService.setReadingBook(
-        {userId: expectedUser.id, bookId: expectedBook.id},
-        props,
-      );
-      expect(actual).toStrictEqual(expected);
-    });
+    ])(
+      'Userが存在しない場合はMERGEで生成する %p',
+      async (props, expected, expectedExists) => {
+        await neo4jService.write(`CREATE (n:Book) SET n=$expected RETURN *`, {
+          expected: expectedBook,
+        });
+        const actual = await usersService.setReadingBook(
+          {userId: expectedUser.id, bookId: expectedBook.id},
+          props,
+        );
+        expect(actual).toStrictEqual(expected);
+
+        const exists: boolean = await neo4jService
+          .read(
+            `OPTIONAL MATCH p=(:User {id: $userId})-[r:IS_READING_BOOK]->(:Book {id: $bookId}) RETURN p IS NOT NULL AS exists`,
+            {userId: expectedUser.id, bookId: expectedBook.id},
+          )
+          .then(({records}) => records[0].get('exists'));
+        expect(exists).toBe(expectedExists);
+      },
+    );
   });
 
   describe('setWishReadBook()', () => {
@@ -971,6 +934,7 @@ describe(UsersService.name, () => {
           wish: true,
           updatedAt: expect.any(Date),
         },
+        true,
       ],
       [
         {wish: false},
@@ -980,8 +944,9 @@ describe(UsersService.name, () => {
           wish: false,
           updatedAt: expect.any(Date),
         },
+        false,
       ],
-    ])('Userが既に存在する場合 %p', async (props, expected) => {
+    ])('Userが既に存在する場合 %p', async (props, expected, expectedExists) => {
       await neo4jService.write(`CREATE (n:User) SET n=$expected RETURN *`, {
         expected: expectedUser,
       });
@@ -993,6 +958,14 @@ describe(UsersService.name, () => {
         props,
       );
       expect(actual).toStrictEqual(expected);
+
+      const exists: boolean = await neo4jService
+        .read(
+          `OPTIONAL MATCH p=(:User {id: $userId})-[r:WISHES_TO_READ_BOOK]->(:Book {id: $bookId}) RETURN p IS NOT NULL AS exists`,
+          {userId: expectedUser.id, bookId: expectedBook.id},
+        )
+        .then(({records}) => records[0].get('exists'));
+      expect(exists).toBe(expectedExists);
     });
 
     it.each([
@@ -1004,6 +977,7 @@ describe(UsersService.name, () => {
           wish: true,
           updatedAt: expect.any(Date),
         },
+        true,
       ],
       [
         {wish: false},
@@ -1013,16 +987,27 @@ describe(UsersService.name, () => {
           wish: false,
           updatedAt: expect.any(Date),
         },
+        false,
       ],
-    ])('Userが存在しない場合はMERGEで生成する %p', async (props, expected) => {
-      await neo4jService.write(`CREATE (n:Book) SET n=$expected RETURN *`, {
-        expected: expectedBook,
-      });
-      const actual = await usersService.setWishReadBook(
-        {userId: expectedUser.id, bookId: expectedBook.id},
-        props,
-      );
-      expect(actual).toStrictEqual(expected);
-    });
+    ])(
+      'Userが存在しない場合はMERGEで生成する %p',
+      async (props, expected, expectedExists) => {
+        await neo4jService.write(`CREATE (n:Book) SET n=$expected RETURN *`, {
+          expected: expectedBook,
+        });
+        const actual = await usersService.setWishReadBook(
+          {userId: expectedUser.id, bookId: expectedBook.id},
+          props,
+        );
+        expect(actual).toStrictEqual(expected);
+        const exists: boolean = await neo4jService
+          .read(
+            `OPTIONAL MATCH p=(:User {id: $userId})-[r:WISHES_TO_READ_BOOK]->(:Book {id: $bookId}) RETURN p IS NOT NULL AS exists`,
+            {userId: expectedUser.id, bookId: expectedBook.id},
+          )
+          .then(({records}) => records[0].get('exists'));
+        expect(exists).toBe(expectedExists);
+      },
+    );
   });
 });
