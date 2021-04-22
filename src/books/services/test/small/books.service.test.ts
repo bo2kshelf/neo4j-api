@@ -3,7 +3,6 @@ import {Test} from '@nestjs/testing';
 import {Neo4jService} from '../../../../neo4j/neo4j.service';
 import {BooksService} from '../../books.service';
 
-jest.mock('../../../../common/id/id.service');
 jest.mock('../../../../neo4j/neo4j.service');
 
 describe(BooksService.name, () => {
