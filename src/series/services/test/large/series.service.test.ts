@@ -1,8 +1,6 @@
 import {INestApplication} from '@nestjs/common';
 import {Test} from '@nestjs/testing';
 import * as faker from 'faker';
-import {IDModule} from '../../../../common/id/id.module';
-import {IDService} from '../../../../common/id/id.service';
 import {OrderBy} from '../../../../common/order-by.enum';
 import {Neo4jTestModule} from '../../../../neo4j/neo4j-test.module';
 import {Neo4jService} from '../../../../neo4j/neo4j.service';
@@ -16,8 +14,8 @@ describe(SeriesService.name, () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      imports: [Neo4jTestModule, IDModule],
-      providers: [IDService, SeriesService],
+      imports: [Neo4jTestModule],
+      providers: [SeriesService],
     }).compile();
 
     app = module.createNestApplication();
@@ -92,76 +90,6 @@ describe(SeriesService.name, () => {
       await expect(() => seriesService.findById('2')).rejects.toThrow(
         /Not Found/,
       );
-    });
-  });
-
-  describe('create()', () => {
-    it('正常に生成する', async () => {
-      await neo4jService.write(
-        `
-        CREATE (b:Book {id: "book1"})
-        RETURN *
-        `,
-      );
-      const actual = await seriesService.createSeries('book1', {
-        title: 'series',
-      });
-      expect(actual.bookId).toBe('book1');
-      expect(actual.seriesId).toStrictEqual(expect.any(String));
-    });
-
-    it('bookが存在しない場合例外を投げる', async () => {
-      await expect(() =>
-        seriesService.createSeries('book2', {title: 'series'}),
-      ).rejects.toThrow(/Not Found/);
-    });
-  });
-
-  describe('connectBooksAsNextBook()', () => {
-    it('正常に生成する', async () => {
-      await neo4jService.write(
-        `
-        CREATE (p:Book {id: "pre"})
-        CREATE (n:Book {id: "next"})
-        RETURN *
-        `,
-      );
-      const actual = await seriesService.connectBooksAsNextBook({
-        previousId: 'pre',
-        nextId: 'next',
-      });
-      expect(actual.previousId).toBe('pre');
-      expect(actual.nextId).toBe('next');
-    });
-
-    it('previousIdに紐づくbookが存在しない場合例外を投げる', async () => {
-      await neo4jService.write(
-        `
-        CREATE (n:Book {id: "next"})
-        RETURN *
-        `,
-      );
-      await expect(() =>
-        seriesService.connectBooksAsNextBook({
-          previousId: 'pre',
-          nextId: 'next',
-        }),
-      ).rejects.toThrow(/Not Found/);
-    });
-
-    it('nextIdに紐づくbookが存在しない場合例外を投げる', async () => {
-      await neo4jService.write(
-        `
-        CREATE (p:Book {id: "pre"})
-        RETURN *
-        `,
-      );
-      await expect(() =>
-        seriesService.connectBooksAsNextBook({
-          previousId: 'pre',
-          nextId: 'next',
-        }),
-      ).rejects.toThrow(/Not Found/);
     });
   });
 

@@ -1,6 +1,5 @@
 import {
   Args,
-  Mutation,
   Parent,
   Query,
   ResolveField,
@@ -10,7 +9,6 @@ import {
 import {SeriesPartEntity} from '../entities/series-part.entity';
 import {SeriesEntity} from '../entities/series.entity';
 import {SeriesService} from '../services/series.service';
-import {CreateSeriesArgs} from './dto/create-series.dto';
 import {GetSeriesArgs} from './dto/get-series.dto';
 import {
   ResolveSeriesPartsArgs,
@@ -62,12 +60,5 @@ export class SeriesResolver {
   @Query(() => [SeriesEntity])
   async allSeries(): Promise<SeriesEntity[]> {
     return this.seriesService.findAll();
-  }
-
-  @Mutation(() => SeriesPartEntity)
-  async createSeries(
-    @Args({type: () => CreateSeriesArgs}) {bookId, ...data}: CreateSeriesArgs,
-  ): Promise<SeriesPartEntity> {
-    return this.seriesService.createSeries(bookId, data);
   }
 }

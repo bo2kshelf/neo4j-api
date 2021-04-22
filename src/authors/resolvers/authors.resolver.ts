@@ -1,6 +1,5 @@
 import {
   Args,
-  Mutation,
   Parent,
   Query,
   ResolveField,
@@ -8,15 +7,12 @@ import {
   ResolveReference,
 } from '@nestjs/graphql';
 import {AuthorEntity} from '../entities/author.entity';
-import {WritingEntity} from '../entities/writing.entity';
 import {AuthorsService} from '../services/authors.service';
-import {CreateAuthorArgs} from './dto/create-author.dto';
 import {GetAuthorArgs} from './dto/get-author.dto';
 import {
   ResolveAuthorWritesArgs,
   ResolveAuthorWritesReturnEntity,
 } from './dto/resolve-authors-writes.dto';
-import {WritedBookArgs} from './dto/writed-book.dto';
 
 @Resolver(() => AuthorEntity)
 export class AuthorsResolver {
@@ -45,21 +41,5 @@ export class AuthorsResolver {
   @Query(() => [AuthorEntity])
   async allAuthors(): Promise<AuthorEntity[]> {
     return this.authorsService.findAll();
-  }
-
-  @Mutation(() => AuthorEntity)
-  async createAuthor(
-    @Args({type: () => CreateAuthorArgs})
-    args: CreateAuthorArgs,
-  ): Promise<AuthorEntity> {
-    return this.authorsService.create(args);
-  }
-
-  @Mutation(() => WritingEntity)
-  async writedBook(
-    @Args({type: () => WritedBookArgs})
-    {authorId, bookId, ...props}: WritedBookArgs,
-  ) {
-    return this.authorsService.writedBook({authorId, bookId}, props);
   }
 }
