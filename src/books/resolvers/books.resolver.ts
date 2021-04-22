@@ -1,6 +1,5 @@
 import {
   Args,
-  Mutation,
   Parent,
   Query,
   ResolveField,
@@ -9,7 +8,6 @@ import {
 } from '@nestjs/graphql';
 import {BookEntity} from '../entities/book.entity';
 import {BooksService} from '../services/books.service';
-import {CreateBookArgs} from './dto/create-books.dto';
 import {GetBookArgs} from './dto/get-book.dto';
 import {BookISBNArgs} from './dto/isbn.dto';
 
@@ -41,13 +39,5 @@ export class BooksResolver {
   @Query(() => [BookEntity])
   async allBooks(): Promise<BookEntity[]> {
     return this.booksService.findAll();
-  }
-
-  @Mutation(() => BookEntity)
-  async createBook(
-    @Args({type: () => CreateBookArgs})
-    args: CreateBookArgs,
-  ): Promise<BookEntity> {
-    return this.booksService.create(args);
   }
 }

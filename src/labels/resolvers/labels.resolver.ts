@@ -1,6 +1,5 @@
 import {
   Args,
-  Mutation,
   Parent,
   Query,
   ResolveField,
@@ -8,11 +7,8 @@ import {
   ResolveReference,
 } from '@nestjs/graphql';
 import {LabelEntity} from '../entities/label.entity';
-import {LabelingEntity} from '../entities/labeling.entity';
 import {LabelsService} from '../services/labels.service';
-import {CreateLabelArgs} from './dto/create-label.dto';
 import {GetLabelArgs} from './dto/get-label.dto';
-import {LabeledBookArgs} from './dto/labeled-book.dto';
 import {
   ResolveLabelsBooksArgs,
   ResolveLabelsBooksReturnEntity,
@@ -47,21 +43,5 @@ export class LabelsResolver {
   @Query(() => [LabelEntity])
   async allLabels(): Promise<LabelEntity[]> {
     return this.labelsService.findAll();
-  }
-
-  @Mutation(() => LabelEntity)
-  async createLabel(
-    @Args({type: () => CreateLabelArgs})
-    args: CreateLabelArgs,
-  ): Promise<LabelEntity> {
-    return this.labelsService.create(args);
-  }
-
-  @Mutation(() => LabelingEntity)
-  async labeledBook(
-    @Args({type: () => LabeledBookArgs})
-    args: LabeledBookArgs,
-  ): Promise<LabelingEntity> {
-    return this.labelsService.labeledBook(args);
   }
 }

@@ -1,18 +1,14 @@
 import {
   Args,
-  Mutation,
   Parent,
   Query,
   ResolveField,
   Resolver,
   ResolveReference,
 } from '@nestjs/graphql';
-import {PublicationEntity} from '../entities/publication.entity';
 import {PublisherEntity} from '../entities/publisher.entity';
 import {PublishersService} from '../services/publishers.service';
-import {CreatePublisherArgs} from './dto/create-publisher.dto';
 import {GetPublisherArgs} from './dto/get-publisher.dto';
-import {ConnectBookToPublisherArgs} from './dto/published-book.dto';
 import {
   PublishersPublicationsReturnEntity,
   ResolvePublishersPublicationsArgs,
@@ -50,21 +46,5 @@ export class PublishersResolver {
   @Query(() => [PublisherEntity])
   async allPublishers(): Promise<PublisherEntity[]> {
     return this.publishersService.findAll();
-  }
-
-  @Mutation(() => PublisherEntity)
-  async createPublisher(
-    @Args({type: () => CreatePublisherArgs})
-    args: CreatePublisherArgs,
-  ): Promise<PublisherEntity> {
-    return this.publishersService.create(args);
-  }
-
-  @Mutation(() => PublicationEntity)
-  async publishedBook(
-    @Args({type: () => ConnectBookToPublisherArgs})
-    args: ConnectBookToPublisherArgs,
-  ): Promise<PublicationEntity> {
-    return this.publishersService.publishedBook(args);
   }
 }
