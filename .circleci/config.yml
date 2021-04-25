@@ -51,7 +51,7 @@ jobs:
 
   ts-check:
     docker:
-      - image: circleci/node:14.16.1
+      - image: cimg/node:14.16.1
     steps:
       - checkout
       - berry-install-packages
