@@ -2,14 +2,14 @@ import {ArgsType, Field, ID, InputType, Int, ObjectType} from '@nestjs/graphql';
 import {OrderBy} from '../../../common/order-by.enum';
 import {WritingEntity} from '../../entities/writing.entity';
 
-@InputType('AuthorWritesArgsOrderBy')
-export class ResolveAuthorWritesArgsOrderBy {
+@InputType('AuthorsWroteBooksArgsOrderBy')
+export class ResolveAuthorsWroteBooksArgsOrderBy {
   @Field(() => OrderBy, {nullable: true, defaultValue: OrderBy.ASC})
   title!: OrderBy;
 }
 
 @ArgsType()
-export class ResolveAuthorWritesArgs {
+export class ResolveAuthorsWroteBooksArgs {
   @Field(() => Int, {nullable: true, defaultValue: 0})
   skip!: number;
 
@@ -19,15 +19,15 @@ export class ResolveAuthorWritesArgs {
   @Field(() => [ID!], {nullable: true, defaultValue: []})
   except!: string[];
 
-  @Field(() => ResolveAuthorWritesArgsOrderBy, {
+  @Field(() => ResolveAuthorsWroteBooksArgsOrderBy, {
     nullable: true,
-    defaultValue: new ResolveAuthorWritesArgsOrderBy(),
+    defaultValue: new ResolveAuthorsWroteBooksArgsOrderBy(),
   })
-  orderBy!: ResolveAuthorWritesArgsOrderBy;
+  orderBy!: ResolveAuthorsWroteBooksArgsOrderBy;
 }
 
-@ObjectType('AuthorWritesReturn')
-export class ResolveAuthorWritesReturnEntity {
+@ObjectType('AuthorsWroteBooksArgsReturn')
+export class ResolveAuthorsWroteBooksReturnEntity {
   @Field(() => [WritingEntity])
   nodes!: WritingEntity[];
 
