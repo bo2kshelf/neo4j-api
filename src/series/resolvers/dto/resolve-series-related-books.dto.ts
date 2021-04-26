@@ -1,19 +1,19 @@
 import {ArgsType, Field, Int, ObjectType} from '@nestjs/graphql';
-import {NextBookConnection} from '../../entities/next-book-connection.entity';
+import {SeriesPartEntity} from '../../entities/series-part.entity';
 
 @ArgsType()
-export class ResolveBooksNextArgs {
+export class SeriesRelatedBooksArgs {
   @Field(() => Int, {nullable: true, defaultValue: 0})
   skip!: number;
 
-  @Field(() => Int, {nullable: true, defaultValue: 1})
+  @Field(() => Int, {nullable: true, defaultValue: 0})
   limit!: number;
 }
 
-@ObjectType('BooksNextReturn')
-export class ResolveBooksNextReturn {
-  @Field(() => [NextBookConnection])
-  nodes!: NextBookConnection[];
+@ObjectType()
+export class SeriesRelatedBooksReturnType {
+  @Field(() => [SeriesPartEntity])
+  nodes!: SeriesPartEntity[];
 
   @Field(() => Int)
   count!: number;

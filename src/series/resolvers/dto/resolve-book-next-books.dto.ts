@@ -2,7 +2,7 @@ import {ArgsType, Field, Int, ObjectType} from '@nestjs/graphql';
 import {NextBookConnection} from '../../entities/next-book-connection.entity';
 
 @ArgsType()
-export class ResolveBooksPreviousArgs {
+export class BookNextBooksArgs {
   @Field(() => Int, {nullable: true, defaultValue: 0})
   skip!: number;
 
@@ -10,8 +10,8 @@ export class ResolveBooksPreviousArgs {
   limit!: number;
 }
 
-@ObjectType('BooksPreviousReturn')
-export class ResolveBooksPreviousReturn {
+@ObjectType()
+export class BookNextBooksReturnType {
   @Field(() => [NextBookConnection])
   nodes!: NextBookConnection[];
 

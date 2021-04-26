@@ -10,9 +10,9 @@ import {PublisherEntity} from '../entities/publisher.entity';
 import {PublishersService} from '../services/publishers.service';
 import {GetPublisherArgs} from './dto/get-publisher.dto';
 import {
-  PublishersPublicationsReturnEntity,
-  ResolvePublishersPublicationsArgs,
-} from './dto/resolve-publishers-publications.dto';
+  PublisherPublishedBooksArgs,
+  PublisherPublishedBooksReturnType,
+} from './dto/resolve-publisher-published-books.dto';
 
 @Resolver(() => PublisherEntity)
 export class PublishersResolver {
@@ -23,12 +23,12 @@ export class PublishersResolver {
     return this.publishersService.findById(reference.id);
   }
 
-  @ResolveField(() => PublishersPublicationsReturnEntity)
-  async publications(
+  @ResolveField(() => PublisherPublishedBooksReturnType)
+  async publishedBooks(
     @Parent() {id: publisherId}: PublisherEntity,
-    @Args({type: () => ResolvePublishersPublicationsArgs})
-    args: ResolvePublishersPublicationsArgs,
-  ): Promise<PublishersPublicationsReturnEntity> {
+    @Args({type: () => PublisherPublishedBooksArgs})
+    args: PublisherPublishedBooksArgs,
+  ): Promise<PublisherPublishedBooksReturnType> {
     return this.publishersService.getPublicationsFromPublisher(
       publisherId,
       args,

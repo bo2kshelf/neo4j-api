@@ -2,14 +2,14 @@ import {ArgsType, Field, ID, InputType, Int, ObjectType} from '@nestjs/graphql';
 import {OrderBy} from '../../../common/order-by.enum';
 import {PublisherLabelRelationEntity} from '../../entities/publisher-label.entity';
 
-@InputType('PublishersLabelsArgsOrderBy')
-export class ResolvePublishersLabelsArgsOrderBy {
+@InputType()
+export class PublisherHasLabelsArgsOrderBy {
   @Field(() => OrderBy, {nullable: true, defaultValue: OrderBy.ASC})
   name!: OrderBy;
 }
 
 @ArgsType()
-export class ResolvePublishersLabelsArgs {
+export class PublisherHasLabelsArgs {
   @Field(() => Int, {nullable: true, defaultValue: 0})
   skip!: number;
 
@@ -19,15 +19,15 @@ export class ResolvePublishersLabelsArgs {
   @Field(() => [ID!], {nullable: true, defaultValue: []})
   except!: string[];
 
-  @Field(() => ResolvePublishersLabelsArgsOrderBy, {
+  @Field(() => PublisherHasLabelsArgsOrderBy, {
     nullable: true,
-    defaultValue: new ResolvePublishersLabelsArgsOrderBy(),
+    defaultValue: new PublisherHasLabelsArgsOrderBy(),
   })
-  orderBy!: ResolvePublishersLabelsArgsOrderBy;
+  orderBy!: PublisherHasLabelsArgsOrderBy;
 }
 
-@ObjectType('PublishersLabelsReturn')
-export class ResolvePublishersLabelsReturn {
+@ObjectType()
+export class PublisherHasLabelsReturnType {
   @Field(() => [PublisherLabelRelationEntity])
   nodes!: PublisherLabelRelationEntity[];
 

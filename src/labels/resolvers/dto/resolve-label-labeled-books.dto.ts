@@ -2,14 +2,14 @@ import {ArgsType, Field, ID, InputType, Int, ObjectType} from '@nestjs/graphql';
 import {OrderBy} from '../../../common/order-by.enum';
 import {LabelingEntity} from '../../entities/labeling.entity';
 
-@InputType('LabelsBooksArgsOrderBy')
-export class ResolveLabelsBooksOrderBy {
+@InputType()
+export class LabelLabeledBooksArgsOrderBy {
   @Field(() => OrderBy, {nullable: true, defaultValue: OrderBy.ASC})
   title!: OrderBy;
 }
 
 @ArgsType()
-export class ResolveLabelsBooksArgs {
+export class LabelsLabeledBooksArgs {
   @Field(() => Int, {nullable: true, defaultValue: 0})
   skip!: number;
 
@@ -19,15 +19,15 @@ export class ResolveLabelsBooksArgs {
   @Field(() => [ID!], {nullable: true, defaultValue: []})
   except!: string[];
 
-  @Field(() => ResolveLabelsBooksOrderBy, {
+  @Field(() => LabelLabeledBooksArgsOrderBy, {
     nullable: true,
-    defaultValue: new ResolveLabelsBooksOrderBy(),
+    defaultValue: new LabelLabeledBooksArgsOrderBy(),
   })
-  orderBy!: ResolveLabelsBooksOrderBy;
+  orderBy!: LabelLabeledBooksArgsOrderBy;
 }
 
-@ObjectType('LabelsBooksReturn')
-export class ResolveLabelsBooksReturnEntity {
+@ObjectType()
+export class LabelLabeledBooksReturnType {
   @Field(() => [LabelingEntity])
   nodes!: LabelingEntity[];
 
