@@ -6,8 +6,8 @@ import {PublishersService} from '../../publishers/services/publishers.service';
 import {PublisherLabelRelationEntity} from '../entities/publisher-label.entity';
 import {PublisherLabelRelationsService} from '../services/publisher-label.service';
 import {
-  ResolvePublishersLabelsArgs,
-  ResolvePublishersLabelsReturn,
+  PublisherHasLabelsArgs,
+  PublisherHasLabelsReturnType,
 } from './dto/publisher-label.dtos';
 
 @Resolver(() => PublisherLabelRelationEntity)
@@ -38,12 +38,12 @@ export class PublishersResolver {
     private readonly relationService: PublisherLabelRelationsService,
   ) {}
 
-  @ResolveField(() => ResolvePublishersLabelsReturn)
-  async labels(
+  @ResolveField(() => PublisherHasLabelsReturnType)
+  async hasLabels(
     @Parent() {id: authorId}: PublisherEntity,
-    @Args({type: () => ResolvePublishersLabelsArgs})
-    args: ResolvePublishersLabelsArgs,
-  ): Promise<ResolvePublishersLabelsReturn> {
+    @Args({type: () => PublisherHasLabelsArgs})
+    args: PublisherHasLabelsArgs,
+  ): Promise<PublisherHasLabelsReturnType> {
     return this.relationService.getLabelsFromPublisher(authorId, args);
   }
 }

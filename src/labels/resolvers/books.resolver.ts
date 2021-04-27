@@ -8,7 +8,9 @@ export class BooksResolver {
   constructor(private readonly labelsService: LabelsService) {}
 
   @ResolveField(() => LabelEntity, {nullable: true})
-  async label(@Parent() {id: bookId}: BookEntity): Promise<LabelEntity | null> {
+  async labeledBy(
+    @Parent() {id: bookId}: BookEntity,
+  ): Promise<LabelEntity | null> {
     const id = await this.labelsService.getLabelIdFromBook(bookId);
     return id ? this.labelsService.findById(id) : null;
   }

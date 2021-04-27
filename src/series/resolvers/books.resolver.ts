@@ -3,13 +3,13 @@ import {BookEntity} from '../../books/entities/book.entity';
 import {SeriesPartEntity} from '../entities/series-part.entity';
 import {SeriesService} from '../services/series.service';
 import {
-  ResolveBooksNextArgs,
-  ResolveBooksNextReturn,
-} from './dto/resolve-books-next.dto';
+  BookNextBooksArgs,
+  BookNextBooksReturnType,
+} from './dto/resolve-book-next-books.dto';
 import {
-  ResolveBooksPreviousArgs,
-  ResolveBooksPreviousReturn,
-} from './dto/resolve-books-previous.dto';
+  BookPreviousBooksArgs,
+  BookPreviousBooksReturnType,
+} from './dto/resolve-book-previous-books.dto';
 
 @Resolver(() => BookEntity)
 export class BooksResolver {
@@ -22,21 +22,21 @@ export class BooksResolver {
     return this.seriesService.getSeriesFromBook(bookId);
   }
 
-  @ResolveField(() => ResolveBooksPreviousReturn)
+  @ResolveField(() => BookPreviousBooksReturnType)
   async previousBooks(
     @Parent() {id: bookId}: BookEntity,
-    @Args({type: () => ResolveBooksPreviousArgs})
-    args: ResolveBooksPreviousArgs,
-  ): Promise<ResolveBooksPreviousReturn> {
+    @Args({type: () => BookPreviousBooksArgs})
+    args: BookPreviousBooksArgs,
+  ): Promise<BookPreviousBooksReturnType> {
     return this.seriesService.previousBooks(bookId, args);
   }
 
-  @ResolveField(() => ResolveBooksNextReturn)
+  @ResolveField(() => BookNextBooksReturnType)
   async nextBooks(
     @Parent() {id: bookId}: BookEntity,
-    @Args({type: () => ResolveBooksNextArgs})
-    args: ResolveBooksNextArgs,
-  ): Promise<ResolveBooksNextReturn> {
+    @Args({type: () => BookNextBooksArgs})
+    args: BookNextBooksArgs,
+  ): Promise<BookNextBooksReturnType> {
     return this.seriesService.nextBooks(bookId, args);
   }
 }

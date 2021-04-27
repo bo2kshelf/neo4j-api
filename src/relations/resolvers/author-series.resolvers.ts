@@ -7,11 +7,11 @@ import {SeriesService} from '../../series/services/series.service';
 import {AuthorSeriesRelationEntity} from '../entities/author-series.entity';
 import {AuthorSeriesRelationsService} from '../services/author-series.service';
 import {
-  ResolveAuthorSeriesRelationRelatedBooksArgs,
-  ResolveAuthorsRelatedSeriesArgs,
-  ResolveAuthorsRelatedSeriesReturn,
-  ResolveSeriesRelatedAuthorsArgs,
-  ResolveSeriesRelatedAuthorsReturn,
+  AuthorRelatedSeriesArgs,
+  AuthorRelatedSeriesReturnType,
+  AuthorSeriesRelationRelatedBooksArgs,
+  SeriesRelatedAuthorsArgs,
+  SeriesRelatedAuthorsReturnType,
 } from './dto/author-series.dtos';
 
 @Resolver(() => AuthorSeriesRelationEntity)
@@ -39,8 +39,8 @@ export class RelationResolver {
   @ResolveField(() => [BookEntity])
   async relatedBooks(
     @Parent() {seriesId, authorId}: AuthorSeriesRelationEntity,
-    @Args({type: () => ResolveAuthorSeriesRelationRelatedBooksArgs})
-    args: ResolveAuthorSeriesRelationRelatedBooksArgs,
+    @Args({type: () => AuthorSeriesRelationRelatedBooksArgs})
+    args: AuthorSeriesRelationRelatedBooksArgs,
   ): Promise<BookEntity[]> {
     return this.relationService.getRelatedBooks({seriesId, authorId}, args);
   }
@@ -50,12 +50,12 @@ export class RelationResolver {
 export class AuthorsResolver {
   constructor(private readonly relationService: AuthorSeriesRelationsService) {}
 
-  @ResolveField(() => ResolveAuthorsRelatedSeriesReturn)
+  @ResolveField(() => AuthorRelatedSeriesReturnType)
   async relatedSeries(
     @Parent() {id: authorId}: AuthorEntity,
-    @Args({type: () => ResolveAuthorsRelatedSeriesArgs})
-    args: ResolveAuthorsRelatedSeriesArgs,
-  ): Promise<ResolveAuthorsRelatedSeriesReturn> {
+    @Args({type: () => AuthorRelatedSeriesArgs})
+    args: AuthorRelatedSeriesArgs,
+  ): Promise<AuthorRelatedSeriesReturnType> {
     return this.relationService.getFromAuthor(authorId, args);
   }
 }
@@ -64,12 +64,12 @@ export class AuthorsResolver {
 export class SeriesRelatedAuthorsResolver {
   constructor(private readonly relationService: AuthorSeriesRelationsService) {}
 
-  @ResolveField(() => ResolveSeriesRelatedAuthorsReturn)
+  @ResolveField(() => SeriesRelatedAuthorsReturnType)
   async relatedAuthors(
     @Parent() {id: seriesId}: SeriesEntity,
-    @Args({type: () => ResolveSeriesRelatedAuthorsArgs})
-    args: ResolveSeriesRelatedAuthorsArgs,
-  ): Promise<ResolveSeriesRelatedAuthorsReturn> {
+    @Args({type: () => SeriesRelatedAuthorsArgs})
+    args: SeriesRelatedAuthorsArgs,
+  ): Promise<SeriesRelatedAuthorsReturnType> {
     return this.relationService.getFromSeries(seriesId, args);
   }
 }

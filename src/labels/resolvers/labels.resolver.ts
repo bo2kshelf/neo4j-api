@@ -10,9 +10,9 @@ import {LabelEntity} from '../entities/label.entity';
 import {LabelsService} from '../services/labels.service';
 import {GetLabelArgs} from './dto/get-label.dto';
 import {
-  ResolveLabelsBooksArgs,
-  ResolveLabelsBooksReturnEntity,
-} from './dto/resolve-label-books.dto';
+  LabelLabeledBooksReturnType,
+  LabelsLabeledBooksArgs,
+} from './dto/resolve-label-labeled-books.dto';
 
 @Resolver(() => LabelEntity)
 export class LabelsResolver {
@@ -23,12 +23,12 @@ export class LabelsResolver {
     return this.labelsService.findById(reference.id);
   }
 
-  @ResolveField(() => ResolveLabelsBooksReturnEntity)
-  async books(
+  @ResolveField(() => LabelLabeledBooksReturnType)
+  async labeledBooks(
     @Parent() {id}: LabelEntity,
-    @Args({type: () => ResolveLabelsBooksArgs})
-    args: ResolveLabelsBooksArgs,
-  ): Promise<ResolveLabelsBooksReturnEntity> {
+    @Args({type: () => LabelsLabeledBooksArgs})
+    args: LabelsLabeledBooksArgs,
+  ): Promise<LabelLabeledBooksReturnType> {
     return this.labelsService.getLabeledBooks(id, args);
   }
 

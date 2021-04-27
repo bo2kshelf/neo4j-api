@@ -3,7 +3,7 @@ import {OrderBy} from '../../../common/order-by.enum';
 import {SeriesPartEntity} from '../../entities/series-part.entity';
 
 @ArgsType()
-export class ResolveSeriesPartsArgs {
+export class SeriesSeriesBooksArgs {
   @Field(() => Int, {nullable: true, defaultValue: 0})
   skip!: number;
 
@@ -14,8 +14,8 @@ export class ResolveSeriesPartsArgs {
   orderBy!: OrderBy;
 }
 
-@ObjectType('SeriesPartsReturn')
-export class ResolveSeriesPartsReturnEntity {
+@ObjectType()
+export class SeriesSeriesBooksReturnType {
   @Field(() => [SeriesPartEntity])
   nodes!: SeriesPartEntity[];
 

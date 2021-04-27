@@ -2,8 +2,8 @@ import {ArgsType, Field, InputType, Int, ObjectType} from '@nestjs/graphql';
 import {OrderBy} from '../../../common/order-by.enum';
 import {AuthorSeriesRelationEntity} from '../../entities/author-series.entity';
 
-@InputType('AuthorSeriesRelationRelatedBooksArgsOrderBy')
-export class ResolveAuthorSeriesRelationRelatedBooksArgsOrderBy {
+@InputType()
+export class AuthorSeriesRelationRelatedBooksArgsOrderBy {
   @Field(() => OrderBy, {nullable: true, defaultValue: OrderBy.ASC})
   order!: OrderBy;
 
@@ -12,43 +12,43 @@ export class ResolveAuthorSeriesRelationRelatedBooksArgsOrderBy {
 }
 
 @ArgsType()
-export class ResolveAuthorSeriesRelationRelatedBooksArgs {
+export class AuthorSeriesRelationRelatedBooksArgs {
   @Field(() => Int, {nullable: true, defaultValue: 0})
   skip!: number;
 
   @Field(() => Int, {nullable: true, defaultValue: 0})
   limit!: number;
 
-  @Field(() => ResolveAuthorSeriesRelationRelatedBooksArgsOrderBy, {
+  @Field(() => AuthorSeriesRelationRelatedBooksArgsOrderBy, {
     nullable: true,
-    defaultValue: new ResolveAuthorSeriesRelationRelatedBooksArgsOrderBy(),
+    defaultValue: new AuthorSeriesRelationRelatedBooksArgsOrderBy(),
   })
-  orderBy!: ResolveAuthorSeriesRelationRelatedBooksArgsOrderBy;
+  orderBy!: AuthorSeriesRelationRelatedBooksArgsOrderBy;
 }
 
-@InputType('SeriesRelatedAuthorsArgsOrderBy')
-export class ResolveSeriesRelatedAuthorsArgsOrderBy {
+@InputType()
+export class SeriesRelatedAuthorsArgsOrderBy {
   @Field(() => OrderBy, {nullable: true, defaultValue: OrderBy.ASC})
   name!: OrderBy;
 }
 
 @ArgsType()
-export class ResolveSeriesRelatedAuthorsArgs {
+export class SeriesRelatedAuthorsArgs {
   @Field(() => Int, {nullable: true, defaultValue: 0})
   skip!: number;
 
   @Field(() => Int, {nullable: true, defaultValue: 0})
   limit!: number;
 
-  @Field(() => ResolveSeriesRelatedAuthorsArgsOrderBy, {
+  @Field(() => SeriesRelatedAuthorsArgsOrderBy, {
     nullable: true,
-    defaultValue: new ResolveSeriesRelatedAuthorsArgsOrderBy(),
+    defaultValue: new SeriesRelatedAuthorsArgsOrderBy(),
   })
-  orderBy!: ResolveSeriesRelatedAuthorsArgsOrderBy;
+  orderBy!: SeriesRelatedAuthorsArgsOrderBy;
 }
 
-@ObjectType('SeriesRelatedAuthorsReturn')
-export class ResolveSeriesRelatedAuthorsReturn {
+@ObjectType()
+export class SeriesRelatedAuthorsReturnType {
   @Field(() => [AuthorSeriesRelationEntity])
   nodes!: AuthorSeriesRelationEntity[];
 
@@ -62,29 +62,29 @@ export class ResolveSeriesRelatedAuthorsReturn {
   hasNext!: boolean;
 }
 
-@InputType('AuthorsRelatedSeriesArgsOrderBy')
-export class ResolveAuthorsRelatedSeriesArgsOrderBy {
+@InputType()
+export class AuthorRelatedSeriesArgsOrderBy {
   @Field(() => OrderBy, {nullable: true, defaultValue: OrderBy.ASC})
   title!: OrderBy;
 }
 
 @ArgsType()
-export class ResolveAuthorsRelatedSeriesArgs {
+export class AuthorRelatedSeriesArgs {
   @Field(() => Int, {nullable: true, defaultValue: 0})
   skip!: number;
 
   @Field(() => Int, {nullable: true, defaultValue: 0})
   limit!: number;
 
-  @Field(() => ResolveAuthorsRelatedSeriesArgsOrderBy, {
+  @Field(() => AuthorRelatedSeriesArgsOrderBy, {
     nullable: true,
-    defaultValue: new ResolveAuthorsRelatedSeriesArgsOrderBy(),
+    defaultValue: new AuthorRelatedSeriesArgsOrderBy(),
   })
-  orderBy!: ResolveAuthorsRelatedSeriesArgsOrderBy;
+  orderBy!: AuthorRelatedSeriesArgsOrderBy;
 }
 
-@ObjectType('AuthorsRelatedSeriesReturn')
-export class ResolveAuthorsRelatedSeriesReturn {
+@ObjectType()
+export class AuthorRelatedSeriesReturnType {
   @Field(() => [AuthorSeriesRelationEntity])
   nodes!: AuthorSeriesRelationEntity[];
 

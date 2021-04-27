@@ -11,10 +11,13 @@ import {SeriesEntity} from '../entities/series.entity';
 import {SeriesService} from '../services/series.service';
 import {GetSeriesArgs} from './dto/get-series.dto';
 import {
-  ResolveSeriesPartsArgs,
-  ResolveSeriesPartsReturnEntity,
-} from './dto/resolve-series-parts.dto';
-import {ResolveSeriesSubPartsArgs} from './dto/resolve-series-sub-parts.dto';
+  SeriesRelatedBooksArgs,
+  SeriesRelatedBooksReturnType,
+} from './dto/resolve-series-related-books.dto';
+import {
+  SeriesSeriesBooksArgs,
+  SeriesSeriesBooksReturnType,
+} from './dto/resolve-series-series-books.dto';
 
 @Resolver(() => SeriesEntity)
 export class SeriesResolver {
@@ -26,27 +29,27 @@ export class SeriesResolver {
   }
 
   @ResolveField(() => SeriesPartEntity)
-  async head(
+  async headOf(
     @Parent() {id: seriesId}: SeriesEntity,
   ): Promise<SeriesPartEntity> {
     return this.seriesService.getHeadOfSeries(seriesId);
   }
 
-  @ResolveField(() => ResolveSeriesPartsReturnEntity)
-  async parts(
+  @ResolveField(() => SeriesSeriesBooksReturnType)
+  async seriesBooks(
     @Parent() {id: seriesId}: SeriesEntity,
-    @Args({type: () => ResolveSeriesPartsArgs})
-    args: ResolveSeriesPartsArgs,
-  ): Promise<ResolveSeriesPartsReturnEntity> {
+    @Args({type: () => SeriesSeriesBooksArgs})
+    args: SeriesSeriesBooksArgs,
+  ): Promise<SeriesSeriesBooksReturnType> {
     return this.seriesService.getPartsOfSeries(seriesId, args);
   }
 
-  @ResolveField(() => ResolveSeriesPartsReturnEntity)
-  async subParts(
+  @ResolveField(() => SeriesRelatedBooksReturnType)
+  async relatedBooks(
     @Parent() {id: seriesId}: SeriesEntity,
-    @Args({type: () => ResolveSeriesSubPartsArgs})
-    args: ResolveSeriesSubPartsArgs,
-  ): Promise<ResolveSeriesPartsReturnEntity> {
+    @Args({type: () => SeriesRelatedBooksArgs})
+    args: SeriesRelatedBooksArgs,
+  ): Promise<SeriesRelatedBooksReturnType> {
     return this.seriesService.getSubPartsOfSeries(seriesId, args);
   }
 
