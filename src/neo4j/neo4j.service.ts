@@ -1,5 +1,5 @@
 import {Inject, Injectable, OnApplicationShutdown} from '@nestjs/common';
-import neo4j, {Driver, Result, Transaction} from 'neo4j-driver';
+import neo4j, {Driver, Transaction} from 'neo4j-driver';
 import {NEO4J_MODULE_DRIVER, NEO4J_MODULE_OPTIONS} from './neo4j.constants';
 import {Neo4jCreateOptions} from './neo4j.utils';
 
@@ -33,14 +33,18 @@ export class Neo4jService implements OnApplicationShutdown {
     });
   }
 
-  read(cypher: string, params?: Record<string, any>): Result {
-    const session = this.getWriteSession();
-    return session.run(cypher, params);
+  async read(cypher: string, params?: Record<string, any>) {
+    const session = this.getReadSession();
+    const result = await session.run(cypher, params);
+    await session.close();
+    return result;
   }
 
-  write(cypher: string, params?: Record<string, any>): Result {
+  async write(cypher: string, params?: Record<string, any>) {
     const session = this.getWriteSession();
-    return session.run(cypher, params);
+    const result = await session.run(cypher, params);
+    await session.close();
+    return result;
   }
 
   onApplicationShutdown() {
