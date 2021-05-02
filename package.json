@@ -42,7 +42,7 @@
     "rxjs": "6.6.7"
   },
   "devDependencies": {
-    "@arkweid/lefthook": "0.7.2",
+    "@arkweid/lefthook": "0.7.4",
     "@bo2kshelf/eslint-config": "1.1.1",
     "@bo2kshelf/prettier-config": "1.0.0",
     "@commitlint/cli": "12.1.1",
