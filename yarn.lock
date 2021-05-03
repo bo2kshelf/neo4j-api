@@ -601,7 +601,7 @@ __metadata:
     eslint: 7.23.0
     faker: 5.5.3
     graphql: 15.5.0
-    graphql-scalars: 1.9.0
+    graphql-scalars: 1.9.3
     jest: 26.6.3
     jest-junit: 12.0.0
     nanoid: 3.1.22
@@ -6092,14 +6092,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-scalars@npm:1.9.0":
-  version: 1.9.0
-  resolution: "graphql-scalars@npm:1.9.0"
+"graphql-scalars@npm:1.9.3":
+  version: 1.9.3
+  resolution: "graphql-scalars@npm:1.9.3"
   dependencies:
-    tslib: ~2.1.0
+    tslib: ~2.2.0
   peerDependencies:
     graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0
-  checksum: 8b287771004c00fcdc95e42e81b7b95f254c3ba70bbac75ea775140df8e94dc083a48b071233547936d8eaec61b56b96f800392374e2961226131badded6b704
+  checksum: 69a9bd4d21fdff3ce7c85f695f52e0c97fd5100635f55c8a6487d34f9556eaf3c7685d901304540434114c3ccdf63fc6b4fb78775de56df6d1dbe41515428f53
   languageName: node
   linkType: hard
 
