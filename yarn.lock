@@ -614,7 +614,7 @@ __metadata:
     rxjs: 6.6.7
     scripty: 2.0.0
     supertest: 5.0.0
-    ts-jest: 26.4.4
+    ts-jest: 26.5.6
     ts-loader: 8.1.0
     ts-node: 9.0.0
     tsconfig-paths: 3.9.0
@@ -1980,7 +1980,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jest@npm:26.0.23, @types/jest@npm:26.x":
+"@types/jest@npm:26.0.23":
   version: 26.0.23
   resolution: "@types/jest@npm:26.0.23"
   dependencies:
@@ -7994,13 +7994,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash.memoize@npm:4.x":
-  version: 4.1.2
-  resolution: "lodash.memoize@npm:4.1.2"
-  checksum: 080c1095b7795b293a06078737550dc0c8138192cadbafb4e4b1303357d367ac589a1a570fad8de154175b008ca7b2b48d6a7f1755a143e13b764e20a7104080
-  languageName: node
-  linkType: hard
-
 "lodash.set@npm:4.3.2":
   version: 4.3.2
   resolution: "lodash.set@npm:4.3.2"
@@ -8055,7 +8048,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash@npm:4.17.21, lodash@npm:^4.17.11, lodash@npm:^4.17.14, lodash@npm:^4.17.15, lodash@npm:^4.17.19, lodash@npm:^4.17.20, lodash@npm:^4.17.21":
+"lodash@npm:4.17.21, lodash@npm:4.x, lodash@npm:^4.17.11, lodash@npm:^4.17.14, lodash@npm:^4.17.15, lodash@npm:^4.17.19, lodash@npm:^4.17.20, lodash@npm:^4.17.21":
   version: 4.17.21
   resolution: "lodash@npm:4.17.21"
   checksum: 4983720b9abca930a4a46f18db163d7dad8dd00dbed6db0cc7b499b33b717cce69f80928b27bbb1ff2cbd3b19d251ee90669a8b5ea466072ca81c2ebe91e7468
@@ -11299,17 +11292,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-jest@npm:26.4.4":
-  version: 26.4.4
-  resolution: "ts-jest@npm:26.4.4"
+"ts-jest@npm:26.5.6":
+  version: 26.5.6
+  resolution: "ts-jest@npm:26.5.6"
   dependencies:
-    "@types/jest": 26.x
     bs-logger: 0.x
     buffer-from: 1.x
     fast-json-stable-stringify: 2.x
     jest-util: ^26.1.0
     json5: 2.x
-    lodash.memoize: 4.x
+    lodash: 4.x
     make-error: 1.x
     mkdirp: 1.x
     semver: 7.x
@@ -11319,7 +11311,7 @@ __metadata:
     typescript: ">=3.8 <5.0"
   bin:
     ts-jest: cli.js
-  checksum: bee46b789c13a9f195c80fbb201362c6c2e5150abb5aeb3699c4ccc17b9bc9c4b229e06230c5a23bf8f17bfd05311c33a4ea33a7641683e8a4bec21529f4da77
+  checksum: fd32a8b256091d45d850c491fd090f74a368d44bccc8fedfa0dd074757727e7f07621eb2a69ebf081428f44a357a879237a2cf0aef970896410d454d0bf87ac6
   languageName: node
   linkType: hard
 
