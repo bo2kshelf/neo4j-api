@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   neo4j-api-neo4j:
-    image: neo4j:4.2@sha256:44ae8c7bb6d605bea1f34c0f2457f45a1120b9054b3e501d942686d21e597061
+    image: neo4j:4.2@sha256:ed14ab09cb0ea1798be6091f60f242467217759335ed85932d243b39a1d2019e
     ports:
       - published: $NEO4J_API_NEO4J_HTTP_PORT
         target: 7474
