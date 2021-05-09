@@ -13,7 +13,7 @@ commands:
 jobs:
   build:
     docker:
-      - image: cimg/node:14.16.1
+      - image: cimg/node:15.14.0
     steps:
       - checkout
       - berry-install-packages
@@ -23,7 +23,7 @@ jobs:
 
   lint-prettier:
     docker:
-      - image: cimg/node:14.16.1
+      - image: cimg/node:15.14.0
     steps:
       - checkout
       - berry-install-packages
@@ -31,7 +31,7 @@ jobs:
 
   lint-eslint:
     docker:
-      - image: cimg/node:14.16.1
+      - image: cimg/node:15.14.0
     steps:
       - checkout
       - berry-install-packages
@@ -51,7 +51,7 @@ jobs:
 
   ts-check:
     docker:
-      - image: cimg/node:14.16.1
+      - image: cimg/node:15.14.0
     steps:
       - checkout
       - berry-install-packages
@@ -59,7 +59,7 @@ jobs:
 
   test-small:
     docker:
-      - image: cimg/node:14.16.1
+      - image: cimg/node:15.14.0
     steps:
       - checkout
       - berry-install-packages
@@ -82,7 +82,7 @@ jobs:
 
   test-medium:
     docker:
-      - image: cimg/node:14.16.1
+      - image: cimg/node:15.14.0
     steps:
       - checkout
       - berry-install-packages
@@ -107,7 +107,7 @@ jobs:
     environment:
       NEO4J_TEST_URL: bolt://localhost:7687
     docker:
-      - image: cimg/node:14.16.1
+      - image: cimg/node:15.14.0
       - image: neo4j:4.2.5
         environment:
           NEO4J_AUTH: none
@@ -136,7 +136,7 @@ jobs:
 
   test-e2e:
     docker:
-      - image: cimg/node:14.16.1
+      - image: cimg/node:15.14.0
     steps:
       - checkout
       - berry-install-packages
