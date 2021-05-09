@@ -596,7 +596,7 @@ __metadata:
     "@types/node": 14.14.43
     "@types/supertest": 2.0.11
     apollo-server-express: 2.23.0
-    class-transformer: 0.3.1
+    class-transformer: 0.4.0
     class-validator: 0.12.2
     eslint: 7.23.0
     faker: 5.5.3
@@ -3764,10 +3764,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"class-transformer@npm:0.3.1":
-  version: 0.3.1
-  resolution: "class-transformer@npm:0.3.1"
-  checksum: 3ae3ef2510d2822766a97d31eb7ca550dabda56cbfe70968f295420531667ca95b4d84cddfe2dc302abc41c8e26d667d43235b0f4759eee09a007741cc307bc8
+"class-transformer@npm:0.4.0":
+  version: 0.4.0
+  resolution: "class-transformer@npm:0.4.0"
+  checksum: 915db337796f6a4d0c2c09bf1c0214eff01e1247836524fdaa170f0c3457f4b5f9ece1068cdb2667e42e01572aa1b08b9995c298f2956d1c8a84884c8d5ea5ff
   languageName: node
   linkType: hard
 
