@@ -616,7 +616,7 @@ __metadata:
     supertest: 5.0.0
     ts-jest: 26.4.4
     ts-loader: 8.1.0
-    ts-node: 9.0.0
+    ts-node: 9.1.1
     tsconfig-paths: 3.9.0
     typescript: 4.2.4
   languageName: unknown
@@ -11353,27 +11353,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-node@npm:9.0.0":
-  version: 9.0.0
-  resolution: "ts-node@npm:9.0.0"
-  dependencies:
-    arg: ^4.1.0
-    diff: ^4.0.1
-    make-error: ^1.1.1
-    source-map-support: ^0.5.17
-    yn: 3.1.1
-  peerDependencies:
-    typescript: ">=2.7"
-  bin:
-    ts-node: dist/bin.js
-    ts-node-script: dist/bin-script.js
-    ts-node-transpile-only: dist/bin-transpile.js
-    ts-script: dist/bin-script-deprecated.js
-  checksum: 49d2ab087fc4b93f0a292e426ea6d242a80d1a4809ac008758bb0170aea1a85cd4182792c1d70889285fe5328cd8bd1ffb1e5108d1c4f31c39dbe9151ea4cabe
-  languageName: node
-  linkType: hard
-
-"ts-node@npm:^9":
+"ts-node@npm:9.1.1, ts-node@npm:^9":
   version: 9.1.1
   resolution: "ts-node@npm:9.1.1"
   dependencies:
