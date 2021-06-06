@@ -66,7 +66,6 @@ jobs:
       - run:
           command: |
             yarn run test:small --ci --runInBand \
-              --forceExit \
               --reporters=default --reporters=jest-junit \
               --testResultsProcessor=jest-junit
           environment:
@@ -89,7 +88,6 @@ jobs:
       - run:
           command: |
             yarn run test:medium --ci --runInBand \
-              --forceExit \
               --reporters=default --reporters=jest-junit \
               --testResultsProcessor=jest-junit
           environment:
@@ -120,7 +118,7 @@ jobs:
       - berry-install-packages
       - run:
           command: |
-            yarn run test:large --ci --forceExit \
+            yarn run test:large --ci \
               --reporters=default --reporters=jest-junit \
               --testResultsProcessor=jest-junit
           environment:
@@ -142,7 +140,7 @@ jobs:
       - berry-install-packages
       - run:
           command: |
-            yarn run test:e2e --ci --forceExit
+            yarn run test:e2e --ci
 
 workflows:
   version: 2
