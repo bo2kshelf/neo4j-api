@@ -186,12 +186,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@arkweid/lefthook@npm:0.7.5":
-  version: 0.7.5
-  resolution: "@arkweid/lefthook@npm:0.7.5"
+"@arkweid/lefthook@npm:0.7.6":
+  version: 0.7.6
+  resolution: "@arkweid/lefthook@npm:0.7.6"
   bin:
     lefthook: bin/index.js
-  checksum: 99871afb73502248c42ad90b5ec6955f95776b426b7e452d5c20f646ea771fdced008c002cf6f088ebf28e73cf9df40dbd79c5881b58d969007ecbbc53741086
+  checksum: 8180d7a0c00759c04c333a3aed3dc3285566ea1cc840315d52933a3013d050fb808eced987b344dd03977eeb685c7e660eb878fff465191a49e8c519090c9367
   languageName: node
   linkType: hard
 
@@ -578,7 +578,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@bo2kshelf/bookcover-api@workspace:."
   dependencies:
-    "@arkweid/lefthook": 0.7.5
+    "@arkweid/lefthook": 0.7.6
     "@bo2kshelf/eslint-config": 1.1.1
     "@bo2kshelf/prettier-config": 1.0.0
     "@commitlint/cli": 12.1.4
