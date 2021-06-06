@@ -153,18 +153,10 @@ workflows:
       - docker/hadolint:
           dockerfiles: Dockerfile
       - ts-check
-      - test-small:
-          requires:
-            - ts-check
-      - test-medium:
-          requires:
-            - ts-check
-      - test-large:
-          requires:
-            - ts-check
-      - test-e2e:
-          requires:
-            - ts-check
+      - test-small
+      - test-medium
+      - test-large
+      - test-e2e
       - build:
           requires:
             - lint-eslint
