@@ -603,7 +603,7 @@ __metadata:
     graphql: 15.5.0
     graphql-scalars: 1.9.3
     jest: 26.6.3
-    jest-junit: 12.0.0
+    jest-junit: 12.2.0
     nanoid: 3.1.23
     neo4j-driver: 4.2.3
     npm-run-all: 4.1.5
@@ -7351,15 +7351,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest-junit@npm:12.0.0":
-  version: 12.0.0
-  resolution: "jest-junit@npm:12.0.0"
+"jest-junit@npm:12.2.0":
+  version: 12.2.0
+  resolution: "jest-junit@npm:12.2.0"
   dependencies:
     mkdirp: ^1.0.4
     strip-ansi: ^5.2.0
-    uuid: ^3.3.3
+    uuid: ^8.3.2
     xml: ^1.0.1
-  checksum: 2cdd446aeab75e4e87e3c168bc72b281a5f036b31f04a36795e9f1509afa85ef4bf6609c2f2504dd221bbaedc1181d57d49728655dca828a3e1033f446715d8e
+  checksum: 6009d37379a346ccd884326ae227b926bc689249fa7bd0d93bd1f0004ed356ee2525a8eeb07b93b5e7adcfcae58b245afa5e8387129bf7e941dbf7d719a527b9
   languageName: node
   linkType: hard
 
@@ -11757,7 +11757,7 @@ typescript@4.2.4:
   languageName: node
   linkType: hard
 
-"uuid@npm:8.3.2, uuid@npm:^8.0.0, uuid@npm:^8.3.0":
+"uuid@npm:8.3.2, uuid@npm:^8.0.0, uuid@npm:^8.3.0, uuid@npm:^8.3.2":
   version: 8.3.2
   resolution: "uuid@npm:8.3.2"
   bin:
@@ -11766,7 +11766,7 @@ typescript@4.2.4:
   languageName: node
   linkType: hard
 
-"uuid@npm:^3.1.0, uuid@npm:^3.3.2, uuid@npm:^3.3.3":
+"uuid@npm:^3.1.0, uuid@npm:^3.3.2":
   version: 3.4.0
   resolution: "uuid@npm:3.4.0"
   bin:
