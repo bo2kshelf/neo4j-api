@@ -609,7 +609,7 @@ __metadata:
     npm-run-all: 4.1.5
     prettier: 2.2.1
     prettier-plugin-optipack: 1.1.2
-    prettier-plugin-organize-imports: 1.1.1
+    prettier-plugin-organize-imports: 2.2.0
     reflect-metadata: 0.1.13
     rxjs: 6.6.7
     scripty: 2.0.0
@@ -9475,13 +9475,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier-plugin-organize-imports@npm:1.1.1":
-  version: 1.1.1
-  resolution: "prettier-plugin-organize-imports@npm:1.1.1"
+"prettier-plugin-organize-imports@npm:2.2.0":
+  version: 2.2.0
+  resolution: "prettier-plugin-organize-imports@npm:2.2.0"
   peerDependencies:
-    prettier: ">=1.10"
-    typescript: ">=2.8.2"
-  checksum: a915e943a93de0a6a6d091bf36f296a6eec5807abd50e6218f55d955c24bf75eaf0bbf708692cff45196b1f889c7a190509ce370b0c611deab2159a741ed912e
+    prettier: ">=2.0"
+    typescript: ">=2.9"
+  checksum: 030778bcfa91af473d274509a839f3aad25a6087266cf87d87c90f8790a6e11cae73360d8e8ff57a19e63a7a4b2000c847d72d9b3b6019c46fb87a90b4bb18e6
   languageName: node
   linkType: hard
 
