@@ -611,7 +611,7 @@ __metadata:
     prettier-plugin-optipack: 1.1.2
     prettier-plugin-organize-imports: 1.1.1
     reflect-metadata: 0.1.13
-    rxjs: 6.6.7
+    rxjs: 7.2.0
     scripty: 2.0.0
     supertest: 5.0.0
     ts-jest: 26.4.4
@@ -10109,7 +10109,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rxjs@npm:6.6.7, rxjs@npm:^6.6.0, rxjs@npm:^6.6.3":
+"rxjs@npm:7.2.0":
+  version: 7.2.0
+  resolution: "rxjs@npm:7.2.0"
+  dependencies:
+    tslib: ~2.1.0
+  checksum: 45b46a5adcfcdbb36dccde6764f186a5ed76418531ba95a3f91662435f504c1b7ad0858c23b02479f24a2f307a293c87deddfecfddfa20e249f50cecb2199654
+  languageName: node
+  linkType: hard
+
+"rxjs@npm:^6.6.0, rxjs@npm:^6.6.3":
   version: 6.6.7
   resolution: "rxjs@npm:6.6.7"
   dependencies:
