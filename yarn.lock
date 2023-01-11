@@ -597,7 +597,7 @@ __metadata:
     "@types/supertest": 2.0.11
     apollo-server-express: 2.23.0
     class-transformer: 0.3.1
-    class-validator: 0.12.2
+    class-validator: 0.14.0
     eslint: 7.23.0
     faker: 5.5.3
     graphql: 15.5.0
@@ -2173,10 +2173,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/validator@npm:13.0.0":
-  version: 13.0.0
-  resolution: "@types/validator@npm:13.0.0"
-  checksum: 22cd062bf92c81939c7610f94252a1997b0ed4d67f5f39c36db0d28dfb17d554077b8c7abe70cf91bb38bc69d2ec0110e4ccd7cc3a98e177ddcf5bbe2c654426
+"@types/validator@npm:^13.7.10":
+  version: 13.7.10
+  resolution: "@types/validator@npm:13.7.10"
+  checksum: 5ad0f25659d04728d6c5e49ec7565195a60f047e1e7fd9393a8c1bbc5b024196b60075fc8d4b313312b6713ef77736864adfe87172bf534f6db9c97e1dc27ebe
   languageName: node
   linkType: hard
 
@@ -3794,15 +3794,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"class-validator@npm:0.12.2":
-  version: 0.12.2
-  resolution: "class-validator@npm:0.12.2"
+"class-validator@npm:0.14.0":
+  version: 0.14.0
+  resolution: "class-validator@npm:0.14.0"
   dependencies:
-    "@types/validator": 13.0.0
-    google-libphonenumber: ^3.2.8
-    tslib: ">=1.9.0"
-    validator: 13.0.0
-  checksum: ebd2b59df742f4750af173ae5b75fd66251da48568f60810a4aac87587dc4e9b43d42648c0c5e161cc1626e5201a3d7500fc341b31134a68d9420838fedc8771
+    "@types/validator": ^13.7.10
+    libphonenumber-js: ^1.10.14
+    validator: ^13.7.0
+  checksum: 5faf11bef14d9013e299ca152f7d2b95fcadf8290fe8681e54c6b509cd5df8d8b43999970ad18e8ee359bebdbb143cab37e212c793adf28cca09a717bb9eb7a2
   languageName: node
   linkType: hard
 
@@ -6047,13 +6046,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"google-libphonenumber@npm:^3.2.8":
-  version: 3.2.15
-  resolution: "google-libphonenumber@npm:3.2.15"
-  checksum: 55c06744874195e2c7a4b0f0257ba50b36abfb91245265298e8f260d515255bbc6612ff3ec86eed1c2aa8507bf333a8043e7996394f410ccbacb9eb41f8b2e1a
-  languageName: node
-  linkType: hard
-
 "graceful-fs@npm:^4.1.2, graceful-fs@npm:^4.1.6, graceful-fs@npm:^4.2.0, graceful-fs@npm:^4.2.3, graceful-fs@npm:^4.2.4":
   version: 4.2.6
   resolution: "graceful-fs@npm:4.2.6"
@@ -7890,6 +7882,13 @@ __metadata:
     prelude-ls: ~1.1.2
     type-check: ~0.3.2
   checksum: 775861da38dcb7e5f1de5bea2a1c7ffaede6e9e8632cfbac76be145ecb295370f46bb41307613c283d66f1fee5d8cc448ca3323c4a02d0fb1e913b2f78de2abb
+  languageName: node
+  linkType: hard
+
+"libphonenumber-js@npm:^1.10.14":
+  version: 1.10.18
+  resolution: "libphonenumber-js@npm:1.10.18"
+  checksum: c6a8927b1cedfa984a57fe37ef94f4793ed57dede16f2a03bc2a2c5834bea09d4293ac9d760987376e6b8885e6aa1f3e7e2beeee8eef4b629c6ff6e6acf912f5
   languageName: node
   linkType: hard
 
@@ -11417,7 +11416,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:2.2.0, tslib@npm:>=1.9.0, tslib@npm:^2, tslib@npm:^2.0.0, tslib@npm:^2.0.3, tslib@npm:~2.2.0":
+"tslib@npm:2.2.0, tslib@npm:^2, tslib@npm:^2.0.0, tslib@npm:^2.0.3, tslib@npm:~2.2.0":
   version: 2.2.0
   resolution: "tslib@npm:2.2.0"
   checksum: 2d35468c470410871c5246e43f12dcb6d0fc363b617c176f26443b9530e5c5ee8448966892a42956168d8f495da7865bda33dfe82c26c91991e28999974a618f
@@ -11810,10 +11809,10 @@ typescript@4.2.4:
   languageName: node
   linkType: hard
 
-"validator@npm:13.0.0":
-  version: 13.0.0
-  resolution: "validator@npm:13.0.0"
-  checksum: c537ecd87c245aad5466a3821c9f87909d6ddd695daddc37691863a79b481a7efc0f3d3e88d0bf001d8d9c64fb4151c4e7a92fe060899c86d8ad9c334dceac2d
+"validator@npm:^13.7.0":
+  version: 13.7.0
+  resolution: "validator@npm:13.7.0"
+  checksum: d6621f541d49f354be0944544665ecca5853e7d08def5de58204c7ea3b4020ddc0d64d7232fa9ea9ff57656c8a955117c76f0267e6d4690d761cfd018857f62d
   languageName: node
   linkType: hard
 
